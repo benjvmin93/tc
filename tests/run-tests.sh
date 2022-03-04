@@ -1,9 +1,10 @@
-#!/bin/sh
+#/bin/sh
 
 GREEN="\e[42m"
 RED="\e[41m"
 END="\e[0m"
 BLINK="\e[5m"
+
 LINE="\e[1;4m"
 
 DIR="all_tests/*"
