@@ -25,9 +25,10 @@
 #include <parse/parsetiger.hh>
 #include <parse/tiger-parser.hh>
 
-  // FIXME: Some code was deleted here.
+  /* FIXME: Some code was deleted here. */
+#include <iostream>
 
-// Convenient shortcuts.
+/* Convenient shortcuts. */
 #define TOKEN_VAL(Type, Value)                  \
   parser::make_ ## Type(Value, tp.location_)
 
@@ -54,10 +55,19 @@ YY_FLEX_NAMESPACE_BEGIN
 
 /* Abbreviations.  */
 int             [0-9]+
-  /* FIXME: Some code was deleted here. */
+xnum            \x[0-9a-fA-F]{2}
+character       [a-zA-Z]
+keywords        "array" | "if" | "then" | "else" | "while" | "for" | "to" | "do" | "let" | "in" | "end" | "of" | "break" | "nil" | "function" | "var" | "type" | "import" | "primitive"
+object-related  "class" | "extends" | "method" | "new"
+symbols         "," | ":" | ";" | "(" | ")" | "[" | "]" | "{" | "}" | "." | "+" | "-" | "*" | "/" | "=" | "<>" | "<" | "<=" | ">" | ">=" | "&" | "|" | ":="
+white           [ \t]
+end-of-line     "\n\r" | "\r\n" | "\r" | "\n"
+words           [a-zA-Z]+
+
 %%
 %{
   // FIXME: Some code was deleted here (Local variables).
+std::string grown_string;
 
   // Each time yylex is called.
   tp.location_.step();
@@ -67,11 +77,57 @@ int             [0-9]+
 
 {int}         {
                 int val = 0;
-  // FIXME: Some code was deleted here (Decode, and check the value).
+                val = strtol(yytext, 0, 10);
+                if (val > 255)
+                  std::cerr << "Integer too long\n";
                 return TOKEN_VAL(INT, val);
               }
 
-  /* FIXME: Some code was deleted here. */
+ /* Begin of a string. */
+
+"\"" {
+  grown_string.clear();
+  BEGIN SC_STRING;
+}
+
+  /* Begin of a comment. */
+
+"/*" {
+  BEGIN SC_COMMENT;
+}
+
+  /* End comment before start. */
+
+"*/" {
+  std::cerr << "End comment before start\n";
+}
+
+  /* String state. */
+
+<SC_STRING>
+{
+  "\"" {
+    BEGIN INITIAL;
+    return TOKEN_VAL(STRING, grown_string);
+  }
+  \\[abfnrtv] { grown_string.append(yytext); }
+  {xnum} { grown_string.append(1, strtol(yytext + 2, 0, 16)); }
+  {int} { grown_string.append(1, strtol(yytext + 3, 0, 10)); }
+  "\\" { grown_string.append(yytext); }
+  "\\\"" { grown_string.append(yytext); }
+  {character} { grown_string.append(yytext); }
+  <<EOF>> { std::cerr << "Unexpected end of file inside string\n"; }
+}
+
+  /* Comment state. */
+
+<SC_COMMENT>
+{
+  <<EOF>> { std::cerr << "Unexpected end of file inside comment\n"; }
+}
+
+. { std::cerr << "error\n"; }
+
 %%
 
 // Do not use %option noyywrap, because then flex generates the same
