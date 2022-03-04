@@ -14,7 +14,7 @@
 
 // In TC, we expect the GLR to resolve one Shift-Reduce and zero Reduce-Reduce
 // conflict at runtime. Use %expect and %expect-rr to tell Bison about it.
-%expect 0
+%expect 1
 %expect-rr 0
   // FIXME: Some code was deleted here (Other directives).
 
@@ -180,8 +180,8 @@
 %right DOT ID
 %right WHILE DO
 %right THEN ELSE
-%right LBRACK RBRACK OF LBRACE RBRACE
-%right CLASS EXTENDS VAR METHOD
+%right OF
+%right CLASS
 %right PRIMITIVE FUNCTION
 %left TIMES DIVIDE
 %left PLUS MINUS
@@ -356,13 +356,9 @@ ty:
 
 classfields:
   %empty
-  | classfields methchunk
+  | classfields METHOD ID LPAREN tyfields RPAREN colonID EQ exp
   | classfields vardec
   ;
-
-methchunk:
-  %empty
-  | methchunk METHOD ID LPAREN tyfields RPAREN colonID EQ exp
 
 colonID:
   %empty
