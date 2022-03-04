@@ -24,10 +24,11 @@
 #include <misc/symbol.hh>
 #include <parse/parsetiger.hh>
 #include <parse/tiger-parser.hh>
-
   /* FIXME: Some code was deleted here. */
+
 #include <iostream>
 
+void yyerror(const char *msg);
 /* Convenient shortcuts. */
 #define TOKEN_VAL(Type, Value)                  \
   parser::make_ ## Type(Value, tp.location_)
@@ -55,6 +56,7 @@ YY_FLEX_NAMESPACE_BEGIN
 
 /* Abbreviations.  */
 int             [0-9]+
+digit           [0-9]
 xnum            \x[0-9a-fA-F]{2}
 character       [a-zA-Z]
 keywords        "array" | "if" | "then" | "else" | "while" | "for" | "to" | "do" | "let" | "in" | "end" | "of" | "break" | "nil" | "function" | "var" | "type" | "import" | "primitive"
@@ -63,11 +65,13 @@ symbols         "," | ":" | ";" | "(" | ")" | "[" | "]" | "{" | "}" | "." | "+" 
 white           [ \t]
 end-of-line     "\n\r" | "\r\n" | "\r" | "\n"
 words           [a-zA-Z]+
-
+identifier      {character} { {character} | {num} | "_" } | "_main"
 %%
 %{
   // FIXME: Some code was deleted here (Local variables).
 std::string grown_string;
+int comments = 0;
+int lines = 1;
 
   // Each time yylex is called.
   tp.location_.step();
@@ -83,6 +87,8 @@ std::string grown_string;
                 return TOKEN_VAL(INT, val);
               }
 
+ /* Id. TODO */
+
  /* Begin of a string. */
 
 "\"" {
@@ -94,6 +100,7 @@ std::string grown_string;
 
 "/*" {
   BEGIN SC_COMMENT;
+  comments++;
 }
 
   /* End comment before start. */
@@ -123,7 +130,19 @@ std::string grown_string;
 
 <SC_COMMENT>
 {
-  <<EOF>> { std::cerr << "Unexpected end of file inside comment\n"; }
+  "/*" {
+    comments++;
+    BEGIN SC_COMMENT;
+  }
+  "*/" {
+    comments--;
+    if (comments == 0) {
+      BEGIN INITIAL;
+    }
+  }
+  <<EOF>> {
+    std::cerr << "expected closed comment but got EOF\n";
+  }
 }
 
 . { std::cerr << "error\n"; }
