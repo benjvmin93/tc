@@ -25,12 +25,10 @@
 #include <parse/parsetiger.hh>
 #include <parse/tiger-parser.hh>
 
-  // Added yyeror to return error.
-void yyerror(const char *msg);
+  /* FIXME: Some code was deleted here. */
+#include <iostream>
 
-  // FIXME: Some code was deleted here.
-
-// Convenient shortcuts.
+/* Convenient shortcuts. */
 #define TOKEN_VAL(Type, Value)                  \
   parser::make_ ## Type(Value, tp.location_)
 
@@ -57,7 +55,6 @@ YY_FLEX_NAMESPACE_BEGIN
 
 /* Abbreviations.  */
 int             [0-9]+
-num             [0-9]{3} | \\o[0-7]{3}
 xnum            \x[0-9a-fA-F]{2}
 character       [a-zA-Z]
 keywords        "array" | "if" | "then" | "else" | "while" | "for" | "to" | "do" | "let" | "in" | "end" | "of" | "break" | "nil" | "function" | "var" | "type" | "import" | "primitive"
@@ -67,7 +64,6 @@ white           [ \t]
 end-of-line     "\n\r" | "\r\n" | "\r" | "\n"
 words           [a-zA-Z]+
 
-  /* FIXME: Some code was deleted here. */
 %%
 %{
   // FIXME: Some code was deleted here (Local variables).
@@ -81,9 +77,9 @@ std::string grown_string;
 
 {int}         {
                 int val = 0;
-                val = strtol(yylength, yytext, 0, 10);
+                val = strtol(yytext, 0, 10);
                 if (val > 255)
-                  yyerror("Integer too long");
+                  std::cerr << "Integer too long\n";
                 return TOKEN_VAL(INT, val);
               }
 
@@ -103,27 +99,34 @@ std::string grown_string;
   /* End comment before start. */
 
 "*/" {
-  yyerror("End comment before start\n");
+  std::cerr << "End comment before start\n";
 }
 
   /* String state. */
-  
-<SC_STRING> 
+
+<SC_STRING>
 {
   "\"" {
     BEGIN INITIAL;
     return TOKEN_VAL(STRING, grown_string);
   }
-  [\a\b\f\n\r\t\v]  { grown_string.append(1, yytext); }
-  {xnum}  { grown_string.append(1, strtol(yytext + 2, 0, 16)); }
-  {num} { grown_string.append(1, strtol(yytext + 3, 0, 10)); }
-  "\\" { grown_string.append(1, yytext); }
-  "\"" { grown_string.append(1, yytext); }
-  {character} { grown_string.append(yylength, yytext); }
-  <<EOF>> { yyerror("Unexpected end of file\n"); }
+  \\[abfnrtv] { grown_string.append(yytext); }
+  {xnum} { grown_string.append(1, strtol(yytext + 2, 0, 16)); }
+  {int} { grown_string.append(1, strtol(yytext + 3, 0, 10)); }
+  "\\" { grown_string.append(yytext); }
+  "\\\"" { grown_string.append(yytext); }
+  {character} { grown_string.append(yytext); }
+  <<EOF>> { std::cerr << "Unexpected end of file inside string\n"; }
 }
 
-. yyerror("error\n");
+  /* Comment state. */
+
+<SC_COMMENT>
+{
+  <<EOF>> { std::cerr << "Unexpected end of file inside comment\n"; }
+}
+
+. { std::cerr << "error\n"; }
 
 %%
 

@@ -100,7 +100,7 @@ namespace parse
 
     // FIXME: Some code was deleted here (Run the parser and close the scanner).
     parser.parse();
-    scanner_->scan_close();
+    scanner_->scan_close_();
     
     ast_type res = ast_;
     ast_ = static_cast<ast::Exp*>(nullptr);
