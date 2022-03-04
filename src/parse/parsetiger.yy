@@ -176,13 +176,13 @@
 //%left reduce
 %precedence CHUNKS
 %precedence TYPE
-%nonassoc ASSIGN
-%right DOT ID
-%right WHILE DO
-%right THEN ELSE
-%right OF
-%right CLASS
-%right PRIMITIVE FUNCTION
+%precedence ASSIGN
+%precedence DOT ID
+%precedence WHILE DO
+%left THEN ELSE
+%precedence OF
+%precedence CLASS
+%precedence PRIMITIVE FUNCTION
 %left TIMES DIVIDE
 %left PLUS MINUS
 %nonassoc GE LE EQ GT LT NE
