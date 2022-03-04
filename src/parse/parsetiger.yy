@@ -392,5 +392,5 @@ typeid:
 void
 parse::parser::error(const location_type& l, const std::string& m)
 {
-  // FIXME: Some code was deleted here.
+    std::cerr << l << ": " << m << '\n';
 }
