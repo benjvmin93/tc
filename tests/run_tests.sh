@@ -66,7 +66,7 @@ do
                 ;;
         esac
 
-        ./../src/tc -X --parse $f >> filerr
+        ./../src/tc -X --parse $f >> filerr 2>&1
 
 
         if [ $? -eq $code_err ]
