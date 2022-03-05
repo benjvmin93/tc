@@ -14,6 +14,8 @@
 
 // In TC, we expect the GLR to resolve one Shift-Reduce and zero Reduce-Reduce
 // conflict at runtime. Use %expect and %expect-rr to tell Bison about it.
+%expect 0
+%expect-rr 0
   // FIXME: Some code was deleted here (Other directives).
 
 %define parse.error verbose
@@ -170,8 +172,26 @@
 // which can be understood as a list of two TypeChunk containing
 // a unique TypeDec each, or a single TypeChunk containing two TypeDec.
 // We want the latter.
+//%right shift
+//%left reduce
 %precedence CHUNKS
 %precedence TYPE
+%precedence ASSIGN
+//%precedence DOT ID
+//%precedence WHILE DO
+%precedence DO
+%precedence THEN
+%precedence ELSE
+%precedence OF
+%precedence CLASS
+%precedence PRIMITIVE FUNCTION
+%left OR
+%left AND
+%nonassoc GE LE EQ GT LT NE
+%left PLUS MINUS
+%left TIMES DIVIDE
+
+%precedence UMINUS
   // FIXME: Some code was deleted here (Other declarations).
 
 %start program
@@ -185,11 +205,79 @@ program:
   chunks
    
 ;
+exps:
+  %empty
+  | exp_or_null
+
+exp_or_null:
+  exp_or_null SEMI exp
+  | exp
+
+record_or_null:
+  record_or_null COMMA ID EQ exp
+  | ID EQ exp
+
+record:
+  %empty
+  | record_or_null
+
+function:
+  %empty
+  | function_or_null
+
+function_or_null:
+  function_or_null COMMA exp
+  | exp
 
 exp:
-  INT
-   
-  // FIXME: Some code was deleted here (More rules).
+  /* Literals */
+  NIL
+  | INT
+  | STRING
+  /* Array and record creations. */
+  | ID LBRACK exp RBRACK OF exp
+  | ID LBRACE record RBRACE
+  /* Variables, field, elements of an array. */
+  | lvalue
+  /* Function call. */
+  | ID LPAREN function RPAREN
+  /* Operations. */
+  | MINUS exp %prec UMINUS
+  | exp PLUS exp
+  | exp MINUS exp
+  | exp TIMES exp
+  | exp DIVIDE exp
+  | exp EQ exp
+  | exp NE exp
+  | exp GT exp
+  | exp LT exp
+  | exp GE exp
+  | exp LE exp
+  | exp AND exp
+  | exp OR exp
+  | LPAREN exps RPAREN
+  /* Assignment. */
+  | lvalue ASSIGN exp
+  /* Control structures. */
+  | IF exp THEN exp ELSE exp
+  | IF exp THEN exp
+  | WHILE exp DO exp
+  | FOR ID ASSIGN exp TO exp DO exp
+  | BREAK
+  | LET chunks IN exps END
+  | NEW typeid
+  | lvalue DOT ID LPAREN function RPAREN
+  ;
+
+lvalue:
+  ID
+  | lvalue_b
+  ;
+
+lvalue_b:
+  ID LBRACK exp RBRACK
+  | lvalue_b LBRACK exp RBRACK
+  | lvalue DOT ID
 
 /*---------------.
 | Declarations.  |
@@ -206,10 +294,38 @@ chunks:
             ..
         end
      which is why we end the recursion with a %empty. */
-  %empty                  
-| tychunk   chunks        
-  // FIXME: Some code was deleted here (More rules).
+  %empty
+| tychunk   chunks
+| funchunk chunks
+| vardec chunks
+| IMPORT STRING chunks
 ;
+
+/*----------------------.
+| Variable Declarations.|
+`----------------------*/
+
+vardec:
+  VAR ID type_id ASSIGN exp
+
+/*----------------------.
+| Function Declarations.|
+`---------------------*/
+
+funchunk:
+  fundec %prec CHUNKS
+  | fundec funchunk
+  ;
+
+fundec:
+  FUNCTION ID LPAREN tyfields RPAREN type_id EQ exp
+  | PRIMITIVE ID LPAREN tyfields RPAREN type_id
+  ;
+
+type_id:
+  %empty
+  | COLON typeid
+  ;
 
 /*--------------------.
 | Type Declarations.  |
@@ -223,14 +339,32 @@ tychunk:
 ;
 
 tydec:
-  "type" ID "=" ty 
+  "type" ID "=" ty
+  | CLASS ID extends LBRACE classfields RBRACE
 ;
+
+extends:
+  %empty
+  | EXTENDS typeid
+  ;
 
 ty:
   typeid               
 | "{" tyfields "}"     
-| "array" "of" typeid  
+| "array" "of" typeid
+| CLASS extends LBRACE classfields RBRACE
 ;
+
+classfields:
+  %empty
+  | classfields METHOD ID LPAREN tyfields RPAREN colonID EQ exp
+  | classfields vardec
+  ;
+
+colonID:
+  %empty
+  | COLON typeid
+  ;
 
 tyfields:
   %empty               
@@ -259,5 +393,5 @@ typeid:
 void
 parse::parser::error(const location_type& l, const std::string& m)
 {
-  // FIXME: Some code was deleted here.
+    std::cerr << l << ": " << m << '\n';
 }
