@@ -8,10 +8,9 @@ BLINK="\e[5m"
 LINE="\e[1;4m"
 
 #Path of tests directory
-DIR="all_tests/*"
+DIR="../../tests/all_tests/*"
 
 #Creation of the testerror file and initialization of variables
-touch testerror
 nbtest=0
 nberr=0
 
@@ -23,7 +22,7 @@ do
 	#Add '/*' to the path file"
 	FILES="$d/*"
 	#Remove what's before '*/' to the path file"
-	dir="${d#*/}"
+	dir="${d#*/*/*/*/}"
 
 	#Print directory name
 	echo "             $dir" | tr '[:lower:]' '[:upper:]'
@@ -69,7 +68,6 @@ do
 			unique_nberr=$(($unique_nberr + 1))
 			unique_nbtest=$(($unique_nbtest + 1))
 		fi
-		cat $f | grep error >> testerror
 	done
 
 	nbgood=$(($unique_nbtest - $unique_nberr))
@@ -82,8 +80,6 @@ do
 		echo " -> $RED✩ $END"
 	fi
 
-	cat testerror
-	echo -n "" > testerror
 	echo
 	nbtest=$(($nbtest + $unique_nbtest))
 	nberr=$(($nberr + $unique_nberr))
@@ -100,8 +96,6 @@ nbgood=$(($nbtest - $nberr))
 percen=$((($nbgood * 100) / $nbtest))
 echo "You pass: $nbgood / $nbtest | $percen%"
 echo
-
-rm testerror
 
 if [ $percen -gt 30 ]
 then

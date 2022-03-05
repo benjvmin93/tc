@@ -1,13 +1,14 @@
 #!/bin/sh
 
 echo "Running pre-commit..."
-echo "No tests yet"
-#./run-tests.sh
+echo
+./../../tests/run-test-pre-com.sh
 
 # $? stores exit value of the last command
 if [ $? -ne 0 ]; then
- 	echo "Tests must pass before commit!"
+ 	echo "You must pass 30% of tests before commit!"
+	echo "No commit has been made."
  	exit 1
 fi
 
-echo "Done!"
+echo "Your commit is done!"
