@@ -26,6 +26,7 @@
 #include <parse/tiger-parser.hh>
   /* FIXME: Some code was deleted here. */
 
+int lines = 1;
 /* Convenient shortcuts. */
 #define TOKEN_VAL(Type, Value)                  \
   parser::make_ ## Type(Value, tp.location_)
@@ -80,12 +81,6 @@ int comments = 0;
                     CHECK_EXTENSION();
                 return TOKEN_VAL(INT, val);
               }
-
- /* Id. TODO
-
-{identifier} {
-                return TOKEN_VAL(ID, yytext);
-             }*/
 
  /* Keyword tokens. */
 
@@ -319,12 +314,12 @@ int comments = 0;
   }
   <<EOF>> {
       tp.error_ << misc::error::error_type::scan
-                    << lineno() << ": Unexpected end of file. Expecting closing string"
+                    << lineno() << ": Unexpected end of file. Expecting closing comment"
                     << "\n";
   }
 }
 
-. { CHECK_EXTENSION(); }
+. { ; }
 
 %%
 
