@@ -5,6 +5,13 @@ autom4te*
 build-aux*
 config*
 lib*
+*.lo
+*.trs
+*.stamp
+*.log
+*.xml
+*.html
+*.output
 src/.deps/
 src/.dirstamp
 src/object/.*
