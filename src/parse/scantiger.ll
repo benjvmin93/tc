@@ -144,12 +144,6 @@ int comments = 0;
     return TOKEN(PRIMITIVE);
 }
 
- /* Id. TODO
-
-{identifier} {
-                return TOKEN_VAL(ID, yytext);
-             }*/
-
  /* Object related tokens. */
 
 "class" {
@@ -258,7 +252,7 @@ int comments = 0;
     return TOKEN(OR);
 }
 
-";=" {
+":=" {
     return TOKEN(ASSIGN);
 }
 
@@ -267,6 +261,9 @@ int comments = 0;
         tp.location_.step();
       }
 
+{white} {
+            ;
+        }
  /* Begin of a string. */
 
 "\"" {
@@ -279,14 +276,6 @@ int comments = 0;
 "/*" {
   BEGIN SC_COMMENT;
   comments++;
-}
-
-  /* End comment before start. */
-
-"*/" {
-    tp.error_ << misc::error::error_type::scan
-            << tp.location_ << ": invalid identifier: `"
-            << misc::escape(yytext) << "\n";
 }
 
   /* String state. */
@@ -334,8 +323,9 @@ int comments = 0;
 
 {identifier} { return TOKEN_VAL(ID, yytext); }
 
- /* Error. TODO  */
-. { ; }
+ /* Error. */
+. { tp.error_ << misc::error::error_type::scan 
+                << tp.location_ << ": Invalid character " << yytext << "\n"; }
 
 %%
 
