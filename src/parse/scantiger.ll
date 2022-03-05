@@ -28,7 +28,6 @@
 
 #include <iostream>
 
-void yyerror(const char *msg);
 /* Convenient shortcuts. */
 #define TOKEN_VAL(Type, Value)                  \
   parser::make_ ## Type(Value, tp.location_)
@@ -59,7 +58,6 @@ int             [0-9]+
 digit           [0-9]
 xnum            \x[0-9a-fA-F]{2}
 character       [a-zA-Z]
-keywords        "array" | "if" | "then" | "else" | "while" | "for" | "to" | "do" | "let" | "in" | "end" | "of" | "break" | "nil" | "function" | "var" | "type" | "import" | "primitive"
 object-related  "class" | "extends" | "method" | "new"
 symbols         "," | ":" | ";" | "(" | ")" | "[" | "]" | "{" | "}" | "." | "+" | "-" | "*" | "/" | "=" | "<>" | "<" | "<=" | ">" | ">=" | "&" | "|" | ":="
 white           [ \t]
@@ -86,6 +84,66 @@ int lines = 1;
                   std::cerr << "Integer too long\n";
                 return TOKEN_VAL(INT, val);
               }
+
+"array" {
+    return TOKEN(ARRAY);
+}
+"if" {
+    return TOKEN(IF);
+}
+"then" {
+    return TOKEN(THEN);
+}
+"else" {
+    return TOKEN(ELSE);
+}
+"while" {
+    return TOKEN(WHILE);
+}
+"for" {
+    return TOKEN(FOR);
+}
+"to" {
+    return TOKEN(TO);
+}
+"do" {
+    return TOKEN(LET);
+}
+"let" {
+    return TOKEN(LET);
+}
+"in" {
+    return TOKEN(IN);
+}
+"end" {
+    return TOKEN(END);
+}
+"of" {
+    return TOKEN(OF);
+}
+"break" {
+    return TOKEN(BREAK);
+}
+"nil" {
+    return TOKEN(NIL);
+}
+"function" {
+    return TOKEN(FUNCTION);
+}
+"var" {
+    return TOKEN(VAR);
+}
+"type" {
+    return TOKEN(TYPE);
+}
+
+"import" {
+    return TOKEN(IMPORT);
+}
+
+"primitive" {
+    return TOKEN(PRIMITIVE);
+}
 
  /* Id. TODO */
 
