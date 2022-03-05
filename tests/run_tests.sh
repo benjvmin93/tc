@@ -1,5 +1,12 @@
 #/bin/sh
 
+GREEN='\e[32m'
+RED='\e[31m'
+BLUE='\e[36m'
+END='\e[0m'
+BOLD=$(tput smso)
+NOB=$(tput rmso)
+
 #Path of tests directory
 DIR="all_tests/*"
 
@@ -21,6 +28,7 @@ do
     dir="${d#*/}"
 
     #Print directory name
+    echo -e "$BLUE============================================================$END"
     echo "             $dir" | tr '[:lower:]' '[:upper:]'
 
     case "$dir" in
@@ -58,10 +66,10 @@ do
 
         if [ $? -eq $code_err ]
         then
-            echo -n "|V"
+            echo -e -n "$GREEN█$END "
             unique_nbtest=$(($unique_nbtest + 1))
         else
-            echo -n "|F"
+            echo -e -n "$RED█$END "
             unique_nberr=$(($unique_nberr + 1))
             unique_nbtest=$(($unique_nbtest + 1))
         fi
@@ -73,11 +81,11 @@ do
     echo -n "|  $dir: $nbgood / $unique_nbtest | $percen%"    
     if [ $unique_nberr -eq 0 ]	
     then
-        echo " -> $GREEN✩ $END"
+        echo -e " -> $GREEN★ $END"
     else
-        echo " -> $RED✩ $END"
+        echo -e " -> $RED★ $END"
     fi
-
+    echo
     cat testerror
     echo -n "" > testerror
     echo
@@ -85,16 +93,19 @@ do
     nberr=$(($nberr + $unique_nberr))
 done
 
-echo "------------------------------------------------------------"
-echo "▒                     TIGER TESTSUIT                       ▒"
-echo "------------------------------------------------------------"
-percen=$((($nberr * 100) / $nbtest))
-echo "  Error : $nberr / $nbtest | $percen%"
-echo
+echo -e "$BLUE============================================================$END"
+echo -e "$BLUE|                     TIGER TESTSUIT                       |$END"
+echo -e "$BLUE============================================================$END"
 
 nbgood=$(($nbtest - $nberr))
+
+echo "# TOTAL: $nbtest"
+echo -e "#$GREEN PASS:  $nbgood$END"
+echo -e "#$RED FAIL:  $nberr$END"
+
+echo
 percen=$((($nbgood * 100) / $nbtest))
-echo "You pass: $nbgood / $nbtest | $percen%"
+echo "# You pass: $percen%"
 echo
 
 rm testerror
