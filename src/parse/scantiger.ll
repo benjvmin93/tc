@@ -26,8 +26,6 @@
 #include <parse/tiger-parser.hh>
   /* FIXME: Some code was deleted here. */
 
-#include <iostream>
-
 /* Convenient shortcuts. */
 #define TOKEN_VAL(Type, Value)                  \
   parser::make_ ## Type(Value, tp.location_)
@@ -58,10 +56,9 @@ int             [0-9]+
 digit           [0-9]
 xnum            \x[0-9a-fA-F]{2}
 character       [a-zA-Z]
-object-related  "class" | "extends" | "method" | "new"
 symbols         "," | ":" | ";" | "(" | ")" | "[" | "]" | "{" | "}" | "." | "+" | "-" | "*" | "/" | "=" | "<>" | "<" | "<=" | ">" | ">=" | "&" | "|" | ":="
 white           [ \t]
-end-of-line     "\n\r" | "\r\n" | "\r" | "\n"
+eol             "\n\r" | "\r\n" | "\r" | "\n"
 words           [a-zA-Z]+
 identifier      {character} { {character} | {num} | "_" } | "_main"
 %%
@@ -69,7 +66,6 @@ identifier      {character} { {character} | {num} | "_" } | "_main"
   // FIXME: Some code was deleted here (Local variables).
 std::string grown_string;
 int comments = 0;
-int lines = 1;
 
   // Each time yylex is called.
   tp.location_.step();
@@ -80,10 +76,11 @@ int lines = 1;
 {int}         {
                 int val = 0;
                 val = strtol(yytext, 0, 10);
-                if (val > 255)
-                  std::cerr << "Integer too long\n";
+                if (val > INT_MAX)
+                    CHECK_EXTENSION();
                 return TOKEN_VAL(INT, val);
               }
+ /* Keyword tokens. */
 
 "array" {
     return TOKEN(ARRAY);
@@ -145,6 +142,23 @@ int lines = 1;
     return TOKEN(PRIMITIVE);
 }
 
+ /* Object related tokens. */
+
+"class" {
+    return TOKEN(CLASS);
+}
+
+"extends" {
+    return TOKEN(EXTENDS);
+}
+
+"method" {
+    return TOKEN(METHOD);
+}
+
+"new" {
+    return TOKEN(NEW);
+}
  /* Id. TODO */
 
  /* Begin of a string. */
@@ -164,7 +178,7 @@ int lines = 1;
   /* End comment before start. */
 
 "*/" {
-  std::cerr << "End comment before start\n";
+    CHECK_EXTENSION();
 }
 
   /* String state. */
@@ -181,7 +195,7 @@ int lines = 1;
   "\\" { grown_string.append(yytext); }
   "\\\"" { grown_string.append(yytext); }
   {character} { grown_string.append(yytext); }
-  <<EOF>> { std::cerr << "Unexpected end of file inside string\n"; }
+  <<EOF>> { CHECK_EXTENSION(); }
 }
 
   /* Comment state. */
@@ -199,7 +213,7 @@ int lines = 1;
     }
   }
   <<EOF>> {
-    std::cerr << "expected closed comment but got EOF\n";
+    CHECK_EXTENSION();
   }
 }
 
