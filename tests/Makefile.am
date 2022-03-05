@@ -1,2 +1,2 @@
 check-local:
-	./run-tests.sh
+	./run-tests_no_color.sh
