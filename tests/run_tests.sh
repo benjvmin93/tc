@@ -10,6 +10,8 @@ NOB=$(tput rmso)
 #Path of tests directory
 DIR="all_tests/*"
 
+array=()
+
 #Creation of the testerror file and initialization of variables
 touch testerror
 nbtest=0
@@ -29,7 +31,7 @@ do
 
     #Print directory name
     echo -e "$BLUE============================================================$END"
-    echo "             $dir" | tr '[:lower:]' '[:upper:]'
+    echo -n "             $dir |" | tr '[:lower:]' '[:upper:]'
 
     case "$dir" in
         "syntax")
@@ -42,6 +44,9 @@ do
             code_err=5
             ;;
     esac
+
+    echo " Error code: $code_err"
+    echo -e "$BLUE============================================================$END"
 
     unique_nbtest=0
     unique_nberr=0
@@ -75,18 +80,20 @@ do
         fi
         cat $f | grep error >> testerror
     done
+    array+=("$unique_nberr")
 
     nbgood=$(($unique_nbtest - $unique_nberr))
     percen=$((($nbgood * 100) / $unique_nbtest))
     echo -n "|  $dir: $nbgood / $unique_nbtest | $percen%"    
     if [ $unique_nberr -eq 0 ]	
     then
-        echo -e " -> $GREEN★ $END"
+        echo -e " -> $GREEN╰(★‿★)╯ $END"
     else
-        echo -e " -> $RED★ $END"
+        echo -e " -> $RED（♯▼皿▼） $END"
+        echo
     fi
-    echo
     cat testerror
+
     echo -n "" > testerror
     echo
     nbtest=$(($nbtest + $unique_nbtest))
@@ -97,6 +104,8 @@ echo -e "$BLUE============================================================$END"
 echo -e "$BLUE|                     TIGER TESTSUIT                       |$END"
 echo -e "$BLUE============================================================$END"
 
+echo
+
 nbgood=$(($nbtest - $nberr))
 
 echo "# TOTAL: $nbtest"
@@ -105,9 +114,20 @@ echo -e "#$RED FAIL:  $nberr$END"
 
 echo
 percen=$((($nbgood * 100) / $nbtest))
-echo "# You pass: $percen%"
-echo
+echo -n "# You pass: "
 
+#Loading bar
+for val in ${array[@]}
+do
+    if [ $val -eq 0 ]
+    then
+            echo -e -n "$GREEN█$END "
+    else
+            echo -e -n "$RED█$END "
+    fi
+done
+echo "$percen%"
+echo
 rm testerror
 rm filerr
 
