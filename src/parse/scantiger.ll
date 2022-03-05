@@ -26,7 +26,8 @@
 #include <parse/tiger-parser.hh>
   /* FIXME: Some code was deleted here. */
 
-int lines = 1;
+#define YY_USER_ACTION tp.location_.columns(yyleng);
+
 /* Convenient shortcuts. */
 #define TOKEN_VAL(Type, Value)                  \
   parser::make_ ## Type(Value, tp.location_)
@@ -58,9 +59,8 @@ digit           [0-9]
 xnum            \x[0-9a-fA-F]{2}
 character       [a-zA-Z]
 white           [ \t]
-eol             "\n\r" | "\r\n" | "\r" | "\n"
-words           {character}+
-identifier      {character} { {character} | {digit} | "_" } | "_main"
+eol             "\n\r"|"\r\n"|"\r"|"\n"
+identifier      [a-zA-Z]{1}[a-zA-Z0-9_]*|"_main"
 
 %%
 %{
@@ -143,12 +143,6 @@ int comments = 0;
 "primitive" {
     return TOKEN(PRIMITIVE);
 }
-
- /* Id. TODO
-
-{identifier} {
-                return TOKEN_VAL(ID, yytext);
-             }*/
 
  /* Object related tokens. */
 
@@ -258,10 +252,18 @@ int comments = 0;
     return TOKEN(OR);
 }
 
-";=" {
+":=" {
     return TOKEN(ASSIGN);
 }
 
+{eol} {
+        tp.location_.lines(yyleng);
+        tp.location_.step();
+      }
+
+{white} {
+            ;
+        }
  /* Begin of a string. */
 
 "\"" {
@@ -274,14 +276,6 @@ int comments = 0;
 "/*" {
   BEGIN SC_COMMENT;
   comments++;
-}
-
-  /* End comment before start. */
-
-"*/" {
-    tp.error_ << misc::error::error_type::scan
-            << tp.location_ << ": invalid identifier: `"
-            << misc::escape(yytext) << "\n";
 }
 
   /* String state. */
@@ -299,7 +293,7 @@ int comments = 0;
   "\\\"" { grown_string.append(yytext); }
   {character} { grown_string.append(yytext); }
   <<EOF>> { tp.error_ << misc::error::error_type::scan
-                    << lineno() << ": Unexpected end of file. Expecting closing string"
+                    << tp.location_ << ": Unexpected end of file. Expecting closing string"
                     << "\n";
   }
 }
@@ -318,14 +312,20 @@ int comments = 0;
       BEGIN INITIAL;
     }
   }
+
   <<EOF>> {
       tp.error_ << misc::error::error_type::scan
-                    << lineno() << ": Unexpected end of file. Expecting closing comment"
-                    << "\n";
+                    << tp.location_ << ": Unexpected end of file. Expecting closing comment" << "\n";
   }
 }
 
-. { ; }
+ /* Id. */
+
+{identifier} { return TOKEN_VAL(ID, yytext); }
+
+ /* Error. */
+. { tp.error_ << misc::error::error_type::scan 
+                << tp.location_ << ": Invalid character " << yytext << "\n"; }
 
 %%
 
