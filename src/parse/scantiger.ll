@@ -56,11 +56,11 @@ int             [0-9]+
 digit           [0-9]
 xnum            \x[0-9a-fA-F]{2}
 character       [a-zA-Z]
-symbols         "," | ":" | ";" | "(" | ")" | "[" | "]" | "{" | "}" | "." | "+" | "-" | "*" | "/" | "=" | "<>" | "<" | "<=" | ">" | ">=" | "&" | "|" | ":="
 white           [ \t]
 eol             "\n\r" | "\r\n" | "\r" | "\n"
-words           [a-zA-Z]+
-identifier      {character} { {character} | {num} | "_" } | "_main"
+words           {character}+
+identifier      {character} { {character} | {digit} | "_" } | "_main"
+
 %%
 %{
   // FIXME: Some code was deleted here (Local variables).
@@ -142,6 +142,12 @@ int comments = 0;
     return TOKEN(PRIMITIVE);
 }
 
+ /* Id. TODO
+
+{identifier} {
+                return TOKEN_VAL(ID, yytext);
+             }*/
+
  /* Object related tokens. */
 
 "class" {
@@ -159,7 +165,100 @@ int comments = 0;
 "new" {
     return TOKEN(NEW);
 }
- /* Id. TODO */
+
+ /* Symbol tokens. */
+
+"," {
+    return TOKEN(COMMA);
+}
+
+":" {
+    return TOKEN(COLON);
+}
+
+";" {
+    return TOKEN(SEMI);
+}
+
+"(" {
+    return TOKEN(LPAREN);
+}
+
+")" {
+    return TOKEN(RPAREN);
+}
+
+"[" {
+    return TOKEN(LBRACK);
+}
+
+"]" {
+    return TOKEN(RBRACK);
+}
+
+"{" {
+    return TOKEN(LBRACE);
+}
+
+"}" {
+    return TOKEN(RBRACE);
+}
+
+"." {
+    return TOKEN(DOT);
+}
+
+"+" {
+    return TOKEN(PLUS);
+}
+
+"-" {
+    return TOKEN(MINUS);
+}
+
+"*" {
+    return TOKEN(TIMES);
+}
+
+"/" {
+    return TOKEN(DIVIDE);
+}
+
+"=" {
+    return TOKEN(EQ);
+}
+
+"<>" {
+    return TOKEN(NE);
+}
+
+"<" {
+    return TOKEN(LT);
+}
+
+"<=" {
+    return TOKEN(LE);
+}
+
+">" {
+    return TOKEN(GT);
+}
+
+">=" {
+    return TOKEN(GE);
+}
+
+"&" {
+    return TOKEN(AND);
+}
+
+"|" {
+    return TOKEN(OR);
+}
+
+";=" {
+    return TOKEN(ASSIGN);
+}
 
  /* Begin of a string. */
 
@@ -218,7 +317,9 @@ int comments = 0;
     }
   }
   <<EOF>> {
-    CHECK_EXTENSION();
+      tp.error_ << misc::error::error_type::scan
+                    << lineno() << ": Unexpected end of file. Expecting closing string"
+                    << "\n";
   }
 }
 
