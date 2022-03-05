@@ -304,7 +304,6 @@ int comments = 0;
 {
   "/*" {
     comments++;
-    BEGIN SC_COMMENT;
   }
   "*/" {
     comments--;
@@ -312,10 +311,11 @@ int comments = 0;
       BEGIN INITIAL;
     }
   }
-
+  . { }
   <<EOF>> {
       tp.error_ << misc::error::error_type::scan
                     << tp.location_ << ": Unexpected end of file. Expecting closing comment" << "\n";
+    BEGIN INITIAL;
   }
 }
 
