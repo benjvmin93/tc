@@ -55,6 +55,9 @@ do
     for f in $FILES
     do
         case "$dir" in
+            "scan")
+                code_err=2
+                ;;
             "syntax")
                 code_err=3
                 ;;
