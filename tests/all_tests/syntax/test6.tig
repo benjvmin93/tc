@@ -1,0 +1,2 @@
+print(Hi Tigrou!\n")/* error : syntax error, unexpected identifier, expecting ) */
+
