@@ -106,7 +106,7 @@ int comments = 0;
     return TOKEN(TO);
 }
 "do" {
-    return TOKEN(LET);
+    return TOKEN(DO);
 }
 "let" {
     return TOKEN(LET);
