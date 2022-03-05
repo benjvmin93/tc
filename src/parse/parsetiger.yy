@@ -297,8 +297,8 @@ chunks:
   %empty
 | tychunk   chunks
 | funchunk chunks
-| vardec
-| IMPORT STRING
+| vardec chunks
+| IMPORT STRING chunks
 ;
 
 /*----------------------.
