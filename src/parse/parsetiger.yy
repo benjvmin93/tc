@@ -177,17 +177,19 @@
 %precedence CHUNKS
 %precedence TYPE
 %precedence ASSIGN
-%precedence DOT ID
-%precedence WHILE DO
-%left THEN ELSE
+//%precedence DOT ID
+//%precedence WHILE DO
+%precedence DO
+%precedence THEN
+%precedence ELSE
 %precedence OF
 %precedence CLASS
 %precedence PRIMITIVE FUNCTION
-%left TIMES DIVIDE
-%left PLUS MINUS
-%nonassoc GE LE EQ GT LT NE
-%left AND
 %left OR
+%left AND
+%nonassoc GE LE EQ GT LT NE
+%left PLUS MINUS
+%left TIMES DIVIDE
 
 %precedence UMINUS
   // FIXME: Some code was deleted here (Other declarations).
