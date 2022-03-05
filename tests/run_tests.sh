@@ -34,6 +34,9 @@ do
     echo -n "             $dir |" | tr '[:lower:]' '[:upper:]'
 
     case "$dir" in
+        "scan")
+            code_err=2
+            ;;
         "syntax")
             code_err=3
             ;;
