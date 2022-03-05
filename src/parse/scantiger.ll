@@ -24,9 +24,9 @@
 #include <misc/symbol.hh>
 #include <parse/parsetiger.hh>
 #include <parse/tiger-parser.hh>
-
   /* FIXME: Some code was deleted here. */
-#include <iostream>
+
+#define YY_USER_ACTION tp.location_.columns(yyleng);
 
 /* Convenient shortcuts. */
 #define TOKEN_VAL(Type, Value)                  \
@@ -55,19 +55,18 @@ YY_FLEX_NAMESPACE_BEGIN
 
 /* Abbreviations.  */
 int             [0-9]+
+digit           [0-9]
 xnum            \x[0-9a-fA-F]{2}
 character       [a-zA-Z]
-keywords        "array" | "if" | "then" | "else" | "while" | "for" | "to" | "do" | "let" | "in" | "end" | "of" | "break" | "nil" | "function" | "var" | "type" | "import" | "primitive"
-object-related  "class" | "extends" | "method" | "new"
-symbols         "," | ":" | ";" | "(" | ")" | "[" | "]" | "{" | "}" | "." | "+" | "-" | "*" | "/" | "=" | "<>" | "<" | "<=" | ">" | ">=" | "&" | "|" | ":="
 white           [ \t]
-end-of-line     "\n\r" | "\r\n" | "\r" | "\n"
-words           [a-zA-Z]+
+eol             "\n\r"|"\r\n"|"\r"|"\n"
+identifier      [a-zA-Z]{1}[a-zA-Z0-9_]*|"_main"
 
 %%
 %{
   // FIXME: Some code was deleted here (Local variables).
 std::string grown_string;
+int comments = 0;
 
   // Each time yylex is called.
   tp.location_.step();
@@ -78,11 +77,193 @@ std::string grown_string;
 {int}         {
                 int val = 0;
                 val = strtol(yytext, 0, 10);
-                if (val > 255)
-                  std::cerr << "Integer too long\n";
+                if (val > INT_MAX)
+                    CHECK_EXTENSION();
                 return TOKEN_VAL(INT, val);
               }
 
+ /* Keyword tokens. */
+
+"array" {
+    return TOKEN(ARRAY);
+}
+"if" {
+    return TOKEN(IF);
+}
+"then" {
+    return TOKEN(THEN);
+}
+"else" {
+    return TOKEN(ELSE);
+}
+"while" {
+    return TOKEN(WHILE);
+}
+"for" {
+    return TOKEN(FOR);
+}
+"to" {
+    return TOKEN(TO);
+}
+"do" {
+    return TOKEN(LET);
+}
+"let" {
+    return TOKEN(LET);
+}
+"in" {
+    return TOKEN(IN);
+}
+"end" {
+    return TOKEN(END);
+}
+"of" {
+    return TOKEN(OF);
+}
+"break" {
+    return TOKEN(BREAK);
+}
+"nil" {
+    return TOKEN(NIL);
+}
+"function" {
+    return TOKEN(FUNCTION);
+}
+"var" {
+    return TOKEN(VAR);
+}
+"type" {
+    return TOKEN(TYPE);
+}
+
+"import" {
+    return TOKEN(IMPORT);
+}
+
+"primitive" {
+    return TOKEN(PRIMITIVE);
+}
+
+ /* Object related tokens. */
+
+"class" {
+    return TOKEN(CLASS);
+}
+
+"extends" {
+    return TOKEN(EXTENDS);
+}
+
+"method" {
+    return TOKEN(METHOD);
+}
+
+"new" {
+    return TOKEN(NEW);
+}
+
+ /* Symbol tokens. */
+
+"," {
+    return TOKEN(COMMA);
+}
+
+":" {
+    return TOKEN(COLON);
+}
+
+";" {
+    return TOKEN(SEMI);
+}
+
+"(" {
+    return TOKEN(LPAREN);
+}
+
+")" {
+    return TOKEN(RPAREN);
+}
+
+"[" {
+    return TOKEN(LBRACK);
+}
+
+"]" {
+    return TOKEN(RBRACK);
+}
+
+"{" {
+    return TOKEN(LBRACE);
+}
+
+"}" {
+    return TOKEN(RBRACE);
+}
+
+"." {
+    return TOKEN(DOT);
+}
+
+"+" {
+    return TOKEN(PLUS);
+}
+
+"-" {
+    return TOKEN(MINUS);
+}
+
+"*" {
+    return TOKEN(TIMES);
+}
+
+"/" {
+    return TOKEN(DIVIDE);
+}
+
+"=" {
+    return TOKEN(EQ);
+}
+
+"<>" {
+    return TOKEN(NE);
+}
+
+"<" {
+    return TOKEN(LT);
+}
+
+"<=" {
+    return TOKEN(LE);
+}
+
+">" {
+    return TOKEN(GT);
+}
+
+">=" {
+    return TOKEN(GE);
+}
+
+"&" {
+    return TOKEN(AND);
+}
+
+"|" {
+    return TOKEN(OR);
+}
+
+":=" {
+    return TOKEN(ASSIGN);
+}
+
+{eol} {
+        tp.location_.lines(yyleng);
+        tp.location_.step();
+      }
+
+{white} {
+            ;
+        }
  /* Begin of a string. */
 
 "\"" {
@@ -94,12 +275,7 @@ std::string grown_string;
 
 "/*" {
   BEGIN SC_COMMENT;
-}
-
-  /* End comment before start. */
-
-"*/" {
-  std::cerr << "End comment before start\n";
+  comments++;
 }
 
   /* String state. */
@@ -116,17 +292,40 @@ std::string grown_string;
   "\\" { grown_string.append(yytext); }
   "\\\"" { grown_string.append(yytext); }
   {character} { grown_string.append(yytext); }
-  <<EOF>> { std::cerr << "Unexpected end of file inside string\n"; }
+  <<EOF>> { tp.error_ << misc::error::error_type::scan
+                    << tp.location_ << ": Unexpected end of file. Expecting closing string"
+                    << "\n";
+  }
 }
 
   /* Comment state. */
 
 <SC_COMMENT>
 {
-  <<EOF>> { std::cerr << "Unexpected end of file inside comment\n"; }
+  "/*" {
+    comments++;
+    BEGIN SC_COMMENT;
+  }
+  "*/" {
+    comments--;
+    if (comments == 0) {
+      BEGIN INITIAL;
+    }
+  }
+
+  <<EOF>> {
+      tp.error_ << misc::error::error_type::scan
+                    << tp.location_ << ": Unexpected end of file. Expecting closing comment" << "\n";
+  }
 }
 
-. { std::cerr << "error\n"; }
+ /* Id. */
+
+{identifier} { return TOKEN_VAL(ID, yytext); }
+
+ /* Error. */
+. { tp.error_ << misc::error::error_type::scan 
+                << tp.location_ << ": Invalid character " << yytext << "\n"; }
 
 %%
 
