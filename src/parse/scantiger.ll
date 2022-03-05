@@ -178,7 +178,9 @@ int comments = 0;
   /* End comment before start. */
 
 "*/" {
-    CHECK_EXTENSION();
+    tp.error_ << misc::error::error_type::scan
+            << tp.location_ << ": invalid identifier: `"
+            << misc::escape(yytext) << "\n";
 }
 
   /* String state. */
@@ -195,7 +197,10 @@ int comments = 0;
   "\\" { grown_string.append(yytext); }
   "\\\"" { grown_string.append(yytext); }
   {character} { grown_string.append(yytext); }
-  <<EOF>> { CHECK_EXTENSION(); }
+  <<EOF>> { tp.error_ << misc::error::error_type::scan
+                    << lineno() << ": Unexpected end of file. Expecting closing string"
+                    << "\n";
+  }
 }
 
   /* Comment state. */
@@ -217,7 +222,7 @@ int comments = 0;
   }
 }
 
-. { std::cerr << "error\n"; }
+. { CHECK_EXTENSION(); }
 
 %%
 
