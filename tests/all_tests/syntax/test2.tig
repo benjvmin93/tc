@@ -1,0 +1,4 @@
+/* error : cannot compare string to int */
+
+for i:=10 to " " do
+i := i - 1
