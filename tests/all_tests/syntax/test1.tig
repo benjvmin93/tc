@@ -1,5 +1,3 @@
-/* error : syntax error, unexpected end */
-
 type int_array = array of int
 
 function max_search(int_array : int_array, size : int) : int =
@@ -7,10 +5,11 @@ let
     var len := size - 1
     var max := 0
 in
-    if size <= 0 then
+    if size == 0 then
         -1
     else
         (for i := 0 to len do
-            if int_array[i] > int_array[max] then
-                max := i; max);
-end
+            (if int_array[i] > int_array[max] then
+                max := i); max)
+end/* error : syntax error, unexpected = */
+
