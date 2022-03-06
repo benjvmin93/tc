@@ -295,6 +295,7 @@ int comments = 0;
   <<EOF>> { tp.error_ << misc::error::error_type::scan
                     << tp.location_ << ": Unexpected end of file. Expecting closing string"
                     << "\n";
+            BEGIN INITIAL;
   }
 }
 
