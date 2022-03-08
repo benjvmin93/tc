@@ -269,37 +269,37 @@ function_or_null:
 
 exp:
   /* Literals */
-  NIL
+  NIL {$$ = tp.td_make_NilExp(@$); }
   | INT { $$ = tp.td_.make_IntExp(@$, $1); }
-  | STRING
+  | STRING {$$ = tp.td_.make_StringExp(@$, $1);}
   /* Array and record creations. */
-  | ID LBRACK exp RBRACK OF exp
-  | ID LBRACE record RBRACE
+  | ID LBRACK exp RBRACK OF exp {$$ = tp.td_.make_ArrayExp(@$, tp.td_.make_NameTy(@1, $1), $3, $6);}
+  | ID LBRACE record RBRACE {$$ = tp.td_.make_RecordExp(@$, tp.td_.make_NameTy(@1, $1), tp.td_.make_fieldinits_type(@2, $3))}
   /* Variables, field, elements of an array. */
   | lvalue
   /* Function call. */
   | ID LPAREN function RPAREN
   /* Operations. */
   | MINUS exp %prec UMINUS
-  | exp PLUS exp
-  | exp MINUS exp
-  | exp TIMES exp
-  | exp DIVIDE exp
-  | exp EQ exp
-  | exp NE exp
-  | exp GT exp
-  | exp LT exp
-  | exp GE exp
-  | exp LE exp
-  | exp AND exp
-  | exp OR exp
+  | exp PLUS exp {$$ = tp.td_.make_OpExp(@$, $1, $2, $3);}
+  | exp MINUS exp {$$ = tp.td_.make_OpExp(@$, $1, $2, $3);}
+  | exp TIMES exp {$$ = tp.td_.make_OpExp(@$, $1, $2, $3);}
+  | exp DIVIDE exp {$$ = tp.td_.make_OpExp(@$, $1, $2, $3);}
+  | exp EQ exp {$$ = tp.td_.make_OpExp(@$, $1, $2, $3);}
+  | exp NE exp {$$ = tp.td_.make_OpExp(@$, $1, $2, $3);}
+  | exp GT exp {$$ = tp.td_.make_OpExp(@$, $1, $2, $3);}
+  | exp LT exp {$$ = tp.td_.make_OpExp(@$, $1, $2, $3);}
+  | exp GE exp {$$ = tp.td_.make_OpExp(@$, $1, $2, $3);}
+  | exp LE exp {$$ = tp.td_.make_OpExp(@$, $1, $2, $3);}
+  | exp AND exp {$$ = tp.td_.make_OpExp(@$, $1, $2, $3);}
+  | exp OR exp {$$ = tp.td_.make_OpExp(@$, $1, $2, $3);}
   | LPAREN exps RPAREN
   /* Assignment. */
   | lvalue ASSIGN exp
   /* Control structures. */
-  | IF exp THEN exp ELSE exp
-  | IF exp THEN exp
-  | WHILE exp DO exp
+  | IF exp THEN exp ELSE exp {$$ = tp.td_.make_IfExp(@$, $2, $4, $6);}
+  | IF exp THEN exp {$$ = tp.td_.make_IfExp(@$, $2, $4);}
+  | WHILE exp DO exp {$$ = tp.td_.make_WhileExp(@$, $2, $4);}
   | FOR ID ASSIGN exp TO exp DO exp
   | BREAK
   | LET chunks IN exps END
