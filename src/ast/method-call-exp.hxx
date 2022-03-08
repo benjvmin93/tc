@@ -9,5 +9,7 @@
 
 namespace ast
 {
-  // FIXME: Some code was deleted here.
+  inline const ast::Var& MethodCallExp::get_object() const { return *object_; }
+  inline ast::Var& MethodCallExp::get_object() { return *object_; }
+
 } // namespace ast
