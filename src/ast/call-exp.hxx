@@ -13,7 +13,7 @@ namespace ast
 
   inline misc::symbol CallExp::name_get() { return name_; }
 
-  inline const exps_type& CallExp::args_get() const { return args_; }
+  inline const exps_type& CallExp::args_get() const { return *args_; }
 
-  inline exps_type& CallExp::args_get() { return args_; }
+  inline exps_type& CallExp::args_get() { return *args_; }
 } // namespace ast

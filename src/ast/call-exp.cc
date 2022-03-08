@@ -17,7 +17,6 @@ namespace ast
 
   CallExp::~CallExp()
   {
-    delete name_;
     delete args_;
   }
 
