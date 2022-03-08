@@ -9,10 +9,12 @@
 #include <memory>
 #include <stack>
 
+#include <ast/fwd.hh>
 #include <common.hh>
 #include <misc/error.hh>
 #include <misc/file-library.hh>
 #include <parse/parsetiger.hh>
+#include <parse/tiger-driver.hh>
 #include <parse/tweast.hh>
 
 // Announce to Bison the lexing function it must use.
@@ -113,6 +115,10 @@ namespace parse
     bool enable_object_extensions_p_ = false;
     /// Allow language extensions (reserved identifiers, new keywords)?
     bool enable_extensions_p_ = false;
+
+    /// Handle a driver for the Parser
+    // FIXME: This is not the place it should be
+    TigerDriver td_;
   };
 
 } // namespace parse

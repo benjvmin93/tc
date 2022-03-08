@@ -131,6 +131,8 @@ src_libtc_la_SOURCES +=				\
   %D%/scantiger.hh %D%/scantiger.cc		\
   %D%/tiger-parser.hh %D%/tiger-parser.cc	\
   %D%/tweast.hh %D%/tweast.cc %D%/tweast.hxx
+src_libtc_la_SOURCES +=					\
+  %D%/tiger-driver.hh %D%/tiger-driver.hxx
 
 FORMAT_IGNORE += %D%/scantiger.hh
 
