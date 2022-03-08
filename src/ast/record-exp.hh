@@ -15,7 +15,7 @@ namespace ast
   class RecordExp : public Exp
   {
     public:
-    RecordExp(const location& location, ast::NameTy* type_name, ast::fieldinits_type* fields);
+    RecordExp(const Location& location, ast::NameTy* type_name, ast::fieldinits_type* fields);
     RecordExp(const RecordExp&) = delete;
     RecordExp& operator=(const RecordExp&) = delete;
 

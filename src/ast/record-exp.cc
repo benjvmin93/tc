@@ -9,7 +9,7 @@
 
 namespace ast
 {
-  RecordExp::RecordExp(const location& location, ast::NameTy* type_name, ast::fieldinits_type* fields):
+  RecordExp::RecordExp(const Location& location, ast::NameTy* type_name, ast::fieldinits_type* fields):
     Exp(location),
     type_name_(type_name),
     fields_(fields)

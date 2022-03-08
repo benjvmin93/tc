@@ -9,19 +9,19 @@
 
 namespace ast
 {
-  const ast::NameTy& RecordExp::get_type_name() const
+  inline const ast::NameTy& RecordExp::get_type_name() const
   {
     return *type_name_;
   }
-  ast::NameTy& RecordExp::get_type_name()
+  inline ast::NameTy& RecordExp::get_type_name()
   {
     return *type_name_;
   }
-  const ast::fieldinits_type& RecordExp::get_fields()
+  inline const ast::fieldinits_type& RecordExp::get_fields() const
   {
     return *fields_;
   }
-  ast::fieldinits_type& RecordExp::get_fields()
+  inline ast::fieldinits_type& RecordExp::get_fields()
   {
     return *fields_;
   }
