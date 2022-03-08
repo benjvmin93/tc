@@ -9,27 +9,27 @@
 
 namespace ast
 {
-  const Exp& IfExp::get_test() const
+  inline const Exp& IfExp::get_test() const
   {
     return *test_;
   }
-  Exp& IfExp::get_test()
+  inline Exp& IfExp::get_test()
   {
     return *test_;
   }
-  const Exp& IfExp::get_thenclause() const
+  inline const Exp& IfExp::get_thenclause() const
   {
     return *thenclause_;
   }
-  Exp& IfExp::get_thenclause()
+  inline Exp& IfExp::get_thenclause()
   {
     return *thenclause_;
   }
-  const Exp& IfExp::get_elseclause() const
+  inline const Exp& IfExp::get_elseclause() const
   {
     return *elseclause_;
   }
-  Exp& IfExp::get_elseclause()
+  inline Exp& IfExp::get_elseclause()
   {
     return *elseclause_;
   }
