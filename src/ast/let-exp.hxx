@@ -9,5 +9,11 @@
 
 namespace ast
 {
-  // FIXME: Some code was deleted here.
+  inline const ChunkList& LetExp::chunklist_get() const { return *chunklist_; }
+
+  inline ChunkList& LetExp::chunklist_get() { return *chunklist_; }
+
+  inline const Exp& LetExp::exp_get() const { return *exp_; }
+
+  inline Exp& LetExp::exp_get() { return *exp_; }
 } // namespace ast
