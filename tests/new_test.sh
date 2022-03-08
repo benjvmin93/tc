@@ -23,15 +23,6 @@ do
 	i=$((i + 1))
 done	
 
-#File name
-echo "Filename: (test$i.tig by default)"
-read -p ">" input_file
-
-case "$file" in
-	"")
-		input_file="test$i.tig"
-		;;
-esac
 
 #Error message
 echo "Error message:"
@@ -60,6 +51,7 @@ cat code >> $input_file
 rm code
 mv $input_file all_tests/$input_dir/
 
+input_file="test$i.tig"
 FILE=all_tests/$input_dir/$input_file
 if test -f "$FILE"
 then

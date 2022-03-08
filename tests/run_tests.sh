@@ -72,6 +72,12 @@ do
                 ;;
         esac
 
+        if [ $(($unique_nbtest % 30)) -eq 0 ]
+        then
+            echo
+            echo
+        fi
+
         ./../src/tc -X --parse $f >> filerr 2>&1
 
 
@@ -132,7 +138,15 @@ do
             echo -e -n "$RED█$END "
     fi
 done
-echo "$percen%"
+echo -n "$percen%"
+
+if [ $percen -eq 100 ]
+    then
+        echo -e " -> $GREEN╰(★‿★)╯ $END"
+    else
+        echo -e " -> $RED（♯▼皿▼） $END"
+fi
+
 echo
 rm testerror
 rm filerr
