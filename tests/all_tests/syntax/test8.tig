@@ -5,6 +5,6 @@ let
 
 	var arr1:arrtype := arrtype [10] of 0
 in
-	arr1
-end/* error : expecting ; */
+	arr1;
+end/* error : expecting end */
 

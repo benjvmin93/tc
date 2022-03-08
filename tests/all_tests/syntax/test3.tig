@@ -12,4 +12,3 @@ in
             if int_array[i] > int_array[max] then
                 max := i; max);
 end/* error : syntax error, unexpected end */
-
