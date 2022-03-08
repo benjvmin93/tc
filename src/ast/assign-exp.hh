@@ -42,7 +42,7 @@ namespace ast
     /** \} */
   protected:
     Var* var_;
-    Exp* exp_
+    Exp* exp_;
   };
 } // namespace ast
 #include <ast/assign-exp.hxx>
