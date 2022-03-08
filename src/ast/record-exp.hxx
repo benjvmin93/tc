@@ -9,5 +9,21 @@
 
 namespace ast
 {
-  // FIXME: Some code was deleted here.
+  const ast::NameTy& RecordExp::get_type_name() const
+  {
+    return *type_name_;
+  }
+  ast::NameTy& RecordExp::get_type_name()
+  {
+    return *type_name_;
+  }
+  const ast::fieldinits_type& RecordExp::get_fields()
+  {
+    return *fields_;
+  }
+  ast::fieldinits_type& RecordExp::get_fields()
+  {
+    return *fields_;
+  }
+  
 } // namespace ast

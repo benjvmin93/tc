@@ -9,5 +9,18 @@
 
 namespace ast
 {
-  // FIXME: Some code was deleted here.
+  RecordExp::RecordExp(const location& location, ast::NameTy* type_name, ast::fieldinits_type* fields):
+    Exp(location),
+    type_name_(type_name),
+    fields_(fields)
+  {}
+  RecordExp::~RecordExp()
+  {
+    delete type_name_;
+    delete fields_;
+  }
+
+  void RecordExp::accept(ConstVisitor& v) const { v(*this); };
+  void RecordExp::accept(Visitor& v) { v(*this); }
+  
 } // namespace ast
