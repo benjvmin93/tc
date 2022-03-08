@@ -1,3 +1,5 @@
+/* error : syntax error, unexpected identifier, expecting ; */
+
 type int_array = array of int
 
 function max_search(int_array : int_array, size : int) : int =
@@ -11,4 +13,5 @@ in
         (for i := 0 to len do
             (if int_array[i] > int_array[max] then
                 max := i) max)
+
 end/* error : syntax error, unexpected identifier, expecting ; */
