@@ -13,6 +13,7 @@ namespace ast
   /// ArrayExp.
   class ArrayExp : public Exp
   {
+  public:
     /** \name Ctor & dtor.
      ** \{ */
     ArrayExp(const Location& location, NameTy* type_name, Exp* size, Exp* init);

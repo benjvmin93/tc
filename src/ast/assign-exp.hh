@@ -13,6 +13,7 @@ namespace ast
   /// AssignExp.
   class AssignExp : public Exp
   {
+  public:
     /** \name Ctor & dtor.
      ** \{ */
     AssignExp(const Location& location, Var* var, Exp* exp);
