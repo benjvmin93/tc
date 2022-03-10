@@ -9,5 +9,18 @@
 
 namespace ast
 {
-  // FIXME: Some code was deleted here.
+  RecordTy::RecordTy(const Location& location, Field::Field& field, Ty& ty)
+    : field_(field)
+    , ty_(ty)
+  {}
+
+  RecordTy::~RecordTy()
+  {
+    delete field_;
+    delete ty_;
+  }
+
+  void RecordTy::accept(ConstVisitor& v) const { v(*this); }
+
+  void RecordTy::accept(Visitor& v) { v(*this); }
 } // namespace ast
