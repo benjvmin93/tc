@@ -9,15 +9,14 @@
 
 namespace ast
 {
-  RecordTy::RecordTy(const Location& location, Field::Field& field, Ty& ty)
-    : field_(field)
-    , ty_(ty)
+  RecordTy::RecordTy(const Location& location, fields_type* field)
+    : Ty(location)
+    , field_(field)
   {}
 
   RecordTy::~RecordTy()
   {
     delete field_;
-    delete ty_;
   }
 
   void RecordTy::accept(ConstVisitor& v) const { v(*this); }

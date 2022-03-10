@@ -14,7 +14,7 @@ namespace ast
   class RecordTy : public Ty
   {
   public:
-    RecordTy(const Location& location, Field::Field& field, Ty& ty);
+    RecordTy(const Location& location, fields_type* field);
     RecordTy(const RecordTy&) = delete;
     RecordTy& operator=(const RecordTy&) = delete;
 
@@ -23,15 +23,11 @@ namespace ast
     void accept(ConstVisitor& v) const override;
     void accept(Visitor& v) override;
 
-    const Field::Field& field_get() const;
-    Field::Field& field_get();
-
-    const Ty& ty_get() const;
-    Ty& ty_get();
+    const fields_type& field_get() const;
+    fields_type& field_get();
 
   protected:
-    Field::Field* field_;
-    Ty* ty_;
+    fields_type* field_;
   };
 } // namespace ast
 #include <ast/record-ty.hxx>
