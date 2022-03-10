@@ -12,6 +12,7 @@ namespace ast
   /// BreakExp.
   class BreakExp : public Exp
   {
+  public:
     /** \name Ctor & dtor.
      ** \{ */
     BreakExp(const Location& location);
