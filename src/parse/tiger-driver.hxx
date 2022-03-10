@@ -12,21 +12,21 @@ namespace parse
   inline ast::StringExp* TigerDriver::make_StringExp(const location& location,
                                                      std::string string) const
   {
-    // FIXME: Some code was deleted here (Constructor of StringExp).
+    return new ast::StringExp(location, string);
   }
 
   inline ast::ObjectExp*
   TigerDriver::make_ObjectExp(const location& location,
                               ast::NameTy* type_name) const
   {
-    // FIXME: Some code was deleted here (Constructor of Object).
+    return new ast::ObjectExp(location, type_name);
   }
 
   inline ast::CallExp* TigerDriver::make_CallExp(const location& location,
                                                  misc::symbol name,
                                                  ast::exps_type* args) const
   {
-    // FIXME: Some code was deleted here (Constructor of CallExp).
+    return new ast::CallExp(location, name, args);
   }
 
   inline ast::MethodCallExp*
@@ -35,7 +35,7 @@ namespace parse
                                   ast::exps_type* args,
                                   ast::Var* object) const
   {
-    // FIXME: Some code was deleted here (Constructor of MethodCallExp).
+    return new ast::MethodCallExp(location, name, args, object);
   }
 
   inline ast::RecordExp*
@@ -43,7 +43,7 @@ namespace parse
                               ast::NameTy* type_name,
                               ast::fieldinits_type* fields) const
   {
-    // FIXME: Some code was deleted here (Constructor of RecordExp).
+    return new ast::RecordExp(location, type_name, fields);
   }
 
   inline ast::ArrayExp* TigerDriver::make_ArrayExp(const location& location,
@@ -51,7 +51,7 @@ namespace parse
                                                    ast::Exp* size,
                                                    ast::Exp* init) const
   {
-    // FIXME: Some code was deleted here (Constructor of ArrayExp).
+    return new ast::ArrayExp(location, type_name, size, init);
   }
 
   inline ast::NilExp* TigerDriver::make_NilExp(const location& location) const
@@ -62,14 +62,14 @@ namespace parse
   inline ast::SeqExp* TigerDriver::make_SeqExp(const location& location,
                                                ast::exps_type* exps) const
   {
-    // FIXME: Some code was deleted here (Constructor of SeqExp).
+    return new ast::SeqExp(location, exps);
   }
 
   inline ast::AssignExp* TigerDriver::make_AssignExp(const location& location,
                                                      ast::Var* var,
                                                      ast::Exp* exp) const
   {
-    // FIXME: Some code was deleted here (Constructor of AssignExp).
+    return new ast::AssignExp(location, var, exp);
   }
 
   inline ast::IfExp* TigerDriver::make_IfExp(const location& location,
@@ -77,14 +77,14 @@ namespace parse
                                              ast::Exp* thenclause,
                                              ast::Exp* elseclause) const
   {
-    // FIXME: Some code was deleted here (Constructor of IfExp).
+    return new ast::IfExp(location, test, thenclause, elseclause);
   }
 
   inline ast::IfExp* TigerDriver::make_IfExp(const location& location,
                                              ast::Exp* test,
                                              ast::Exp* thenclause) const
   {
-    // FIXME: Some code was deleted here (Constructor of IfExp).
+    return new ast::IfExp(location, test, thenclause);
   }
 
   inline ast::WhileExp* TigerDriver::make_WhileExp(const location& location,
@@ -105,14 +105,14 @@ namespace parse
   inline ast::BreakExp*
   TigerDriver::make_BreakExp(const location& location) const
   {
-    // FIXME: Some code was deleted here (Constructor of BreakExp).
+    return new ast::BreakExp(location);
   }
 
   inline ast::LetExp* TigerDriver::make_LetExp(const location& location,
                                                ast::ChunkList* decs,
                                                ast::Exp* body) const
   {
-    // FIXME: Some code was deleted here (Constructor of LetExp).
+    return new ast::LetExp(location, decs, body);
   }
 
   inline ast::OpExp* TigerDriver::make_OpExp(const location& location,
@@ -140,7 +140,7 @@ namespace parse
                                                    ast::Var* var,
                                                    misc::symbol name) const
   {
-    // FIXME: Some code was deleted here (Constructor of FieldVar).
+    return new ast::FieldVar(location, var, name);
   }
 
   inline ast::SubscriptVar*
@@ -180,7 +180,7 @@ namespace parse
   inline ast::RecordTy* TigerDriver::make_RecordTy(const location& location,
                                                    ast::fields_type* fields)
   {
-    // FIXME: Some code was deleted here (Constructor of RecordTy).
+    return new ast::RecordTy(location, fields);
   }
 
   inline ast::ArrayTy* TigerDriver::make_ArrayTy(const location& location,
