@@ -35,7 +35,7 @@ namespace ast
 
   void PrettyPrinter::operator()(const FieldVar& e)
   {
-    // FIXME: Some code was deleted here.
+    ostr_ << e.name_get(); /* not sure */
   }
 
   /* Foo[10]. */
@@ -48,6 +48,41 @@ namespace ast
   void PrettyPrinter::operator()(const CastExp& e)
   {
     ostr_ << "_cast(" << e.exp_get() << ", " << e.ty_get() << ')';
+  }
+
+  void PrettyPrinter::operator()(const IntExp& e)
+  {
+    ostr_ << e.value_get();
+  }
+
+  void PrettyPrinter::operator()(const StringExp& e)
+  {
+    ostr_ << e.string_get();
+  }
+
+  void PrettyPrinter::operator()(const ForExp& e)
+  {
+    ostr_ << "for " << e.vardec_get() << ":= " << e.hi_get() << " do" << misc::incendl;
+    ostr_ << e.body_get() << ");" << misc::decendl;
+  }
+
+  void PrettyPrinter::operator()(const LetExp& e)
+  {
+    ostr_ << "let" << misc::incendl << e.chunklist_get() << misc::decendl;
+    ostr_ << "in" << misc::incendl << '(' << e.exp_get() << ')';
+    ostr_ << misc::decendl << "end";
+  }
+
+  void PrettyPrinter::operator()(const WhileExp& e)
+  {
+    ostr_ << "while (" << e.test_get() << ')' << misc::incendl;
+    ostr_ << e.body_get() << misc::decendl;
+  }
+
+  void PrettyPrinter::operator()(const FunctionDec& e)
+  {
+    ostr_ << "function " << e.name_get() << '(' << e.formals_get() << " : " << e.result_get() << ") : " << e.result_get() << " =" << misc::incendl;
+    ostr_ << e.body_get() << misc::decendl;
   }
 
   // FIXME: Some code was deleted here.

@@ -25,10 +25,38 @@ namespace ast
 
     /// Visit methods.
     /// \{
-    void operator()(const SimpleVar& e) override;
-    void operator()(const FieldVar& e) override;
-    void operator()(const SubscriptVar& e) override;
-    void operator()(const CastExp& e) override;
+    //Var
+    void operator()(const SimpleVar& e) override;   //OK
+    void operator()(const FieldVar& e) override;    //OK
+    void operator()(const SubscriptVar& e) override;//OK
+    //Exp
+    void operator()(const CastExp& e) override;     //OK
+
+    void operator()(const ArrayExp& e) override;
+    void operator()(const AssignExp& e) override;
+    void operator()(const CallExp& e) override;
+    void operator()(const ForExp& e) override;    //OK
+    void operator()(const IfExp& e) override;
+    void operator()(const IntExp& e) override;    //OK
+    void operator()(const LetExp& e) override;    //OK
+    void operator()(const NilExp& e) override;
+    void operator()(const ObjectExp& e) override;
+    void operator()(const OpExp& e) override;
+    void operator()(const RecordExp& e) override;
+    void operator()(const SeqExp& e) override;
+    void operator()(const StringExp& e) override; //OK
+    void operator()(const WhileExp& e) override;  //OK
+
+    // Ty
+    void operator()(const ArrayTy& e) override;
+    void operator()(const ClassTy& e) override;
+    void operator()(const NameTy& e) override;
+    void operator()(const RecordTy& e) override;
+
+    //Dec
+    void operator()(const FunctionDec& e) override;//OK
+    void operator()(const TypeDec& e) override;
+    void operator()(const VarDec& e) override;
     // FIXME: Some code was deleted here.
     /// \}
 
