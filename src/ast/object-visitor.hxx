@@ -27,7 +27,7 @@ namespace ast
   template <template <typename> class Const>
   void GenObjectVisitor<Const>::operator()(const_t<ClassTy>& e)
   {
-    e.super_get().accept();
+    e.super_get().accept(*this);
 
     for (auto ch : e.chunks_get())
       ch->accept(*this);
@@ -42,8 +42,7 @@ namespace ast
   template <template <typename> class Const>
   void GenObjectVisitor<Const>::operator()(const_t<MethodDec>& e)
   {
-    e.name_get().accpet(*this);
-    e.formals_get()->accept(*this);
+    e.formals_get().accept(*this);
     e.result_get()->accept(*this);
     e.body_get()->accept(*this);
   }
@@ -51,15 +50,15 @@ namespace ast
   template <template <typename> class Const>
   void GenObjectVisitor<Const>::operator()(const_t<MethodCallExp>& e)
   {
-    e.name_get().accept(*this);
-    e.args_get().accept(*this);
+    for (auto v : e.args_get())
+      v->accept(*this);
     e.get_object().accept(*this);
   }
 
   template <template <typename> class Const>
   void GenObjectVisitor<Const>::operator()(const_t<ObjectExp>& e)
   {
-    e.type_name_get()->accept(*this);
+    e.type_name_get().accept(*this);
   }
 
 } // namespace ast
