@@ -300,7 +300,7 @@ exp:
   | IF exp THEN exp ELSE exp /* {$$ = tp.td_.make_IfExp(@$, $2, $4, $6);} */
   | IF exp THEN exp /* {$$ = tp.td_.make_IfExp(@$, $2, $4);} */
   | WHILE exp DO exp /* {$$ = tp.td_.make_WhileExp(@$, $2, $4);} */
-  | FOR ID ASSIGN exp TO exp DO exp /* ???? I don't know */
+  | FOR ID ASSIGN exp TO exp DO exp /* {$$ = tp.td_.make_ForExp(@$, tp.td_.make_VarDec(@1, $2, tp.td_.make_NameTy(@2, misc::symbol("int")) , $4) ,$6, $8);} */
   | BREAK /* {$$ = tp.td_.make_BreakExp(@$);} */
   | LET chunks IN exps END /* {$$ = tp.td_.make_LetExp(@$, $2, $4);} */
   | NEW typeid /* {$$ = tp.td_.make_ObjectExp(@$, $2);} */
@@ -337,7 +337,7 @@ chunks:
 | tychunk   chunks {$$ = $2; $$->push_front($1);}
 | funchunk chunks /* {$$ = $2; $$->push_front($1);} */
 | vardec chunks /* {$$ = $2; $$->push_front($1);} */
-| IMPORT STRING chunks /* {$$ = $3; $$->push_front($2)} */
+| IMPORT STRING chunks /* {$$ = $3; $$->push_front($2)} */  /* Not sure */
 ;
 
 /*----------------------.
@@ -362,8 +362,8 @@ fundec:
   ;
 
 type_id:
-  %empty /* ???? I don't know */
-  | COLON typeid /* {$$->push_front($1);} */
+  %empty/*{$$ = tp.td_make_NilExp(@$); } */  /* Not sure */
+  | COLON typeid /* {$$->$2;} */
   ;
 
 /*--------------------.
@@ -379,11 +379,11 @@ tychunk:
 
 tydec:
   "type" ID "=" ty { $$ = tp.td_.make_TypeDec(@$, $2, $4);}
-  | CLASS ID extends LBRACE classfields RBRACE /* {$$ = tp.td_.make_ClassTy(@$, tp.td_.make_NameTy(@1, $2), Another Thing)} */
+  | CLASS ID extends LBRACE classfields RBRACE /* {$$ = tp.td_.make_ClassTy(@$, $3, $5)} */  /* Not sure */
 ;
 
 extends:
-  %empty /* ???? I don't know */
+  %empty /*{$$ = tp.td_make_NilExp(@$); } */  /* Not sure */
   | EXTENDS typeid /* {$$ = $2;} */
   ;
 
@@ -391,17 +391,17 @@ ty:
   typeid {$$ = $1;}
 | "{" tyfields "}" {$$ = tp.td_make_RecordTy(@$, $2); }     
 | "array" "of" typeid {$$ = tp.td_.make_ArrayTy(@$, $3); }
-| CLASS extends LBRACE classfields RBRACE /* ???? I don't know */
+| CLASS extends LBRACE classfields RBRACE /* {$$ = tp.td_.make_ClassTy(@$, $2, $4);} */
 ;
 
 classfields:
-  %empty /* ???? I don't know */
-  | classfields METHOD ID LPAREN tyfields RPAREN colonID EQ exp /* {$$ = $1; another thing} */
-  | classfields vardec /* {$$ = $1; $$->emplace_back($2);} */
+  %empty /* {$$ = tp.td_.make_ChunkList(@$);} */  /* Not sure */
+  | classfields METHOD ID LPAREN tyfields RPAREN colonID EQ exp /* {$$ = $1; $$->emplace_back(tp.td_.make_MethodDec(@$, $3, $5, $7, $9);)} */ /* Not sure */
+  | classfields vardec /* {$$ = $1; $$->emplace_back($2);} */  /* Not sure */
   ;
 
 colonID:
-  %empty /* ???? I don't know */
+  %empty /*{$$ = tp.td_make_NilExp(@$); } */
   | COLON typeid /* {$$ = $2} */
   ;
 
