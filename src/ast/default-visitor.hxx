@@ -33,7 +33,7 @@ namespace ast
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<FieldVar>& e)
   {
-    // FIXME: Some code was deleted here.
+    e.var_get().accept(*this);
   }
 
   template <template <typename> class Const>
