@@ -191,7 +191,27 @@
        EOF 0        "end of file"
 
 %type <ast::Exp*>             exp
+%type <ast::exps_type*>       exps
+%type <ast::exps_type*>       exp_or_null
+%type <ast::VarDec*>          vardec
+%type <ast::Var*>             lvalue
+%type <ast::Var*>             lvalue_b
+%type <ast::NameTy*>          type_id
+%type <ast::NameTy*>          extends colonID
+//%type <ast::OpExp::Oper>      AND OR
+%type <ast::ChunkList*>       classfields
+
+
 %type <ast::ChunkList*>       chunks
+%type <ast::FunctionChunk*>   funchunk
+%type <ast::FunctionDec*>     fundec
+
+%type <ast::exps_type*>       function
+%type <ast::exps_type*>       function_or_null
+
+
+%type <ast::fieldinits_type*> record_or_null
+%type <ast::fieldinits_type*> record
 
 %type <ast::TypeChunk*>       tychunk
 %type <ast::TypeDec*>         tydec
@@ -244,78 +264,78 @@ program:
    { tp.ast_ = $1; }
 ;
 exps:
-  %empty /* {$$ = tp.td_.make_exps_type();} */
-  | exp_or_null /* {$$ = $1} */
+  %empty {$$ = tp.td_.make_exps_type();}
+  | exp_or_null {$$ = $1;}
 
 exp_or_null:
-  exp_or_null SEMI exp /* {$$ = $1; $$->emplace_back($3)} */
-  | exp /* {$$ = tp.td_.make_exps_type($1);} */
+  exp_or_null SEMI exp {$$ = $1; $$->emplace_back($3);}
+  | exp {$$ = tp.td_.make_exps_type($1);}
 
 record_or_null:
-  record_or_null COMMA ID EQ exp /* {$$ = $1; $$->emplace_back(tp.td_.make_FieldInit(@1, $3, $5));} ????*/
-  | ID EQ exp /* {$$ = tp.td_.make_fieldsinit_type(@$, tp.td_.make_FieldInit(@1, $1, $3));} */
+  record_or_null COMMA ID EQ exp {$$ = $1; $$->emplace_back(tp.td_.make_FieldInit(@1, $3, $5));}
+  | ID EQ exp {$$ = tp.td_.make_fieldinits_type(@$, tp.td_.make_FieldInit(@1, $1, $3));}
 
 record:
-  %empty /* {$$ = tp.td_.make_fieldsinit_type();} */
-  | record_or_null /* {$$ = $1} */
+  %empty {$$ = tp.td_.make_fieldinits_type();}
+  | record_or_null {$$ = $1;}
 
 function:
-  %empty /* {$$ = tp.td_.make_exps_type();} */
-  | function_or_null /* {$$ = $1} */
+  %empty {$$ = tp.td_.make_exps_type();}
+  | function_or_null {$$ = $1;}
 
 function_or_null:
-  function_or_null COMMA exp /* {$$ = $1; $$->emplace_back($3)} */
-  | exp /* {$$ = tp.td_.make_exps_type($1);} */
+  function_or_null COMMA exp {$$ = $1; $$->emplace_back($3);}
+  | exp {$$ = tp.td_.make_exps_type($1);}
 
 exp:
   /* Literals */
-  NIL /*{$$ = tp.td_make_NilExp(@$); } */
-  | INT /* { $$ = tp.td_.make_IntExp(@$, $1); } */
-  | STRING /* {$$ = tp.td_.make_StringExp(@$, $1);} */
+  NIL {$$ = tp.td_.make_NilExp(@$); }
+  | INT { $$ = tp.td_.make_IntExp(@$, $1); }
+  | STRING {$$ = tp.td_.make_StringExp(@$, $1);}
   /* Array and record creations. */
-  | ID LBRACK exp RBRACK OF exp /* {$$ = tp.td_.make_ArrayExp(@$, tp.td_.make_NameTy(@1, $1), $3, $6);} */
-  | ID LBRACE record RBRACE /* {$$ = tp.td_.make_RecordExp(@$, tp.td_.make_NameTy(@1, $1), $3)} */
+  | ID LBRACK exp RBRACK OF exp {$$ = tp.td_.make_ArrayExp(@$, tp.td_.make_NameTy(@1, $1), $3, $6);}
+  | ID LBRACE record RBRACE {$$ = tp.td_.make_RecordExp(@$, tp.td_.make_NameTy(@1, $1), $3);}
   /* Variables, field, elements of an array. */
-  | lvalue /* {$$ = $1} */
+  | lvalue {$$ = $1;} 
   /* Function call. */
-  | ID LPAREN function RPAREN /* {$$ = tp.td_.make_CallExp(@$, $1, $3);} */
+  | ID LPAREN function RPAREN {$$ = tp.td_.make_CallExp(@$, $1, $3);}
   /* Operations. */
-  | MINUS exp %prec UMINUS /* { $$ = tp.td_.make_OpExp(@$, tp.td_.make_IntExp(@$, 0), ast::OpExp::Oper::sub, $2);} */
-  | exp PLUS exp /* {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::add, $3);} */
-  | exp MINUS exp /* {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::sub, $3);} */
-  | exp TIMES exp /* {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::mul, $3);} */
-  | exp DIVIDE exp /* {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::div, $3);} */
-  | exp EQ exp /* {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::eq, $3);} */
-  | exp NE exp /* {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ne, $3);} */
-  | exp GT exp /* {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::gt, $3);} */
-  | exp LT exp /* {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::lt, $3);} */
-  | exp GE exp /* {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ge, $3);} */
-  | exp LE exp /* {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::le, $3);} */
-  | exp AND exp /* {$$ = tp.td_.make_OpExp(@$, $1, $2, $3);} */
-  | exp OR exp /* {$$ = tp.td_.make_OpExp(@$, $1, $2, $3);} */
-  | LPAREN exps RPAREN /* {$$ = tp.td_.make_SeqExp(@$, $2);} */
+  | MINUS exp %prec UMINUS { $$ = tp.td_.make_OpExp(@$, tp.td_.make_IntExp(@$, 0), ast::OpExp::Oper::sub, $2);}
+  | exp PLUS exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::add, $3);} 
+  | exp MINUS exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::sub, $3);} 
+  | exp TIMES exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::mul, $3);} 
+  | exp DIVIDE exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::div, $3);} 
+  | exp EQ exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::eq, $3);} 
+  | exp NE exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ne, $3);} 
+  | exp GT exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::gt, $3);} 
+  | exp LT exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::lt, $3);} 
+  | exp GE exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ge, $3);} 
+  | exp LE exp  {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::le, $3);} 
+  | exp AND exp {$$ = nullptr; }//tp.td_.make_OpExp(@$, $1, $2, $3);} 
+  | exp OR exp {$$ = nullptr; }//tp.td_.make_OpExp(@$, $1, $2, $3);} 
+  | LPAREN exps RPAREN {$$ = tp.td_.make_SeqExp(@$, $2);} 
   /* Assignment. */
-  | lvalue ASSIGN exp /* {$$ = tp.td_.make_AssignExp(@$, $1, $3);} */
+  | lvalue ASSIGN exp  {$$ = tp.td_.make_AssignExp(@$, $1, $3);} 
   /* Control structures. */
-  | IF exp THEN exp ELSE exp /* {$$ = tp.td_.make_IfExp(@$, $2, $4, $6);} */
-  | IF exp THEN exp /* {$$ = tp.td_.make_IfExp(@$, $2, $4);} */
-  | WHILE exp DO exp /* {$$ = tp.td_.make_WhileExp(@$, $2, $4);} */
-  | FOR ID ASSIGN exp TO exp DO exp /* {$$ = tp.td_.make_ForExp(@$, tp.td_.make_VarDec(@1, $2, tp.td_.make_NameTy(@2, misc::symbol("int")) , $4) ,$6, $8);} */
-  | BREAK /* {$$ = tp.td_.make_BreakExp(@$);} */
-  | LET chunks IN exps END /* {$$ = tp.td_.make_LetExp(@$, $2, $4);} */
-  | NEW typeid /* {$$ = tp.td_.make_ObjectExp(@$, $2);} */
-  | lvalue DOT ID LPAREN function RPAREN /* {$$ = tp.td_.make_MethodCallExp(@$, $3, $5, $1);} */
+  | IF exp THEN exp ELSE exp {$$ = tp.td_.make_IfExp(@$, $2, $4, $6);}
+  | IF exp THEN exp {$$ = tp.td_.make_IfExp(@$, $2, $4);}
+  | WHILE exp DO exp {$$ = tp.td_.make_WhileExp(@$, $2, $4);}
+  | FOR ID ASSIGN exp TO exp DO exp {$$ = tp.td_.make_ForExp(@$, tp.td_.make_VarDec(@1, $2, tp.td_.make_NameTy(@2, misc::symbol("int")) , $4) ,$6, $8);}
+  | BREAK {$$ = tp.td_.make_BreakExp(@$);}
+  | LET chunks IN exps END {$$ = tp.td_.make_LetExp(@$, $2, $4);}
+  | NEW typeid {$$ = tp.td_.make_ObjectExp(@$, $2);}
+  | lvalue DOT ID LPAREN function RPAREN {$$ = tp.td_.make_MethodCallExp(@$, $3, $5, $1);}
   ;
 
 lvalue:
-  ID /* {$$ = tp.td_.make_SimpleVar(@$, $1);} */
-  | lvalue_b /* {$$ = $1;} */
+  ID {$$ = tp.td_.make_SimpleVar(@$, $1);}
+  | lvalue_b {$$ = $1;}
   ;
 
 lvalue_b:
-  ID LBRACK exp RBRACK /* {$$ = tp.td_.make_SubscriptVar(@$, tp.td_.make_SimpleVar(@1, $1), $3);} */
-  | lvalue_b LBRACK exp RBRACK /* {$$ = tp.td_.make_SubscriptVar(@$, $1, $3);} */
-  | lvalue DOT ID /* {$$ = tp.td_.make_FieldVar(@$, $1, $3);} */
+  ID LBRACK exp RBRACK {$$ = tp.td_.make_SubscriptVar(@$, tp.td_.make_SimpleVar(@1, $1), $3);}
+  | lvalue_b LBRACK exp RBRACK {$$ = tp.td_.make_SubscriptVar(@$, $1, $3);}
+  | lvalue DOT ID {$$ = tp.td_.make_FieldVar(@$, $1, $3);}
 
 /*---------------.
 | Declarations.  |
@@ -335,9 +355,9 @@ chunks:
 
   %empty {$$ = tp.td_.make_ChunkList(@$);}
 | tychunk   chunks {$$ = $2; $$->push_front($1);}
-| funchunk chunks /* {$$ = $2; $$->push_front($1);} */
-| vardec chunks /* {$$ = $2; $$->push_front($1);} */
-| IMPORT STRING chunks /* {$$ = $3; $$->push_front($2)} */  /* Not sure */
+| funchunk chunks {$$ = $2; $$->push_front($1);}
+| vardec chunks {$$ = $2; $$->push_front($1);}
+| IMPORT STRING chunks {$$ = $3; $$->push_front($2)}  /* Not sure */
 ;
 
 /*----------------------.
@@ -345,25 +365,25 @@ chunks:
 `----------------------*/
 
 vardec:
-  VAR ID type_id ASSIGN exp /* {$$ = tp.td_.make_VarDec(@$, $2, $3, $5);} */
+  VAR ID type_id ASSIGN exp {$$ = tp.td_.make_VarDec(@$, $2, $3, $5);}
 
 /*----------------------.
 | Function Declarations.|
 `---------------------*/
 
 funchunk:
-  fundec %prec CHUNKS /* {$$ = tp.td_.make_FunctionChunk()} */
-  | fundec funchunk /* {$$ = $2; $$->push_front($1);} */
+  fundec %prec CHUNKS {$$ = tp.td_.make_FunctionChunk()}
+  | fundec funchunk {$$ = $2; $$->push_front($1);}
   ;
 
 fundec:
-  FUNCTION ID LPAREN tyfields RPAREN type_id EQ exp /* {$$ = tp.td_.make_FunctionDec(@$, $2, $4, $6, $8);} */
-  | PRIMITIVE ID LPAREN tyfields RPAREN type_id /* {$$ = tp.td_.make_FunctionDec(@$, $2, $4, $6, nullptr);} */
+  FUNCTION ID LPAREN tyfields RPAREN type_id EQ exp {$$ = tp.td_.make_FunctionDec(@$, $2, $4, $6, $8);}
+  | PRIMITIVE ID LPAREN tyfields RPAREN type_id {$$ = tp.td_.make_FunctionDec(@$, $2, $4, $6, nullptr);}
   ;
 
 type_id:
-  %empty/*{$$ = tp.td_make_NilExp(@$); } */  /* Not sure */
-  | COLON typeid /* {$$->$2;} */
+  %empty {$$ = tp.td_make_NilExp(@$); } /* Not sure */
+  | COLON typeid {$$->$2;}
   ;
 
 /*--------------------.
@@ -379,30 +399,30 @@ tychunk:
 
 tydec:
   "type" ID "=" ty { $$ = tp.td_.make_TypeDec(@$, $2, $4);}
-  | CLASS ID extends LBRACE classfields RBRACE /* {$$ = tp.td_.make_ClassTy(@$, $3, $5)} */  /* Not sure */
+  | CLASS ID extends LBRACE classfields RBRACE {$$ = tp.td_.make_ClassTy(@$, $3, $5)} /* Not sure */
 ;
 
 extends:
-  %empty /*{$$ = tp.td_make_NilExp(@$); } */  /* Not sure */
-  | EXTENDS typeid /* {$$ = $2;} */
+  %empty {$$ = tp.td_make_NilExp(@$); }  /* Not sure */
+  | EXTENDS typeid {$$ = $2;} 
   ;
 
 ty:
   typeid {$$ = $1;}
 | "{" tyfields "}" {$$ = tp.td_make_RecordTy(@$, $2); }     
 | "array" "of" typeid {$$ = tp.td_.make_ArrayTy(@$, $3); }
-| CLASS extends LBRACE classfields RBRACE /* {$$ = tp.td_.make_ClassTy(@$, $2, $4);} */
+| CLASS extends LBRACE classfields RBRACE {$$ = tp.td_.make_ClassTy(@$, $2, $4);}
 ;
 
 classfields:
-  %empty /* {$$ = tp.td_.make_ChunkList(@$);} */  /* Not sure */
-  | classfields METHOD ID LPAREN tyfields RPAREN colonID EQ exp /* {$$ = $1; $$->emplace_back(tp.td_.make_MethodDec(@$, $3, $5, $7, $9);)} */ /* Not sure */
-  | classfields vardec /* {$$ = $1; $$->emplace_back($2);} */  /* Not sure */
+  %empty {$$ = tp.td_.make_ChunkList(@$);}  /* Not sure */
+  | classfields METHOD ID LPAREN tyfields RPAREN colonID EQ exp {$$ = $1; $$->emplace_back(tp.td_.make_MethodDec(@$, $3, $5, $7, $9);)} /* Not sure */
+  | classfields vardec {$$ = $1; $$->emplace_back($2);}  /* Not sure */
   ;
 
 colonID:
-  %empty /*{$$ = tp.td_make_NilExp(@$); } */
-  | COLON typeid /* {$$ = $2} */
+  %empty {$$ = tp.td_make_NilExp(@$); }
+  | COLON typeid {$$ = $2} 
   ;
 
 tyfields:
