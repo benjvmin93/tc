@@ -214,9 +214,11 @@ namespace parse
   TigerDriver::make_fieldinits_type(T... inits_types) const
   {
     // Pas reussi a regler le soucis
+    /*
     std::vector<T*> vec;
     (vec.push_back(inits_types), ...);
-    return vec;
+    return vec;*/
+    return new ast::fieldinits_type{inits_types...};
   }
 
   inline ast::FieldInit* TigerDriver::make_FieldInit(const location& location,
