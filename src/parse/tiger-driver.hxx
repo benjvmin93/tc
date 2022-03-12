@@ -278,6 +278,7 @@ namespace parse
   inline ast::FunctionChunk* TigerDriver::make_FunctionChunk(T... args)
   {
     // Pas reussi a regler le soucis
-    return ast::Chunk<T*>(&args...);
+    //return ast::Chunk<T*>(&args...);
+    return new ast::FunctionChunk(args...);
   }
 } // namespace parse
