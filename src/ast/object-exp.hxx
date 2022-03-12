@@ -9,5 +9,6 @@
 
 namespace ast
 {
-  // FIXME: Some code was deleted here.
+        inline const NameTy& ObjectExp::type_name_get() const { return *type_name_; }
+        inline NameTy& ObjectExp::type_name_get() { return *type_name_; }
 } // namespace ast

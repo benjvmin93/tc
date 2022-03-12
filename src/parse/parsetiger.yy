@@ -191,7 +191,28 @@
        EOF 0        "end of file"
 
 %type <ast::Exp*>             exp
+//%type <ast::Exp*>             exps
+%type <ast::exps_type*>       exps
+%type <ast::exps_type*>       exp_or_null
+%type <ast::VarDec*>        vardec
+%type <ast::Var*>             lvalue
+%type <ast::Var*>             lvalue_b
+%type <ast::ChunkList*>       classfields
+%type <ast::VarChunk*>         varchunk
+
+
 %type <ast::ChunkList*>       chunks
+%type <ast::FunctionChunk*>   funchunk
+%type <ast::FunctionDec*>     fundec
+%type <ast::MethodChunk*>     methodchunk
+%type <ast::MethodDec*>       methoddec
+
+%type <ast::exps_type*>       function
+%type <ast::exps_type*>       function_or_null
+
+
+%type <ast::fieldinits_type*> record_or_null
+%type <ast::fieldinits_type*> record
 
 %type <ast::TypeChunk*>       tychunk
 %type <ast::TypeDec*>         tydec
@@ -199,11 +220,27 @@
 %type <ast::Ty*>              ty
 
 %type <ast::Field*>           tyfield
+%type <ast::VarChunk*>        tyfieldvar tyfieldvar.1
+
 %type <ast::fields_type*>     tyfields tyfields.1
   // FIXME: Some code was deleted here (More %types).
 
   // FIXME: Some code was deleted here (Priorities/associativities).
+%precedence ASSIGN
+//%precedence tyfieldvar
+//%precedence WHILE DO
+%precedence DO
+%precedence THEN
+%precedence ELSE
+%precedence OF
 
+%left OR
+%left AND
+%nonassoc GE LE EQ GT LT NE
+%left PLUS MINUS
+%left TIMES DIVIDE
+
+%precedence UMINUS
 // Solving conflicts on:
 // let type foo = bar
 //     type baz = bat
@@ -214,22 +251,8 @@
 //%left reduce
 %precedence CHUNKS
 %precedence TYPE
-%precedence ASSIGN
-//%precedence DOT ID
-//%precedence WHILE DO
-%precedence DO
-%precedence THEN
-%precedence ELSE
-%precedence OF
 %precedence CLASS
-%precedence PRIMITIVE FUNCTION
-%left OR
-%left AND
-%nonassoc GE LE EQ GT LT NE
-%left PLUS MINUS
-%left TIMES DIVIDE
-
-%precedence UMINUS
+%precedence PRIMITIVE FUNCTION METHOD
   // FIXME: Some code was deleted here (Other declarations).
 
 %start program
@@ -244,78 +267,81 @@ program:
    { tp.ast_ = $1; }
 ;
 exps:
-  %empty
-  | exp_or_null
+  %empty {$$ = tp.td_.make_exps_type();}
+  | exp_or_null {$$ = $1;}
 
 exp_or_null:
-  exp_or_null SEMI exp
-  | exp
+  exp_or_null SEMI exp {$$ = $1; $$->emplace_back($3);}
+  | exp {$$ = tp.td_.make_exps_type($1);}
 
 record_or_null:
-  record_or_null COMMA ID EQ exp
-  | ID EQ exp
+  record_or_null COMMA ID EQ exp {$$ = $1; $$->emplace_back(tp.td_.make_FieldInit(@1, $3, $5));}
+  | ID EQ exp {$$ = tp.td_.make_fieldinits_type(tp.td_.make_FieldInit(@1, $1, $3));}
 
 record:
-  %empty
-  | record_or_null
+  %empty {$$ = tp.td_.make_fieldinits_type();}
+  | record_or_null {$$ = $1;}
 
 function:
-  %empty
-  | function_or_null
+  %empty {$$ = tp.td_.make_exps_type();}
+  | function_or_null {$$ = $1;}
 
 function_or_null:
-  function_or_null COMMA exp
-  | exp
-
+  function_or_null COMMA exp {$$ = $1; $$->emplace_back($3);}
+  | exp {$$ = tp.td_.make_exps_type($1);}
+%token EXP "_exp";
 exp:
   /* Literals */
-  NIL
+  NIL {$$ = tp.td_.make_NilExp(@$); }
   | INT { $$ = tp.td_.make_IntExp(@$, $1); }
-  | STRING
+  | STRING {$$ = tp.td_.make_StringExp(@$, $1);}
   /* Array and record creations. */
-  | ID LBRACK exp RBRACK OF exp
-  | ID LBRACE record RBRACE
+  | ID LBRACK exp RBRACK OF exp {$$ = tp.td_.make_ArrayExp(@$, tp.td_.make_NameTy(@1, $1), $3, $6);}
+  | ID LBRACE record RBRACE {$$ = tp.td_.make_RecordExp(@$, tp.td_.make_NameTy(@1, $1), $3);}
   /* Variables, field, elements of an array. */
-  | lvalue
+  | lvalue {$$ = $1;} 
   /* Function call. */
-  | ID LPAREN function RPAREN
+  | ID LPAREN function RPAREN {$$ = tp.td_.make_CallExp(@$, $1, $3);}
   /* Operations. */
-  | MINUS exp %prec UMINUS
-  | exp PLUS exp
-  | exp MINUS exp
-  | exp TIMES exp
-  | exp DIVIDE exp
-  | exp EQ exp
-  | exp NE exp
-  | exp GT exp
-  | exp LT exp
-  | exp GE exp
-  | exp LE exp
-  | exp AND exp
-  | exp OR exp
-  | LPAREN exps RPAREN
+  | MINUS exp %prec UMINUS { $$ = tp.td_.make_OpExp(@$, tp.td_.make_IntExp(@$, 0), ast::OpExp::Oper::sub, $2);}
+  | exp PLUS exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::add, $3);} 
+  | exp MINUS exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::sub, $3);} 
+  | exp TIMES exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::mul, $3);} 
+  | exp DIVIDE exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::div, $3);} 
+  | exp EQ exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::eq, $3);} 
+  | exp NE exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ne, $3);} 
+  | exp GT exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::gt, $3);} 
+  | exp LT exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::lt, $3);} 
+  | exp GE exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ge, $3);} 
+  | exp LE exp  {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::le, $3);} 
+  | exp AND exp {$$ = tp.td_.make_IfExp(@$, $1, $3);}
+  | exp OR exp {$$ = tp.td_.make_IfExp(@$, $1, nullptr, $3);}
+  | LPAREN exps RPAREN {$$ = tp.td_.make_SeqExp(@$, $2);} 
   /* Assignment. */
-  | lvalue ASSIGN exp
+  | lvalue ASSIGN exp  {$$ = tp.td_.make_AssignExp(@$, $1, $3);} 
   /* Control structures. */
-  | IF exp THEN exp ELSE exp
-  | IF exp THEN exp
-  | WHILE exp DO exp
-  | FOR ID ASSIGN exp TO exp DO exp
-  | BREAK
-  | LET chunks IN exps END
-  | NEW typeid
-  | lvalue DOT ID LPAREN function RPAREN
+  | IF exp THEN exp ELSE exp {$$ = tp.td_.make_IfExp(@$, $2, $4, $6);}
+  | IF exp THEN exp {$$ = tp.td_.make_IfExp(@$, $2, $4);}
+  | WHILE exp DO exp {$$ = tp.td_.make_WhileExp(@$, $2, $4);}
+  | FOR ID ASSIGN exp TO exp DO exp {$$ = tp.td_.make_ForExp(@$, tp.td_.make_VarDec(@1, $2, tp.td_.make_NameTy(@2, misc::symbol("int")) , $4) ,$6, $8);}
+  | BREAK {$$ = tp.td_.make_BreakExp(@$);}
+  | LET chunks IN exps END {$$ = tp.td_.make_LetExp(@$, $2, tp.td_.make_SeqExp(@$,$4));} // Pas reussi a regler le soucis
+  | NEW typeid {$$ = tp.td_.make_ObjectExp(@$, $2);}
+  | lvalue DOT ID LPAREN function RPAREN {$$ = tp.td_.make_MethodCallExp(@$, $3, $5, $1);}
+  | EXP "(" INT ")" { $$ = metavar<ast::Exp>(tp, $3); }
   ;
 
+%token LVALUE "_lvalue";
 lvalue:
-  ID
-  | lvalue_b
+  ID {$$ = tp.td_.make_SimpleVar(@$, $1);}
+  | lvalue_b {$$ = $1;}
+  | LVALUE "(" INT ")" { $$ = metavar<ast::Var>(tp, $3); }
   ;
 
 lvalue_b:
-  ID LBRACK exp RBRACK
-  | lvalue_b LBRACK exp RBRACK
-  | lvalue DOT ID
+  ID LBRACK exp RBRACK {$$ = tp.td_.make_SubscriptVar(@$, tp.td_.make_SimpleVar(@1, $1), $3);}
+  | lvalue_b LBRACK exp RBRACK {$$ = tp.td_.make_SubscriptVar(@$, $1, $3);}
+  | lvalue DOT ID {$$ = tp.td_.make_FieldVar(@$, $1, $3);}
 
 /*---------------.
 | Declarations.  |
@@ -335,36 +361,39 @@ chunks:
 
   %empty {$$ = tp.td_.make_ChunkList(@$);}
 | tychunk   chunks {$$ = $2; $$->push_front($1);}
-| funchunk chunks
-| vardec chunks
-| IMPORT STRING chunks
+| funchunk chunks {$$ = $2; $$->push_front($1);}
+| varchunk chunks {$$ = $2; $$->push_front($1);}
+| IMPORT STRING chunks {$$ = $3; $$->splice_front(*tp.parse_import($2, @$));}  /* Not sure */
+| CHUNKS "(" INT ")" chunks { $$ = $5; $$->splice_front(*metavar<ast::ChunkList>(tp, $3));}
 ;
 
 /*----------------------.
 | Variable Declarations.|
 `----------------------*/
 
+varchunk:
+  vardec  {$$ = tp.td_.make_VarChunk(@1); $$->push_front(*$1);}
+
 vardec:
-  VAR ID type_id ASSIGN exp
+  VAR ID COLON typeid ASSIGN exp {$$ = tp.td_.make_VarDec(@$, $2, $4, $6);}
+  | VAR ID ASSIGN exp {$$ = tp.td_.make_VarDec(@$, $2, nullptr, $4);}
 
 /*----------------------.
 | Function Declarations.|
 `---------------------*/
 
 funchunk:
-  fundec %prec CHUNKS
-  | fundec funchunk
+  fundec %prec CHUNKS {$$ = tp.td_.make_FunctionChunk(@$); $$->push_front(*$1);}
+  | fundec funchunk {$$ = $2; $$->push_front(*$1);}
   ;
 
 fundec:
-  FUNCTION ID LPAREN tyfields RPAREN type_id EQ exp
-  | PRIMITIVE ID LPAREN tyfields RPAREN type_id
+  FUNCTION ID LPAREN tyfieldvar RPAREN COLON typeid EQ exp {$$ = tp.td_.make_FunctionDec(@$, $2, $4, $7, $9);} // Pas reussi a regler le soucis
+  | PRIMITIVE ID LPAREN tyfieldvar RPAREN COLON typeid {$$ = tp.td_.make_FunctionDec(@$, $2, $4, $7, nullptr);} // Pas reussi a regler le soucis
+  | FUNCTION ID LPAREN tyfieldvar RPAREN EQ exp {$$ = tp.td_.make_FunctionDec(@$, $2, $4, nullptr, $7);} // Pas reussi a regler le soucis
+  | PRIMITIVE ID LPAREN tyfieldvar RPAREN {$$ = tp.td_.make_FunctionDec(@$, $2, $4, nullptr, nullptr);} // Pas reussi a regler le soucis
   ;
 
-type_id:
-  %empty
-  | COLON typeid
-  ;
 
 /*--------------------.
 | Type Declarations.  |
@@ -379,31 +408,33 @@ tychunk:
 
 tydec:
   "type" ID "=" ty { $$ = tp.td_.make_TypeDec(@$, $2, $4);}
-  | CLASS ID extends LBRACE classfields RBRACE
-;
-
-extends:
-  %empty
-  | EXTENDS typeid
+  | CLASS ID EXTENDS typeid LBRACE classfields RBRACE {$$ = tp.td_.make_TypeDec(@$, $2, tp.td_.make_ClassTy(@$, $4, $6));}
+  | CLASS ID LBRACE classfields RBRACE {$$ = tp.td_.make_TypeDec(@$, $2, tp.td_.make_ClassTy(@$, nullptr, $4));}
   ;
 
 ty:
   typeid {$$ = $1;}
-| "{" tyfields "}" {$$ = tp.td_make_RecordTy(@$, $2); }     
+| "{" tyfields "}" {$$ = tp.td_.make_RecordTy(@$, $2); }
 | "array" "of" typeid {$$ = tp.td_.make_ArrayTy(@$, $3); }
-| CLASS extends LBRACE classfields RBRACE
+| CLASS EXTENDS typeid LBRACE classfields RBRACE {$$ = tp.td_.make_ClassTy(@$, $3, $5);}
+| CLASS LBRACE classfields RBRACE {$$ = tp.td_.make_ClassTy(@$, nullptr, $3);}
 ;
 
 classfields:
-  %empty
-  | classfields METHOD ID LPAREN tyfields RPAREN colonID EQ exp
-  | classfields vardec
+  %empty {$$ = tp.td_.make_ChunkList(@$);}
+  | classfields methodchunk {$$ = $1; $$->emplace_back($2);}
+  | classfields varchunk {$$ = $1; $$->emplace_back($2);}
   ;
 
-colonID:
-  %empty
-  | COLON typeid
-  ;
+methodchunk:
+    methoddec %prec CHUNKS  { $$ = tp.td_.make_MethodChunk(@1); $$->push_front(*$1); }
+  | methoddec methodchunk       { $$ = $2; $$->push_front(*$1); }
+  
+;
+methoddec:
+  METHOD ID LPAREN tyfieldvar RPAREN EQ exp {tp.td_.make_MethodDec(@$, $2, $4, nullptr, $7);} // Pas reussi a regler le soucis
+  |   METHOD ID LPAREN tyfieldvar RPAREN COLON typeid EQ exp {tp.td_.make_MethodDec(@$, $2, $4, $7, $9);} // Pas reussi a regler le soucis
+;
 
 tyfields:
   %empty               { $$ = tp.td_.make_fields_type(); }
@@ -413,6 +444,16 @@ tyfields:
 tyfields.1:
   tyfields.1 "," tyfield { $$ = $1; $$->emplace_back($3); }
 | tyfield                { $$ = tp.td_.make_fields_type($1); }
+;
+
+tyfieldvar:
+  %empty               { $$ = tp.td_.make_VarChunk(@$); }
+| tyfieldvar.1           { $$ = $1; }
+;
+
+tyfieldvar.1:
+  tyfieldvar.1 "," vardec { $$ = $1; $$->emplace_back(*$3); }
+| vardec               { $$ = tp.td_.make_VarChunk(@$); }
 ;
 
 tyfield:

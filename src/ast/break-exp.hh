@@ -12,7 +12,23 @@ namespace ast
   /// BreakExp.
   class BreakExp : public Exp
   {
-    // FIXME: Some code was deleted here.
+  public:
+    /** \name Ctor & dtor.
+     ** \{ */
+    BreakExp(const Location& location);
+    BreakExp(const BreakExp&) = delete;
+    BreakExp& operator=(const BreakExp&) = delete;
+
+    ~BreakExp() override;
+    /** \} */
+
+    /// \name Visitors entry point.
+    /// \{ */
+    /// Accept a const visitor \a v.
+    void accept(ConstVisitor& v) const override;
+    /// Accept a non-const visitor \a v.
+    void accept(Visitor& v) override;
+    /// \}
   };
 } // namespace ast
 #include <ast/break-exp.hxx>

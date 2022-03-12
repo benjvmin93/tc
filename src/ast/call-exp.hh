@@ -14,7 +14,38 @@ namespace ast
   /// CallExp.
   class CallExp : public Exp
   {
-    // FIXME: Some code was deleted here.
+    /** \name Ctor & dtor.
+     ** \{ */
+    public:
+      CallExp(const Location& location, misc::symbol name, exps_type* args);
+      CallExp(const CallExp&) = delete;
+      CallExp& operator=(const CallExp&) = delete;
+
+      ~CallExp() override;
+      /** \} */
+
+      /// \name Visitors entry point.
+      /// \{ */
+      /// Accept a const visitor \a v.
+      void accept(ConstVisitor& v) const override;
+      /// Accept a non-const visitor \a v.
+      void accept(Visitor& v) override;
+      /// \}
+
+      /** \name Accessors.
+       ** \{ */
+      const misc::symbol name_get() const;
+
+      misc::symbol name_get();
+
+      const exps_type& args_get() const;
+
+      exps_type& args_get();
+      /** \} */
+
+  protected:
+    misc::symbol name_;
+    exps_type* args_;
   };
 } // namespace ast
 #include <ast/call-exp.hxx>

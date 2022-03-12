@@ -9,5 +9,18 @@
 
 namespace ast
 {
-  // FIXME: Some code was deleted here.
+  CallExp::CallExp(const Location& location, misc::symbol name, exps_type* args)
+    : Exp(location)
+    , name_(name)
+    , args_(args)
+  {}
+
+  CallExp::~CallExp()
+  {
+    delete args_;
+  }
+
+  void CallExp::accept(ConstVisitor& v) const { v(*this); }
+
+  void CallExp::accept(Visitor& v) { v(*this); }
 } // namespace ast
