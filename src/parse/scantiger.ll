@@ -61,7 +61,6 @@ character       [a-zA-Z]
 white           [ \t]
 eol             "\n\r"|"\r\n"|"\r"|"\n"
 identifier      [a-zA-Z]{1}[a-zA-Z0-9_]*|"_main"
-metavar         "_chunks"|"_exp"|"_lvalue"|"_namety"
 %%
 %{
   // FIXME: Some code was deleted here (Local variables).
@@ -82,9 +81,25 @@ int comments = 0;
                 return TOKEN_VAL(INT, val);
               }
 
- /* Keyword tokens. */
+ /* Metavar tokens. */
 
-{metavar}       { ; }
+"_chunks" {
+    return TOKEN(CHUNKS);
+}
+
+"_exp" {
+    return TOKEN(EXP);
+}
+
+"_lvalue" {
+    return TOKEN(LVALUE);
+}
+
+"_namety" {
+    return TOKEN(NAMETY);
+}
+
+ /* Keyword tokens. */
 
 "array" {
     return TOKEN(ARRAY);
