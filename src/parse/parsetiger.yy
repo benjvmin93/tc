@@ -372,8 +372,8 @@ varchunk:
   vardec  {$$ = tp.td_.make_VarChunk(@1); $$->push_front(*$1);}
 
 vardec:
-  VAR ID COLON typeid ASSIGN exp {tp.td_.make_VarDec(@$, $2, $4, $6);}
-  | VAR ID ASSIGN exp {tp.td_.make_VarDec(@$, $2, nullptr, $4);}
+  VAR ID COLON typeid ASSIGN exp {$$ = tp.td_.make_VarDec(@$, $2, $4, $6);}
+  | VAR ID ASSIGN exp {$$ = tp.td_.make_VarDec(@$, $2, nullptr, $4);}
 
 /*----------------------.
 | Function Declarations.|

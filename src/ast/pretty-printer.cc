@@ -125,8 +125,8 @@ namespace ast
   {
     ostr_ << e.super_get() << "\n{" << misc::incendl;
     
-      for (auto ch : e.chunks_get())
-        ostr_ << ch->decs_get() << misc::iendl;
+      for (auto& ch : e.chunks_get())
+        ostr_ << *ch << misc::iendl;
     
     ostr_ << misc::decindent << "};" << misc::iendl;
   }
@@ -139,19 +139,22 @@ namespace ast
   void PrettyPrinter::operator()(const RecordTy& e)
   {
     ostr_ << "{ ";
-     for (auto ch : e.field_get())
-        ostr_ << ch.name_get() << " : " << ch.init_get() << ',';
+     for (auto& ch : e.field_get())
+        ostr_ << *(ch) << ',';
     ostr_ << " }";
   }
 
   void PrettyPrinter::operator()(const AssignExp& e)
   {
-    ostr_ << e.base_type_get();
+    ostr_ << e.var_get() << " := " << e.exp_get();
   }
 
   void PrettyPrinter::operator()(const CallExp& e)
   {
-    ostr_ << e.name_get() << " = " << e.args_get();
+    ostr_ << e.name_get() << "(";
+    for (auto& args : e.args_get())
+      ostr_ <<  *args << ", ";
+    ostr_ << ")";
   }
 
   void PrettyPrinter::operator()(const ObjectExp& e)

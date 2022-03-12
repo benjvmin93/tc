@@ -39,11 +39,11 @@ namespace ast
     void operator()(const IfExp& e) override;       //OK
     void operator()(const IntExp& e) override;      //OK
     void operator()(const LetExp& e) override;      //OK
-    void operator()(const NilExp& e) override;      //No get
+   // void operator()(const NilExp& e) override;      //No get
     void operator()(const ObjectExp& e) override;   //OK
     void operator()(const OpExp& e) override;       //No complete
     void operator()(const RecordExp& e) override;   //OK
-    void operator()(const SeqExp& e) override;
+ //   void operator()(const SeqExp& e) override;
     void operator()(const StringExp& e) override; //OK
     void operator()(const WhileExp& e) override;  //OK
 
