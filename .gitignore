@@ -127,3 +127,11 @@ src/parse/test-tweast
 src/parse/test-tweast.log
 src/parse/test-tweast.trs
 test-suite.log
+src/ast/.deps/
+src/ast/.dirstamp
+src/parse/location.hh.bak
+src/parse/parsetiger.hh.bak
+src/parse/parsetiger.tab.cc
+src/parse/parsetiger.tab.hh
+src/parse/position.hh.bak
+src/vgcore.52864
