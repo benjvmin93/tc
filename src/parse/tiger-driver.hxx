@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <parse/tiger-driver.hh>
 
 namespace parse
@@ -212,7 +213,10 @@ namespace parse
   inline ast::fieldinits_type*
   TigerDriver::make_fieldinits_type(T... inits_types) const
   {
-    return new ast::fieldinits_type{inits_types...};
+    // Pas reussi a regler le soucis
+    std::vector<T*> vec;
+    (vec.push_back(inits_types), ...);
+    return vec;
   }
 
   inline ast::FieldInit* TigerDriver::make_FieldInit(const location& location,
@@ -271,6 +275,7 @@ namespace parse
   template <class... T>
   inline ast::FunctionChunk* TigerDriver::make_FunctionChunk(T... args)
   {
-    return new ast::FunctionChunk(args...);
+    // Pas reussi a regler le soucis
+    return ast::Chunk<T*>(&args...);
   }
 } // namespace parse

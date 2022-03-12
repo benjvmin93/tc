@@ -193,11 +193,9 @@
 %type <ast::Exp*>             exp
 %type <ast::exps_type*>       exps
 %type <ast::exps_type*>       exp_or_null
-%type <ast::VarDec*>          vardec
+%type <ast::VarChunk*>        vardec
 %type <ast::Var*>             lvalue
 %type <ast::Var*>             lvalue_b
-%type <ast::NameTy*>          type_id
-%type <ast::NameTy*>          extends colonID
 //%type <ast::OpExp::Oper>      AND OR
 %type <ast::ChunkList*>       classfields
 
@@ -311,8 +309,8 @@ exp:
   | exp LT exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::lt, $3);} 
   | exp GE exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ge, $3);} 
   | exp LE exp  {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::le, $3);} 
-  | exp AND exp {$$ = nullptr; }//tp.td_.make_OpExp(@$, $1, $2, $3);} 
-  | exp OR exp {$$ = nullptr; }//tp.td_.make_OpExp(@$, $1, $2, $3);} 
+  | exp AND exp {$$ = nullptr; }//tp.td_.make_OpExp(@$, $1, $2, $3);}  // Pas reussi a regler le soucis
+  | exp OR exp {$$ = nullptr; }//tp.td_.make_OpExp(@$, $1, $2, $3);}  // Pas reussi a regler le soucis
   | LPAREN exps RPAREN {$$ = tp.td_.make_SeqExp(@$, $2);} 
   /* Assignment. */
   | lvalue ASSIGN exp  {$$ = tp.td_.make_AssignExp(@$, $1, $3);} 
@@ -322,7 +320,7 @@ exp:
   | WHILE exp DO exp {$$ = tp.td_.make_WhileExp(@$, $2, $4);}
   | FOR ID ASSIGN exp TO exp DO exp {$$ = tp.td_.make_ForExp(@$, tp.td_.make_VarDec(@1, $2, tp.td_.make_NameTy(@2, misc::symbol("int")) , $4) ,$6, $8);}
   | BREAK {$$ = tp.td_.make_BreakExp(@$);}
-  | LET chunks IN exps END {$$ = tp.td_.make_LetExp(@$, $2, $4);}
+  | LET chunks IN exps END {$$ = tp.td_.make_LetExp(@$, $2, $4);} // Pas reussi a regler le soucis
   | NEW typeid {$$ = tp.td_.make_ObjectExp(@$, $2);}
   | lvalue DOT ID LPAREN function RPAREN {$$ = tp.td_.make_MethodCallExp(@$, $3, $5, $1);}
   ;
@@ -357,7 +355,7 @@ chunks:
 | tychunk   chunks {$$ = $2; $$->push_front($1);}
 | funchunk chunks {$$ = $2; $$->push_front($1);}
 | vardec chunks {$$ = $2; $$->push_front($1);}
-| IMPORT STRING chunks {$$ = $3; $$->push_front($2)}  /* Not sure */
+| IMPORT STRING chunks /*{$$ = $3; $$->push_front($2)}*/  /* Not sure */
 ;
 
 /*----------------------.
@@ -365,25 +363,23 @@ chunks:
 `----------------------*/
 
 vardec:
-  VAR ID type_id ASSIGN exp {$$ = tp.td_.make_VarDec(@$, $2, $3, $5);}
+  VAR ID COLON typeid ASSIGN exp {$$ = tp.td_.make_VarChunk(@$);$$->push_front(*tp.td_.make_VarDec(@$, $2, $4, $6));}
+  | VAR ID ASSIGN exp {$$ = tp.td_.make_VarChunk(@$);$$->push_front(*tp.td_.make_VarDec(@$, $2, nullptr, $4));}
 
 /*----------------------.
 | Function Declarations.|
 `---------------------*/
 
 funchunk:
-  fundec %prec CHUNKS {$$ = tp.td_.make_FunctionChunk()}
-  | fundec funchunk {$$ = $2; $$->push_front($1);}
+  fundec %prec CHUNKS {$$ = tp.td_.make_FunctionChunk();}
+  | fundec funchunk {$$ = $2; $$->push_front(*$1);}
   ;
 
 fundec:
-  FUNCTION ID LPAREN tyfields RPAREN type_id EQ exp {$$ = tp.td_.make_FunctionDec(@$, $2, $4, $6, $8);}
-  | PRIMITIVE ID LPAREN tyfields RPAREN type_id {$$ = tp.td_.make_FunctionDec(@$, $2, $4, $6, nullptr);}
-  ;
-
-type_id:
-  %empty {$$ = tp.td_make_NilExp(@$); } /* Not sure */
-  | COLON typeid {$$->$2;}
+  FUNCTION ID LPAREN tyfields RPAREN COLON typeid EQ exp {$$ = tp.td_.make_FunctionDec(@$, $2, $4, $7, $9);} // Pas reussi a regler le soucis
+  | PRIMITIVE ID LPAREN tyfields RPAREN COLON typeid {$$ = tp.td_.make_FunctionDec(@$, $2, $4, $7, nullptr);} // Pas reussi a regler le soucis
+  | FUNCTION ID LPAREN tyfields RPAREN EQ exp {$$ = tp.td_.make_FunctionDec(@$, $2, $4, nullptr, $7);} // Pas reussi a regler le soucis
+  | PRIMITIVE ID LPAREN tyfields RPAREN {$$ = tp.td_.make_FunctionDec(@$, $2, $4, nullptr, nullptr);} // Pas reussi a regler le soucis
   ;
 
 /*--------------------.
@@ -399,30 +395,23 @@ tychunk:
 
 tydec:
   "type" ID "=" ty { $$ = tp.td_.make_TypeDec(@$, $2, $4);}
-  | CLASS ID extends LBRACE classfields RBRACE {$$ = tp.td_.make_ClassTy(@$, $3, $5)} /* Not sure */
-;
-
-extends:
-  %empty {$$ = tp.td_make_NilExp(@$); }  /* Not sure */
-  | EXTENDS typeid {$$ = $2;} 
+  | CLASS ID EXTENDS typeid LBRACE classfields RBRACE {$$ = tp.td_.make_TypeDec(@$, $2, tp.td_.make_ClassTy(@$, $4, $6));}
+  | CLASS ID LBRACE classfields RBRACE {$$ = tp.td_.make_TypeDec(@$, $2, tp.td_.make_ClassTy(@$, nullptr, $4));}
   ;
 
 ty:
   typeid {$$ = $1;}
-| "{" tyfields "}" {$$ = tp.td_make_RecordTy(@$, $2); }     
+| "{" tyfields "}" {$$ = tp.td_.make_RecordTy(@$, $2); }
 | "array" "of" typeid {$$ = tp.td_.make_ArrayTy(@$, $3); }
-| CLASS extends LBRACE classfields RBRACE {$$ = tp.td_.make_ClassTy(@$, $2, $4);}
+| CLASS EXTENDS typeid LBRACE classfields RBRACE {$$ = tp.td_.make_ClassTy(@$, $3, $5);}
+| CLASS LBRACE classfields RBRACE {$$ = tp.td_.make_ClassTy(@$, nullptr, $3);}
 ;
 
 classfields:
-  %empty {$$ = tp.td_.make_ChunkList(@$);}  /* Not sure */
-  | classfields METHOD ID LPAREN tyfields RPAREN colonID EQ exp {$$ = $1; $$->emplace_back(tp.td_.make_MethodDec(@$, $3, $5, $7, $9);)} /* Not sure */
-  | classfields vardec {$$ = $1; $$->emplace_back($2);}  /* Not sure */
-  ;
-
-colonID:
-  %empty {$$ = tp.td_make_NilExp(@$); }
-  | COLON typeid {$$ = $2} 
+  %empty {$$ = tp.td_.make_ChunkList(@$);}
+  | classfields METHOD ID LPAREN tyfields RPAREN EQ exp {$$ = $1; $$->emplace_back(tp.td_.make_MethodDec(@$, $3, $5, nullptr, $8));} // Pas reussi a regler le soucis
+  | classfields METHOD ID LPAREN tyfields RPAREN COLON typeid EQ exp {$$ = $1; $$->emplace_back(tp.td_.make_MethodDec(@$, $3, $5, $8, $10));} // Pas reussi a regler le soucis
+  | classfields vardec {$$ = $1; $$->emplace_back($2);}
   ;
 
 tyfields:
