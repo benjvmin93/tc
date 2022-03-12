@@ -197,7 +197,6 @@
 %type <ast::VarDec*>        vardec
 %type <ast::Var*>             lvalue
 %type <ast::Var*>             lvalue_b
-//%type <ast::OpExp::Oper>      AND OR
 %type <ast::ChunkList*>       classfields
 %type <ast::VarChunk*>         varchunk
 
@@ -290,7 +289,7 @@ function:
 function_or_null:
   function_or_null COMMA exp {$$ = $1; $$->emplace_back($3);}
   | exp {$$ = tp.td_.make_exps_type($1);}
-
+%token EXP "_exp";
 exp:
   /* Literals */
   NIL {$$ = tp.td_.make_NilExp(@$); }
@@ -315,8 +314,8 @@ exp:
   | exp LT exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::lt, $3);} 
   | exp GE exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ge, $3);} 
   | exp LE exp  {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::le, $3);} 
-  | exp AND exp {$$ = nullptr; }//tp.td_.make_OpExp(@$, $1, $2, $3);}  // Pas reussi a regler le soucis
-  | exp OR exp {$$ = nullptr; }//tp.td_.make_OpExp(@$, $1, $2, $3);}  // Pas reussi a regler le soucis
+  | exp AND exp {$$ = tp.td_.make_IfExp(@$, $1, $3);}
+  | exp OR exp {$$ = tp.td_.make_IfExp(@$, $1, nullptr, $3);}
   | LPAREN exps RPAREN {$$ = tp.td_.make_SeqExp(@$, $2);} 
   /* Assignment. */
   | lvalue ASSIGN exp  {$$ = tp.td_.make_AssignExp(@$, $1, $3);} 
@@ -329,11 +328,14 @@ exp:
   | LET chunks IN exps END {$$ = tp.td_.make_LetExp(@$, $2, tp.td_.make_SeqExp(@$,$4));} // Pas reussi a regler le soucis
   | NEW typeid {$$ = tp.td_.make_ObjectExp(@$, $2);}
   | lvalue DOT ID LPAREN function RPAREN {$$ = tp.td_.make_MethodCallExp(@$, $3, $5, $1);}
+  | EXP "(" INT ")" { $$ = metavar<ast::Exp>(tp, $3); }
   ;
 
+%token LVALUE "_lvalue";
 lvalue:
   ID {$$ = tp.td_.make_SimpleVar(@$, $1);}
   | lvalue_b {$$ = $1;}
+  | LVALUE "(" INT ")" { $$ = metavar<ast::Var>(tp, $3); }
   ;
 
 lvalue_b:
@@ -362,6 +364,7 @@ chunks:
 | funchunk chunks {$$ = $2; $$->push_front($1);}
 | varchunk chunks {$$ = $2; $$->push_front($1);}
 | IMPORT STRING chunks {$$ = $3; $$->splice_front(*tp.parse_import($2, @$));}  /* Not sure */
+| CHUNKS "(" INT ")" chunks { $$ = $5; $$->push_front(metavar<ast::ChunkList>(tp, $3));}
 ;
 
 /*----------------------.
