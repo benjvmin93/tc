@@ -35,7 +35,7 @@ namespace ast
 
   void PrettyPrinter::operator()(const FieldVar& e)
   {
-    // FIXME: Some code was deleted here.
+    ostr_ << e.name_get(); /* not sure */
   }
 
   /* Foo[10]. */
@@ -50,6 +50,128 @@ namespace ast
     ostr_ << "_cast(" << e.exp_get() << ", " << e.ty_get() << ')';
   }
 
-  // FIXME: Some code was deleted here.
+  void PrettyPrinter::operator()(const IntExp& e)
+  {
+    ostr_ << e.value_get();
+  }
+
+  void PrettyPrinter::operator()(const StringExp& e)
+  {
+    ostr_ << e.string_get();
+  }
+
+  void PrettyPrinter::operator()(const ForExp& e)
+  {
+    ostr_ << "for " << e.vardec_get() << ":= " << e.hi_get() << " do" << misc::incendl;
+    ostr_ << e.body_get() << ");" << misc::decendl;
+  }
+
+  void PrettyPrinter::operator()(const LetExp& e)
+  {
+    ostr_ << "let" << misc::incendl << e.chunklist_get() << misc::decendl;
+    ostr_ << "in" << misc::incendl << '(' << e.exp_get() << ')';
+    ostr_ << misc::decendl << "end";
+  }
+
+  void PrettyPrinter::operator()(const WhileExp& e)
+  {
+    ostr_ << "while (" << e.test_get() << ')' << misc::incendl;
+    ostr_ << e.body_get() << misc::decendl;
+  }
+
+  void PrettyPrinter::operator()(const FunctionDec& e)
+  {
+    ostr_ << "function " << e.name_get() << '(' << e.formals_get() << " : " << e.result_get() << ") : " << e.result_get() << " =" << misc::incendl;
+    ostr_ << e.body_get() << misc::decendl;
+  }
+
+  void PrettyPrinter::operator()(const ArrayExp& e)
+  {
+    ostr_ << e.type_name_get() << '[' << e.size_get() << ']';
+    ostr_ << " = " << e.init_get();
+  }
+
+  void PrettyPrinter::operator()(const IfExp& e)
+  {
+    ostr_ << "if (" << e.get_test() << ')' << misc::incendl;
+    ostr_ << "then " << e.get_thenclause() << misc::iendl;
+
+    if (&(e.get_elseclause()) != nullptr) {
+      ostr_ << "else" << misc::incendl;
+      ostr_ << e.get_elseclause() << misc::iendl;
+    }
+  }
+
+  void PrettyPrinter::operator()(const VarDec& e)
+  {
+    if (e.type_name_get() != nullptr) {
+      ostr_ << e.type_name_get() << ' ';
+    }
+
+    ostr_ << e.name_get() << " = " << e.init_get();
+  }
+  
+  void PrettyPrinter::operator()(const TypeDec& e)
+  {
+    ostr_ << e.ty_get() << ' ' << e.name_get();
+  }
+
+  void PrettyPrinter::operator()(const ArrayTy& e)
+  {
+    ostr_ << e.base_type_get();
+  }
+
+  void PrettyPrinter::operator()(const ClassTy& e)
+  {
+    ostr_ << e.super_get() << "\n{" << misc::incendl;
+    
+      for (auto ch : e.chunks_get())
+        ostr_ << ch->decs_get() << misc::iendl;
+    
+    ostr_ << misc::decindent << "};" << misc::iendl;
+  }
+
+  void PrettyPrinter::operator()(const NameTy& e)
+  {
+    ostr_ << "typename " << e.name_get() << '<' << e.def_get() << '>';
+  }
+
+  void PrettyPrinter::operator()(const RecordTy& e)
+  {
+    ostr_ << "{ ";
+     for (auto ch : e.field_get())
+        ostr_ << ch.name_get() << " : " << ch.init_get() << ',';
+    ostr_ << " }";
+  }
+
+  void PrettyPrinter::operator()(const AssignExp& e)
+  {
+    ostr_ << e.base_type_get();
+  }
+
+  void PrettyPrinter::operator()(const CallExp& e)
+  {
+    ostr_ << e.name_get() << " = " << e.args_get();
+  }
+
+  void PrettyPrinter::operator()(const ObjectExp& e)
+  {
+    ostr_ << e.type_name_get();
+  }
+
+  void PrettyPrinter::operator()(const OpExp& e)
+  {
+    ostr_ << '(' << e.left_get() << ' ' << e.right_get() << ')';
+  }
+
+  void PrettyPrinter::operator()(const RecordExp& e)
+  {
+    ostr_ << "type " << e.get_type_name() << " = { ";
+
+    for (auto fi : e.get_fields())
+        ostr_ << fi->name_get() << " : " << fi->init_get() << ',';
+
+    ostr_ << " }";
+  }
 
 } // namespace ast
