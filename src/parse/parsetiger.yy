@@ -197,8 +197,7 @@
        EOF 0        "end of file"
 
 %type <ast::Exp*>             exp
-%type <ast::exps_type*>       exps
-%type <ast::exps_type*>       exp_or_null
+%type <ast::exps_type*>       exps exp_or_null
 %type <ast::VarDec*>        vardec
 %type <ast::Var*>             lvalue
 %type <ast::Var*>             lvalue_b
