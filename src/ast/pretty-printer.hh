@@ -39,7 +39,7 @@ namespace ast
     void operator()(const IfExp& e) override;     //OK
     void operator()(const IntExp& e) override;    //OK
     void operator()(const LetExp& e) override;    //OK
-    // void operator()(const NilExp& e) override;      //No get
+    void operator()(const NilExp& e) override;    //No get
     void operator()(const ObjectExp& e) override; //OK
     void operator()(const OpExp& e) override;     //No complete
     void operator()(const RecordExp& e) override; //OK
@@ -57,6 +57,7 @@ namespace ast
     void operator()(const FunctionDec& e) override; //OK
     void operator()(const TypeDec& e) override;     //OK
     void operator()(const VarDec& e) override;      //OK
+    void operator()(const MethodDec& e) override;   //OK
     // FIXME: Some code was deleted here.
     /// \}
 
