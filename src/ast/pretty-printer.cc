@@ -80,14 +80,29 @@ namespace ast
 
   void PrettyPrinter::operator()(const FunctionDec& e)
   {
-    ostr_ << "function " << e.name_get() << '(' << e.formals_get() << ")";
-    if (e.result_get() != nullptr)
-      ostr_ << " : " << e.result_get();
-    ostr_ << " =" << misc::incendl;
-    ostr_ << "(" << misc::incendl;
-    ostr_ << *(e.body_get());
-    ostr_ << "()" << misc::decendl;
+    ostr_ << "function " << e.name_get() << '(';
+    bool first = false;
+    for (auto& x : e.formals_get())
+      if (!first)
+        {
+          ostr_ << x->name_get() << " : " << x->type_name_get()->name_get();
+          first = true;
+        }
+      else
+        ostr_ << ", " << x->name_get() << " : "
+              << x->type_name_get()->name_get();
     ostr_ << ")";
+    if (e.result_get() != nullptr)
+      ostr_ << " : " << e.result_get()->name_get();
+    if (e.body_get() != nullptr)
+      {
+        ostr_ << " =" << misc::incendl;
+        ostr_ << "(" << misc::incendl;
+        ostr_ << *(e.body_get());
+        ostr_ << "()" << misc::decendl;
+        ostr_ << ")";
+      }
+    ostr_ << misc::iendl;
   }
 
   void PrettyPrinter::operator()(const ArrayExp& e)
