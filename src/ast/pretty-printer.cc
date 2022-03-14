@@ -4,13 +4,13 @@
  */
 
 #include <cstddef>
+#include <typeinfo>
 #include <ast/all.hh>
 #include <ast/libast.hh>
 #include <ast/pretty-printer.hh>
 #include <misc/escape.hh>
 #include <misc/indent.hh>
 #include <misc/separator.hh>
-
 namespace ast
 {
   // Anonymous namespace: these functions are private to this file.
@@ -62,14 +62,28 @@ namespace ast
   {
     ostr_ << "(for " << e.vardec_get() << ":= " << *(e.vardec_get().init_get())
           << " to " << e.hi_get() << " do" << misc::incendl;
-    ostr_ << e.body_get() << ");" << misc::decendl;
+    ostr_ << e.body_get() << ")";
   }
 
   void PrettyPrinter::operator()(const LetExp& e)
   {
-    ostr_ << "let" << misc::incendl << e.chunklist_get() << misc::decendl;
-    ostr_ << "in" << misc::incendl << e.exp_get();
-    ostr_ << "end;" << misc::iendl;
+    ostr_ << "let" << misc::incendl;
+    bool first = false;
+    for (auto& x : e.chunklist_get())
+      {
+        if (!first)
+          {
+            ostr_ << *x;
+            first = true;
+          }
+        else
+          ostr_ << misc::iendl << *x;
+      }
+    ostr_ << misc::decindent;
+    ostr_ << "in" << misc::incendl;
+    ostr_ << e.exp_get();
+    ostr_ << misc::decendl;
+    ostr_ << "end";
   }
 
   void PrettyPrinter::operator()(const WhileExp& e)
@@ -80,7 +94,11 @@ namespace ast
 
   void PrettyPrinter::operator()(const FunctionDec& e)
   {
-    ostr_ << "function " << e.name_get() << '(';
+    if (e.body_get() != nullptr)
+      ostr_ << "function ";
+    else
+      ostr_ << "primitive ";
+    ostr_ << e.name_get() << '(';
     bool first = false;
     for (auto& x : e.formals_get())
       if (!first)
@@ -98,8 +116,7 @@ namespace ast
       {
         ostr_ << " =" << misc::incendl;
         ostr_ << "(" << misc::incendl;
-        ostr_ << *(e.body_get());
-        ostr_ << "()" << misc::decendl;
+        ostr_ << *(e.body_get()) << misc::decindent; /*ca veut pas dec*/
         ostr_ << ")";
       }
     ostr_ << misc::iendl;
@@ -119,11 +136,11 @@ namespace ast
       {
         ostr_ << "then " << e.get_thenclause() << misc::iendl;
         ostr_ << "else ";
-        ostr_ << e.get_elseclause() << ");" << misc::decendl;
+        ostr_ << e.get_elseclause() << ")" << misc::decindent;
       }
     else
       {
-        ostr_ << "then " << e.get_thenclause() << ");" << misc::decendl;
+        ostr_ << "then " << e.get_thenclause() << ")" << misc::decindent;
       }
   }
 
@@ -182,7 +199,7 @@ namespace ast
       ostr_ << *(e.args_get()[0]);
     for (size_t args = 1; args < e.args_get().size(); args++)
       ostr_ << ", " << *(e.args_get()[args]);
-    ostr_ << ");" << misc::iendl;
+    ostr_ << ")";
   }
 
   void PrettyPrinter::operator()(const ObjectExp& e)
@@ -203,6 +220,25 @@ namespace ast
       ostr_ << fi->name_get() << " : " << fi->init_get() << ',';
 
     ostr_ << " }";
+  }
+
+  void PrettyPrinter::operator()(const SeqExp& e)
+  {
+    bool first = false;
+    for (auto& x : e.exps_get())
+      {
+        if (!first)
+          {
+            ostr_ << *x;
+            first = true;
+          }
+        else
+          {
+            ostr_ << ";" << misc::iendl << *x;
+            if (dynamic_cast<ast::Exp*>(x))
+              ostr_ << "()" << misc::decendl;
+          }
+      }
   }
 
 } // namespace ast
