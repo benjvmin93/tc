@@ -116,7 +116,7 @@ namespace ast
       {
         ostr_ << " =" << misc::incendl;
         ostr_ << "(" << misc::incendl;
-        ostr_ << *(e.body_get()) << misc::decindent; /*ca veut pas dec*/
+        ostr_ << *(e.body_get()) << misc::decindent << misc::decindent; /*ca veut pas dec*/
         ostr_ << ")";
       }
     ostr_ << misc::iendl;
@@ -151,12 +151,14 @@ namespace ast
         ostr_ << e.type_name_get() << ' ';
       }
 
-    ostr_ << e.name_get() << " = " << e.init_get();
+    ostr_ << "var " <<  e.name_get();
+    if (e.init_get())
+      ostr_ << " := " << *e.init_get();
   }
 
   void PrettyPrinter::operator()(const TypeDec& e)
   {
-    ostr_ << e.ty_get() << ' ' << e.name_get();
+    ostr_ << "type " << e.name_get() << " = " << e.ty_get();
   }
 
   void PrettyPrinter::operator()(const ArrayTy& e)
