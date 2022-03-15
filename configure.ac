@@ -6,14 +6,13 @@ m4_define([TC_GCC_PREREQ],      [10.2])
 m4_define([TC_HAVM_PREREQ],     [0.28])
 m4_define([TC_NOLIMIPS_PREREQ], [0.11])
 
-AC_PREREQ([2.64])
+AC_PREREQ([2.71])
 
 ## ---------------- ##
 ## Package set up.  ##
 ## ---------------- ##
 
-AC_INIT([LRDE Tiger Compiler], [1.91.b], [tiger@lrde.epita.fr], [tc],
-        [http://tiger.lrde.epita.fr])
+AC_INIT([LRDE Tiger Compiler],[1.91.b],[tiger@lrde.epita.fr],[tc],[http://tiger.lrde.epita.fr])
 
 # Auxiliary files.
 AC_CONFIG_AUX_DIR([build-aux])
@@ -74,7 +73,7 @@ if ! "${stdpass-false}"; then
 fi
 
 if ! "${stdpass-false}"; then
-  AC_ERROR([unable to turn on C++20 mode with this compiler])
+  AC_MSG_ERROR(unable to turn on C++20 mode with this compiler)
 fi
 
 # Try to use pipes between compiler stages to speed the compilation up.

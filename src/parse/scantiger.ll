@@ -308,12 +308,12 @@ int comments = 0;
   {int} { grown_string.append(1, strtol(yytext + 3, 0, 10)); }
   "\\" { grown_string.append(yytext); }
   "\\\"" { grown_string.append(yytext); }
-  {character} { grown_string.append(yytext); }
   <<EOF>> { tp.error_ << misc::error::error_type::scan
                     << tp.location_ << ": Unexpected end of file. Expecting closing string"
                     << "\n";
             BEGIN INITIAL;
   }
+    . { grown_string.append(yytext); }
 }
 
   /* Comment state. */

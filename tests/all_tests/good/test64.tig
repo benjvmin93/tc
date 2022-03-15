@@ -4,12 +4,12 @@
 ** MlOmLzHtM3IlVT9yozylMzqzYPOzLvOipvOznTIlVTqvQDckLzRaMlOapay5VT5uoTWupvOho2Wb
 ** MlO2Ml4=
 */
-
+z
 let
   var n := 9
 
   type int_array = array of int
-  var grid := let import "test64.tih" in init_grid() end
+  var grid := let import "test64.tih" in init_grid() end /* there is some error here help */
 
   function print_board() =
   (print("-------------------");

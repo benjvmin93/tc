@@ -12,5 +12,6 @@ let
   var x := 5
 in
   x
-end/* error : unexpected end of file in a comment */
+end
+/* error : unexpected end of file in a comment */
 

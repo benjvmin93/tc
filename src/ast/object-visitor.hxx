@@ -36,15 +36,16 @@ namespace ast
   template <template <typename> class Const>
   void GenObjectVisitor<Const>::operator()(const_t<MethodChunk>& e)
   {
-    e.accept(*this);
+    for (const auto dec : e)
+      dec->accept(*this);
   }
 
   template <template <typename> class Const>
   void GenObjectVisitor<Const>::operator()(const_t<MethodDec>& e)
   {
     e.formals_get().accept(*this);
-    e.result_get()->accept(*this);
-    e.body_get()->accept(*this);
+    this->accept(e.result_get());
+    this->accept(e.body_get());
   }
 
   template <template <typename> class Const>

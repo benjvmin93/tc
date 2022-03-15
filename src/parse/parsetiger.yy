@@ -17,7 +17,7 @@
 %expect 0
 %expect-rr 0
   // FIXME: Some code was deleted here (Other directives).
-
+%define parse.trace
 %define parse.error verbose
 %defines
 %debug
@@ -72,6 +72,12 @@
 }
 
 %printer { yyo << $$; } <int> <std::string> <misc::symbol>;
+%printer { yyo << *$$; } <ast::Exp*> <ast::Var*> <ast::FunctionDec*>
+%destructor { delete $$; } <ast::Exp*> <ast::exps_type*> <ast::VarDec*> <ast::Var*> <ast::ChunkList*>
+%destructor { delete $$; } <ast::VarChunk*> <ast::FunctionChunk*> <ast::FunctionDec*> <ast::MethodChunk*>
+%destructor { delete $$; } <ast::MethodDec*> <ast::fieldinits_type*> <ast::TypeChunk*> <ast::TypeDec*>
+%destructor { delete $$; } <ast::NameTy*> <ast::Ty*> <ast::Field*> <ast::fields_type*>
+
 
 %token <std::string>    STRING "string"
 %token <misc::symbol>   ID     "identifier"
@@ -191,9 +197,7 @@
        EOF 0        "end of file"
 
 %type <ast::Exp*>             exp
-//%type <ast::Exp*>             exps
-%type <ast::exps_type*>       exps
-%type <ast::exps_type*>       exp_or_null
+%type <ast::exps_type*>       exps exp_or_null
 %type <ast::VarDec*>        vardec
 %type <ast::Var*>             lvalue
 %type <ast::Var*>             lvalue_b
@@ -220,7 +224,8 @@
 %type <ast::Ty*>              ty
 
 %type <ast::Field*>           tyfield
-%type <ast::VarChunk*>        tyfieldvar tyfieldvar.1
+%type <ast::VarChunk*>        functionparamChunk
+%type <ast::VarDec*>          functionparam
 
 %type <ast::fields_type*>     tyfields tyfields.1
   // FIXME: Some code was deleted here (More %types).
@@ -314,8 +319,8 @@ exp:
   | exp LT exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::lt, $3);} 
   | exp GE exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ge, $3);} 
   | exp LE exp  {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::le, $3);} 
-  | exp AND exp {$$ = tp.td_.make_IfExp(@$, $1, $3);}
-  | exp OR exp {$$ = tp.td_.make_IfExp(@$, $1, nullptr, $3);}
+  | exp AND exp {$$ = tp.td_.make_IfExp(@$, $1, tp.td_.make_OpExp(@$, $3, ast::OpExp::Oper::ne, tp.td_.make_IntExp(@$, 0)), tp.td_.make_IntExp(@$, 0));}
+  | exp OR exp {$$ = tp.td_.make_IfExp(@$, tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ne, tp.td_.make_IntExp(@$, 0)), tp.td_.make_IntExp(@$, 1), $3);}
   | LPAREN exps RPAREN {$$ = tp.td_.make_SeqExp(@$, $2);} 
   /* Assignment. */
   | lvalue ASSIGN exp  {$$ = tp.td_.make_AssignExp(@$, $1, $3);} 
@@ -325,7 +330,7 @@ exp:
   | WHILE exp DO exp {$$ = tp.td_.make_WhileExp(@$, $2, $4);}
   | FOR ID ASSIGN exp TO exp DO exp {$$ = tp.td_.make_ForExp(@$, tp.td_.make_VarDec(@1, $2, tp.td_.make_NameTy(@2, misc::symbol("int")) , $4) ,$6, $8);}
   | BREAK {$$ = tp.td_.make_BreakExp(@$);}
-  | LET chunks IN exps END {$$ = tp.td_.make_LetExp(@$, $2, tp.td_.make_SeqExp(@$,$4));} // Pas reussi a regler le soucis
+  | LET chunks IN exps END {$$ = tp.td_.make_LetExp(@$, $2, tp.td_.make_SeqExp(@$,$4));}
   | NEW typeid {$$ = tp.td_.make_ObjectExp(@$, $2);}
   | lvalue DOT ID LPAREN function RPAREN {$$ = tp.td_.make_MethodCallExp(@$, $3, $5, $1);}
   | EXP "(" INT ")" { $$ = metavar<ast::Exp>(tp, $3); }
@@ -388,10 +393,10 @@ funchunk:
   ;
 
 fundec:
-  FUNCTION ID LPAREN tyfieldvar RPAREN COLON typeid EQ exp {$$ = tp.td_.make_FunctionDec(@$, $2, $4, $7, $9);} // Pas reussi a regler le soucis
-  | PRIMITIVE ID LPAREN tyfieldvar RPAREN COLON typeid {$$ = tp.td_.make_FunctionDec(@$, $2, $4, $7, nullptr);} // Pas reussi a regler le soucis
-  | FUNCTION ID LPAREN tyfieldvar RPAREN EQ exp {$$ = tp.td_.make_FunctionDec(@$, $2, $4, nullptr, $7);} // Pas reussi a regler le soucis
-  | PRIMITIVE ID LPAREN tyfieldvar RPAREN {$$ = tp.td_.make_FunctionDec(@$, $2, $4, nullptr, nullptr);} // Pas reussi a regler le soucis
+  FUNCTION ID LPAREN functionparamChunk RPAREN COLON typeid EQ exp {$$ = tp.td_.make_FunctionDec(@$, $2, $4, $7, $9);} 
+  | PRIMITIVE ID LPAREN functionparamChunk RPAREN COLON typeid {$$ = tp.td_.make_FunctionDec(@$, $2, $4, $7, nullptr);} 
+  | FUNCTION ID LPAREN functionparamChunk RPAREN EQ exp {$$ = tp.td_.make_FunctionDec(@$, $2, $4, nullptr, $7);} 
+  | PRIMITIVE ID LPAREN functionparamChunk RPAREN {$$ = tp.td_.make_FunctionDec(@$, $2, $4, nullptr, nullptr);} 
   ;
 
 
@@ -432,8 +437,8 @@ methodchunk:
   
 ;
 methoddec:
-  METHOD ID LPAREN tyfieldvar RPAREN EQ exp {tp.td_.make_MethodDec(@$, $2, $4, nullptr, $7);} // Pas reussi a regler le soucis
-  |   METHOD ID LPAREN tyfieldvar RPAREN COLON typeid EQ exp {tp.td_.make_MethodDec(@$, $2, $4, $7, $9);} // Pas reussi a regler le soucis
+  METHOD ID LPAREN functionparamChunk RPAREN EQ exp {$$ = tp.td_.make_MethodDec(@$, $2, $4, nullptr, $7);}
+  |   METHOD ID LPAREN functionparamChunk RPAREN COLON typeid EQ exp {$$ = tp.td_.make_MethodDec(@$, $2, $4, $7, $9);}
 ;
 
 tyfields:
@@ -446,15 +451,14 @@ tyfields.1:
 | tyfield                { $$ = tp.td_.make_fields_type($1); }
 ;
 
-tyfieldvar:
-  %empty               { $$ = tp.td_.make_VarChunk(@$); }
-| tyfieldvar.1           { $$ = $1; }
-;
+functionparamChunk:
+  %empty {$$ = tp.td_.make_VarChunk(@$);}
+  | functionparamChunk "," functionparam {$$ = $1; $$->emplace_back(*$3);}
+  | functionparam {$$ = tp.td_.make_VarChunk(@$); $$->emplace_back(*$1);}
 
-tyfieldvar.1:
-  tyfieldvar.1 "," vardec { $$ = $1; $$->emplace_back(*$3); }
-| vardec               { $$ = tp.td_.make_VarChunk(@$); }
-;
+functionparam:
+  ID COLON typeid {$$ = tp.td_.make_VarDec(@$, $1, $3, nullptr);}
+  ;
 
 tyfield:
   ID ":" typeid     { $$ = tp.td_.make_Field(@$, $1, $3); }
