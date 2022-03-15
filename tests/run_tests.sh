@@ -19,6 +19,14 @@ nberr=0
 
 touch filerr
 
+if test -f pretty_log.txt
+then 
+    rm pretty_log.txt
+    touch pretty_log.txt
+else
+    touch pretty_log.txt
+fi
+
 #Browse all directories in tests directory
 for d in $DIR
 do
@@ -30,7 +38,7 @@ do
     dir="${d#*/}"
 
     #Print directory name
-    echo -e "$BLUE============================================================$END"
+    echo -e "$BLUE============================================================================$END"
     echo -n "             $dir |" | tr '[:lower:]' '[:upper:]'
 
     case "$dir" in
@@ -49,7 +57,7 @@ do
     esac
 
     echo " Error code: $code_err"
-    echo -e "$BLUE============================================================$END"
+    echo -e "$BLUE----------------------------------------------------------------------------$END"
 
     unique_nbtest=0
     unique_nberr=0
@@ -70,45 +78,82 @@ do
             "type")
                 code_err=5
                 ;;
+            "good")
+            code_err=0
+                ;;
         esac
 
-        ./../src/tc -X --parse $f >> filerr 2>&1
+        code_prett=1
+        fileee="${f##*/}"
+        fileee=$(echo "$fileee" | cut -f 1 -d '.')
 
+        pretty_file=$fileee"_pretty.txt"
+        retour_pretty=$fileee"_retour.txt"
+
+        touch $pretty_file
+        touch $retour_pretty
+
+        if [ $code_err -eq 0 ]
+        then
+
+            ./../src/tc -XA $f >> $pretty_file 2>&1
+
+            ./../src/tc -XA $pretty_file >> $retour_pretty 2>&1
+
+            cmp -s $pretty_file $retour_pretty && code_prett=0 || code_prett=1
+        else
+            ./../src/tc -X --parse $f >> filerr 2>&1
+        fi
 
         if [ $? -eq $code_err ]
         then
-            echo -e -n "$GREEN█$END "
+            if [ $code_err -eq 0 ]
+            then
+                if [ $code_prett -eq 0 ]
+                then
+                    echo -e "$BLUE|$END$GREEN PASS $END" $f
+                else
+                    echo -e "$BLUE|$END$RED FAIL $END" $f
+                    unique_nberr=$(($unique_nberr + 1))
+
+                    # You can change the output format: -u, -y, -C 1
+                    diff -u $pretty_file $retour_pretty >> pretty_log.txt              
+                    echo "" >> pretty_log.txt
+                fi
+            else
+                echo -e "$BLUE|$END$GREEN PASS $END" $f
+            fi
             unique_nbtest=$(($unique_nbtest + 1))
         else
-            echo -e -n "$RED█$END "
+            echo -e "$BLUE|$END$RED FAIL $END" $f
             unique_nberr=$(($unique_nberr + 1))
             unique_nbtest=$(($unique_nbtest + 1))
         fi
-        cat $f | grep error >> testerror
+        rm $pretty_file
+        rm $retour_pretty
     done
     array+=("$unique_nberr")
 
     nbgood=$(($unique_nbtest - $unique_nberr))
     percen=$((($nbgood * 100) / $unique_nbtest))
-    echo -n "|  $dir: $nbgood / $unique_nbtest | $percen%"    
-    if [ $unique_nberr -eq 0 ]	
-    then
-        echo -e " -> $GREEN╰(★‿★)╯ $END"
-    else
-        echo -e " -> $RED（♯▼皿▼） $END"
-        echo
-    fi
-    cat testerror
+    echo -ne "$BLUE##$END $dir: $nbgood / $unique_nbtest | $percen%"    
 
-    echo -n "" > testerror
+    echo
+    if [ $code_err -eq 0 ]
+        then          
+            echo
+            echo "Show tests/pretty_log.txt for more information about Pretty Print."
+            echo "You can change the output format line 120 in run_tests.sh."
+    fi
+    
     echo
     nbtest=$(($nbtest + $unique_nbtest))
     nberr=$(($nberr + $unique_nberr))
 done
 
-echo -e "$BLUE============================================================$END"
+echo -e "$BLUE============================================================================$END"
 echo -e "$BLUE|                     TIGER TESTSUIT                       |$END"
-echo -e "$BLUE============================================================$END"
+echo -e "$BLUE============================================================================$END"
 
 echo
 
