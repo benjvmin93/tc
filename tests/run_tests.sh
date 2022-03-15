@@ -106,12 +106,6 @@ do
             ./../src/tc -X --parse $f >> filerr 2>&1
         fi
 
-        if [ $(($unique_nbtest % 38)) -eq 0 ]
-        then
-            echo
-            echo
-        fi
-
         if [ $? -eq $code_err ]
         then
             if [ $code_err -eq 0 ]
@@ -133,12 +127,18 @@ do
                 echo -e -n "$GREEN█$END "
                 #echo -e "$BLUE|$END$GREEN PASS $END" $f
             fi
-            unique_nbtest=$(($unique_nbtest + 1))
         else
             echo -e -n "$RED█$END "
-            echo -e "$BLUE|$END$RED FAIL $END" $f >> printerr
+            echo -e "$BLUE|$END$RED FAIL $END" $fileee >> printerr
             unique_nberr=$(($unique_nberr + 1))
-            unique_nbtest=$(($unique_nbtest + 1))
+            
+        fi
+
+        unique_nbtest=$(($unique_nbtest + 1))
+        if [ $(($unique_nbtest % 38)) -eq 0 ]
+        then
+            echo
+            echo
         fi
         rm $pretty_file
         rm $retour_pretty
@@ -147,11 +147,14 @@ do
 
     nbgood=$(($unique_nbtest - $unique_nberr))
     percen=$((($nbgood * 100) / $unique_nbtest))
-    echo -ne "$BLUE##$END $dir: $nbgood / $unique_nbtest | $percen%"    
-
+    
     echo
     cat printerr
     echo "" > printerr
+
+    echo
+    echo -ne "$BLUE##$END $dir: $nbgood / $unique_nbtest | $percen%"    
+    echo
 
     if [ $unique_nberr -ne 0 ]
     then
