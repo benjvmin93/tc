@@ -55,12 +55,13 @@ YY_FLEX_NAMESPACE_BEGIN
 
 /* Abbreviations.  */
 int             [0-9]+
-digit           [0-9]
-xnum            \x[0-9a-fA-F]{2}
+num             \\[0-7]{3} 
+xnum            \\x[0-9a-fA-F]{2}
 character       [a-zA-Z]
 white           [ \t]
 eol             "\n\r"|"\r\n"|"\r"|"\n"
 identifier      [a-zA-Z]{1}[a-zA-Z0-9_]*|"_main"
+escape          "\\a"|"\\b"|"\\t"|"\\n"|"\\v"|"\\f"|"\\r"
 %%
 %{
   // FIXME: Some code was deleted here (Local variables).
@@ -303,17 +304,25 @@ int comments = 0;
     BEGIN INITIAL;
     return TOKEN_VAL(STRING, grown_string);
   }
-  \\[abfnrtv] { grown_string.append(yytext); }
+  "\\" { grown_string.append(yytext); }
+  {num} {
+      int value = strtol(yytext + 3, 0, 8);
+      if (value < 0 || value > 377)
+            CHECK_EXTENSION();
+      grown_string.append(yytext + 3);
+  }
   {xnum} { grown_string.append(1, strtol(yytext + 2, 0, 16)); }
   {int} { grown_string.append(1, strtol(yytext + 3, 0, 10)); }
-  "\\" { grown_string.append(yytext); }
+  "\\\\" { grown_string.append(yytext); }
   "\\\"" { grown_string.append(yytext); }
-  <<EOF>> { tp.error_ << misc::error::error_type::scan
-                    << tp.location_ << ": Unexpected end of file. Expecting closing string"
-                    << "\n";
-            BEGIN INITIAL;
+  <<EOF>> { 
+      tp.error_ << misc::error::error_type::scan
+                << tp.location_ << ": Unexpected end of file. Expecting closing string"
+                << "\n";
+        BEGIN INITIAL;
   }
-    . { grown_string.append(yytext); }
+  {escape} { grown_string.append(yytext); }
+   . { grown_string.append(yytext); }
 }
 
   /* Comment state. */
@@ -329,6 +338,8 @@ int comments = 0;
       BEGIN INITIAL;
     }
   }
+  \\[abfnrtv] { }
+  {eol} { }
   . { }
   <<EOF>> {
       tp.error_ << misc::error::error_type::scan
