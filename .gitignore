@@ -1,9 +1,3 @@
-build-aux/ltmain.sh
-build-aux/m4/libtool.m4
-build-aux/m4/ltoptions.m4
-build-aux/m4/ltsugar.m4
-build-aux/m4/ltversion.m4
-build-aux/m4/lt~obsolete.m4
 Makefile.in
 aclocal.m4
 autom4te.cache/
@@ -108,8 +102,8 @@ src/parse/location.hh.bak
 src/parse/position.hh.bak
 *.lo
 *.o
-build-aux/ar-lib
-build-aux/compile
-build-aux/test-driver
-config.h.in~
-configure~
+config*
+build-aux/*
+src/ast/test-ast
+src/ast/test-ast.log
+src/ast/test-ast.trs
