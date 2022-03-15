@@ -11,5 +11,6 @@ in
         (for i := 0 to len do
             (if int_array[i] > int_array[max] then
                 max := i); max)
-end/* error : syntax error, unexpected = */
+end
+/* error : syntax error, unexpected = */
 

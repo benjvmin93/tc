@@ -50,6 +50,13 @@ namespace misc
     return o << std::setw(indent(o)) << "" << std::setfill(fill);
   }
 
+  std::ostream& resetline(std::ostream& o)
+  {
+    o << '\r';
+    char fill = o.fill(' ');
+    return o << std::setw(indent(o)) << "" << std::setfill(fill);
+  }
+
   std::ostream& incendl(std::ostream& o) { return o << incindent << iendl; }
 
   std::ostream& decendl(std::ostream& o) { return o << decindent << iendl; }

@@ -13,5 +13,6 @@ in
             (for j := to i do
                 (c := a + b; a := b; b := c);
                 c)
-end/* error : syntax error, unexpected to */
+end
+/* error : syntax error, unexpected to */
 
