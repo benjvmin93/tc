@@ -1,3 +1,16 @@
+2022-03-03  Etienne Renault  <renault@lrde.epita.fr>
+
+	Version 1.91.b for 2024-tc-2.0
+
+	* NEWS.txt, configure.ac: Here.
+
+2022-02-18  Etienne Renault  <renault@lrde.epita.fr>
+
+	Version 1.91.a for 2024-tc-1.0
+
+	* NEWS.txt, configure.ac, .last-cl-gen,
+	ChangeLog, Makefile.am: Here.
+
 2022-02-17  Serval Martinot-Lagarde  <serval.martinot-lagarde@epita.fr>
 
 	dumper-dot: create the dev python generator and --dot-style
