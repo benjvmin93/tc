@@ -108,3 +108,8 @@ src/parse/location.hh.bak
 src/parse/position.hh.bak
 *.lo
 *.o
+build-aux/ar-lib
+build-aux/compile
+build-aux/test-driver
+config.h.in~
+configure~
