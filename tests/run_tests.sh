@@ -117,7 +117,7 @@ do
                     unique_nberr=$(($unique_nberr + 1))
 
                     # You can change the output format: -u, -y, -C 1
-                    diff -u $pretty_file $retour_pretty >> pretty_log.txt              
+                    diff -u $retour_pretty $pretty_file >> pretty_log.txt              
                     echo "" >> pretty_log.txt
                 fi
             else
@@ -142,7 +142,7 @@ do
     if [ $code_err -eq 0 ]
         then          
             echo
-            echo "Show tests/pretty_log.txt for more information about Pretty Print."
+            echo "See tests/pretty_log.txt for more information about Pretty Print."
             echo "You can change the output format line 120 in run_tests.sh."
     fi
     
