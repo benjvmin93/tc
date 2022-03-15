@@ -477,5 +477,5 @@ typeid:
 void
 parse::parser::error(const location_type& l, const std::string& m)
 {
-    std::cerr << l << ": " << m << '\n';
+  tp.error_ << misc::error::error_type::parse << l << ": " << m << '\n';
 }
