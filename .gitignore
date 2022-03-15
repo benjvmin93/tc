@@ -107,3 +107,4 @@ src/ast/.dirstamp
 src/parse/location.hh.bak
 src/parse/position.hh.bak
 *.lo
+*.o
