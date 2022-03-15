@@ -111,9 +111,9 @@ do
             then
                 if [ $code_prett -eq 0 ]
                 then
-                    echo -e "$BLUE|$END$GREEN PASS $END" $fileee
+                    echo -e "$BLUE|$END$GREEN PASS $END" $f
                 else
-                    echo -e "$BLUE|$END$RED FAIL $END" $fileee
+                    echo -e "$BLUE|$END$RED FAIL $END" $f
                     unique_nberr=$(($unique_nberr + 1))
 
                     # You can change the output format: -u, -y, -C 1
@@ -121,11 +121,11 @@ do
                     echo "" >> pretty_log.txt
                 fi
             else
-                echo -e "$BLUE|$END$GREEN PASS $END" $fileee
+                echo -e "$BLUE|$END$GREEN PASS $END" $f
             fi
             unique_nbtest=$(($unique_nbtest + 1))
         else
-            echo -e "$BLUE|$END$RED FAIL $END" $fileee
+            echo -e "$BLUE|$END$RED FAIL $END" $f
             unique_nberr=$(($unique_nberr + 1))
             unique_nbtest=$(($unique_nbtest + 1))
         fi
