@@ -18,6 +18,7 @@ nbtest=0
 nberr=0
 
 touch filerr
+touch printerr
 
 if test -f pretty_log.txt
 then 
@@ -105,15 +106,23 @@ do
             ./../src/tc -X --parse $f >> filerr 2>&1
         fi
 
+        if [ $(($unique_nbtest % 38)) -eq 0 ]
+        then
+            echo
+            echo
+        fi
+
         if [ $? -eq $code_err ]
         then
             if [ $code_err -eq 0 ]
             then
                 if [ $code_prett -eq 0 ]
                 then
-                    echo -e "$BLUE|$END$GREEN PASS $END" $f
+                    #echo -e "$BLUE|$END$GREEN PASS $END" $f
+                    echo -e -n "$GREEN█$END "
                 else
-                    echo -e "$BLUE|$END$RED FAIL $END" $f
+                    echo -e -n "$RED█$END "
+                    echo -e "$BLUE|$END$RED FAIL $END" $f >> printerr
                     unique_nberr=$(($unique_nberr + 1))
 
                     # You can change the output format: -u, -y, -C 1
@@ -121,11 +130,13 @@ do
                     echo "" >> pretty_log.txt
                 fi
             else
-                echo -e "$BLUE|$END$GREEN PASS $END" $f
+                echo -e -n "$GREEN█$END "
+                #echo -e "$BLUE|$END$GREEN PASS $END" $f
             fi
             unique_nbtest=$(($unique_nbtest + 1))
         else
-            echo -e "$BLUE|$END$RED FAIL $END" $f
+            echo -e -n "$RED█$END "
+            echo -e "$BLUE|$END$RED FAIL $END" $f >> printerr
             unique_nberr=$(($unique_nberr + 1))
             unique_nbtest=$(($unique_nbtest + 1))
         fi
@@ -139,14 +150,20 @@ do
     echo -ne "$BLUE##$END $dir: $nbgood / $unique_nbtest | $percen%"    
 
     echo
+    cat printerr
+    echo "" > printerr
+
+    if [ $unique_nberr -ne 0 ]
+    then
+        echo
+    fi
+
     if [ $code_err -eq 0 ]
         then          
-            echo
             echo "See tests/pretty_log.txt for more information about Pretty Print."
             echo "You can change the output format line 120 in run_tests.sh."
     fi
     
-    echo
     nbtest=$(($nbtest + $unique_nbtest))
     nberr=$(($nberr + $unique_nberr))
 done
@@ -181,6 +198,7 @@ echo "$percen%"
 echo
 rm testerror
 rm filerr
+rm printerr
 
 if [ $percen -gt 30 ]
 then
