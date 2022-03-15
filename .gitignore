@@ -102,7 +102,6 @@ src/parse/location.hh.bak
 src/parse/position.hh.bak
 *.lo
 *.o
-config*
 build-aux/*
 src/ast/test-ast
 src/ast/test-ast.log
