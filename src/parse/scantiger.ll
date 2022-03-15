@@ -329,6 +329,8 @@ int comments = 0;
       BEGIN INITIAL;
     }
   }
+  \\[abfnrtv] { }
+  {eol} { }
   . { }
   <<EOF>> {
       tp.error_ << misc::error::error_type::scan
