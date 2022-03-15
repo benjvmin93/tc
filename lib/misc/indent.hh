@@ -27,4 +27,5 @@ namespace misc
   /// Decrement the indentation, print an end of line, and set the indentation.
   std::ostream& decendl(std::ostream& o);
 
+  std::ostream& resetline(std::ostream& o);
 } // namespace misc

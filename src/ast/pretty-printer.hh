@@ -46,6 +46,7 @@ namespace ast
     void operator()(const SeqExp& e) override;
     void operator()(const StringExp& e) override; //OK
     void operator()(const WhileExp& e) override;  //OK
+    void operator()(const BreakExp& e) override;
 
     // Ty
     void operator()(const ArrayTy& e) override;  //OK

@@ -12,5 +12,6 @@ var lis:intlist := intlist { hd=0, tl= nil }
 var truc = autretruc = autreautretruc
 in
 	lis
-end/* error : syntax error, unexpected =, expected := */
+end
+/* error : syntax error, unexpected =, expected := */
 
