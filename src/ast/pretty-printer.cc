@@ -77,7 +77,7 @@ namespace ast
 
   void PrettyPrinter::operator()(const ForExp& e)
   {
-    ostr_ << "(for " << e.vardec_get() << ":= " << *(e.vardec_get().init_get())
+    ostr_ << "(for " << e.vardec_get().type_name_get() << ":= " << *(e.vardec_get().init_get())
           << " to " << e.hi_get() << " do" << misc::incendl;
     ostr_ << e.body_get() << ")" << misc::decindent;
   }
