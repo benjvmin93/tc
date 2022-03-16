@@ -29,6 +29,13 @@ namespace ast
     /// Accept a non-const visitor \a v.
     void accept(Visitor& v) override;
     /// \}
+
+    const Exp* def_get() const;
+    Exp* def_get();
+    void def_set(Exp*);
+
+    protected:
+      Exp* def_ = nullptr;
   };
 } // namespace ast
 #include <ast/break-exp.hxx>
