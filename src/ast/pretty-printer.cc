@@ -273,6 +273,10 @@ namespace ast
     //main++;
     if (e.exps_get().size() == 0)
       ostr_ << "()";
+    else if (e.exps_get().size() == 1)
+    {
+      ostr_ << misc::separate(e.exps_get(), std::make_pair(";", misc::iendl));
+    }
     else
       {
         ostr_ << "(" << misc::incendl;

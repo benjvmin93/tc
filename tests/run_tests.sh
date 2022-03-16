@@ -3,6 +3,7 @@
 GREEN='\e[32m'
 RED='\e[31m'
 BLUE='\e[36m'
+YELLOW='\e[33m'
 END='\e[0m'
 BOLD=$(tput smso)
 NOB=$(tput rmso)
@@ -16,6 +17,8 @@ array=()
 touch testerror
 nbtest=0
 nberr=0
+
+prett=0
 
 touch filerr
 touch printerr
@@ -101,6 +104,8 @@ do
 
             ./../src/tc -XA $pretty_file >> $retour_pretty 2>&1
 
+            cmp -s $pretty_file $retour_pretty && code_prett=0 || code_prett=1
+
             ./../src/tc -X $retour_pretty >> filerr 2>&1
 
         else
@@ -109,8 +114,19 @@ do
 
         if [ $? -eq $code_err ]
         then
-            echo -e -n "$GREEN█$END "
-                
+            if [ $code_err -eq 0 ]
+            then
+                if [ $code_prett -eq 0 ]
+                then 
+                    echo -e -n "$GREEN█$END "
+                else
+                    echo -e -n "$YELLOW█$END "
+                    echo -e "$BLUE|$END$YELLOW PRETTY $END" $fileee >> printerr
+                    prett=$(($prett + 1))
+                fi
+            else
+                echo -e -n "$GREEN█$END "
+            fi                
         else
             echo -e -n "$RED█$END "
             echo -e "$BLUE|$END$RED FAIL $END" $fileee >> printerr
@@ -133,7 +149,7 @@ do
     percen=$((($nbgood * 100) / $unique_nbtest))
     
     echo
-    if [ $unique_nberr -ne 0 ]
+    if [ $unique_nberr -ne 0 -o $prett -ne 0 ]
     then
         cat printerr
         echo "" > printerr
@@ -161,10 +177,22 @@ echo -e "$BLUE==================================================================
 
 echo
 
+echo -e "-$GREEN""PASS ""█$END"
+echo -e "-$RED""FAIL ""█$END"
+echo -e "-$YELLOW""PRETTY PRINT ""█$END"
+echo 
+
 nbgood=$(($nbtest - $nberr))
 
 echo "# TOTAL: $nbtest"
-echo -e "#$GREEN PASS:  $nbgood$END"
+echo -en "#$GREEN PASS:  $nbgood$END"
+
+if [ $prett -eq 0 ]
+then
+    echo
+else
+    echo -e "$YELLOW PRETTY:  $prett$END"
+fi
 echo -e "#$RED FAIL:  $nberr$END"
 
 echo
