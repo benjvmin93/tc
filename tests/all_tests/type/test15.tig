@@ -1,3 +1,7 @@
-/* error : if-then returns non unit */
+/* error : procedure returns value */
+let
+        function g (a : int) = a
+in
+        g (2)
+end
 
-if 20 then 3

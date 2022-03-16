@@ -1,3 +1,6 @@
-/* error : comparison of incompatible types */
-
-3 > "df"
+/* error : type constraint and init value differ */
+let
+        var a : int := " "
+in
+        a
+end
