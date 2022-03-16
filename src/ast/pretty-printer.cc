@@ -87,7 +87,7 @@ namespace ast
 
   void PrettyPrinter::operator()(const ForExp& e)
   {
-    ostr_ << "for " << *(e.vardec_get().type_name_get())
+    ostr_ << "for " << e.vardec_get().name_get()
           << " := " << *(e.vardec_get().init_get()) << " to " << e.hi_get()
           << " do" << misc::incendl;
     ostr_ << e.body_get() << misc::decindent;
@@ -199,10 +199,10 @@ namespace ast
     ostr_ << "{" << misc::incendl;
     for (auto& ch : e.chunks_get())
       {
-        ostr_ << ch << misc::iendl;
+        ostr_ << *ch << misc::iendl;
       }
 
-    ostr_ << misc::decindent << "}" << misc::iendl;
+    ostr_ << misc::decendl << "}";
   }
 
   void PrettyPrinter::operator()(const NameTy& e) { ostr_ << e.name_get(); }
@@ -241,7 +241,7 @@ namespace ast
 
   void PrettyPrinter::operator()(const ObjectExp& e)
   {
-    ostr_ << e.type_name_get();
+    ostr_ << "new " << e.type_name_get();
   }
 
   void PrettyPrinter::operator()(const OpExp& e)
@@ -274,9 +274,9 @@ namespace ast
     if (e.exps_get().size() == 0)
       ostr_ << "()";
     else if (e.exps_get().size() == 1)
-    {
-      ostr_ << misc::separate(e.exps_get(), std::make_pair(";", misc::iendl));
-    }
+      {
+        ostr_ << misc::separate(e.exps_get(), std::make_pair(";", misc::iendl));
+      }
     else
       {
         ostr_ << "(" << misc::incendl;
@@ -291,11 +291,21 @@ namespace ast
 
   void PrettyPrinter::operator()(const MethodDec& e)
   {
-    ostr_ << "method " << e.name_get() << e.formals_get();
+    ostr_ << "method " << e.name_get() << "(";
+    bool first = false;
+    for (auto& x : e.formals_get())
+      if (!first)
+        {
+          ostr_ << x->name_get() << " : " << x->type_name_get()->name_get();
+          first = true;
+        }
+      else
+        ostr_ << ", " << x->name_get() << " : "
+              << x->type_name_get()->name_get();
+    ostr_ << ")";
     if (e.result_get() != nullptr)
-      ostr_ << ": " << e.result_get() << " ";
-    ostr_ << "=" << misc::incendl;
-    ostr_ << e.body_get() << misc::decendl;
+      ostr_ << ": " << *(e.result_get());
+    ostr_ << " = " << *(e.body_get());
   }
 
   void PrettyPrinter::operator()(const BreakExp& e) { ostr_ << "break"; }

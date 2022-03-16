@@ -312,7 +312,7 @@ exp:
   | exp PLUS exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::add, $3);} 
   | exp MINUS exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::sub, $3);} 
   | exp TIMES exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::mul, $3);} 
-  | exp DIVIDE exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::div, $3);} 
+  | exp DIVIDE exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::div, $3);}
   | exp EQ exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::eq, $3);} 
   | exp NE exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ne, $3);} 
   | exp GT exp {$$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::gt, $3);} 

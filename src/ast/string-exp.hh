@@ -10,21 +10,21 @@
 
 namespace ast
 {
-    /// StringExp.
-    class StringExp : public Exp
-    {
-        public:
-            StringExp(const Location& location, std::string string);
-            StringExp(const StringExp&) = delete;
-            StringExp& operator=(const StringExp&) = delete;
+  /// StringExp.
+  class StringExp : public Exp
+  {
+  public:
+    StringExp(const Location& location, std::string string);
+    StringExp(const StringExp&) = delete;
+    StringExp& operator=(const StringExp&) = delete;
 
-            void accept(ConstVisitor& v) const override;
-            void accept(Visitor& v) override;
+    void accept(ConstVisitor& v) const override;
+    void accept(Visitor& v) override;
 
-            std::string string_get() const;
+    std::string string_get() const;
 
-        protected:
-            std::string string_;
-    };
+  protected:
+    std::string string_;
+  };
 } // namespace ast
 #include <ast/string-exp.hxx>
