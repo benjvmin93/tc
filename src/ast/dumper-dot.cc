@@ -19,9 +19,11 @@ namespace ast
   void DumperDot::operator()(const ArrayExp& e)
   {
     unsigned long old_parent_id = node_html_header(e, "ArrayExp");
-    // FIXME: Some code was deleted here (node_html_ports with properties).
+    node_html_ports({"type_name", "size", "init"});
     footer_and_link(old_parent_id);
-    // FIXME: Some code was deleted here (dump).
+    dump("type_name", e.type_name_get());
+    dump("size", e.size_get());
+    dump("init", e.init_get());
     parent_id = old_parent_id;
   }
 
@@ -37,9 +39,10 @@ namespace ast
   void DumperDot::operator()(const AssignExp& e)
   {
     unsigned long old_parent_id = node_html_header(e, "AssignExp");
-    // FIXME: Some code was deleted here (node_html_ports with properties).
+    node_html_ports({"var", "exp"});
     footer_and_link(old_parent_id);
-    // FIXME: Some code was deleted here (dump).
+    dump("var", e.var_get());
+    dump("exp", e.exp_get());
     parent_id = old_parent_id;
   }
 
@@ -55,13 +58,18 @@ namespace ast
   void DumperDot::operator()(const CallExp& e)
   {
     unsigned long old_parent_id = node_html_header(e, "CallExp");
-    // FIXME: Some code was deleted here (node_html_field).
+    node_html_field("name", e.name_get());
     node_html_ports();
     // FIXME: Some code was deleted here (node_html_port_list for each list).
+    //node_html_port_list("args", e.args_get());
+    node_html_port_list("args", e.args_get());
+
     node_html_one_port("def");
     footer_and_link(old_parent_id);
     dump_def(e);
+
     // FIXME: Some code was deleted here (dump_list).
+    dump_list("args", e.args_get());
     parent_id = old_parent_id;
   }
 
@@ -109,9 +117,12 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "FieldVar");
     // FIXME: Some code was deleted here (node_html_field).
+    node_html_field("name", e.name_get());
     // FIXME: Some code was deleted here (node_html_ports with properties).
+    node_html_ports({"var"});
     footer_and_link(old_parent_id);
     // FIXME: Some code was deleted here (dump).
+    dump("var", e.var_get());
     parent_id = old_parent_id;
   }
 
@@ -142,8 +153,12 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "IfExp");
     // FIXME: Some code was deleted here (node_html_ports with properties).
+    node_html_ports({"test", "thenclause", "elseclause"});
     footer_and_link(old_parent_id);
     // FIXME: Some code was deleted here (dump).
+    dump("test", e.get_test());
+    dump("thenclause", e.get_thenclause());
+    dump("elseclause", e.get_elseclause());
     parent_id = old_parent_id;
   }
 
@@ -159,8 +174,11 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "LetExp");
     // FIXME: Some code was deleted here (node_html_ports with properties).
+    node_html_ports({"chunklist", "exp"});
     footer_and_link(old_parent_id);
     // FIXME: Some code was deleted here (dump).
+    dump("chunklist", e.chunklist_get());
+    dump("exp", e.exp_get());
     parent_id = old_parent_id;
   }
 
@@ -168,12 +186,19 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "MethodCallExp");
     // FIXME: Some code was deleted here (node_html_field).
+    node_html_field("name", e.name_get());
     // FIXME: Some code was deleted here (node_html_ports with properties).
+    node_html_ports({"object"});
+  
     // FIXME: Some code was deleted here (node_html_port_list for each list).
+    node_html_port_list("args", e.args_get());
+    
     node_html_one_port("def");
     footer_and_link(old_parent_id);
     dump_def(e);
     // FIXME: Some code was deleted here (dump and dump_list).
+    dump("object", e.get_object());
+    dump_list("args", e.args_get());
     parent_id = old_parent_id;
   }
 
@@ -210,8 +235,10 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "ObjectExp");
     // FIXME: Some code was deleted here (node_html_ports with properties).
+    node_html_ports({"type_name"});
     footer_and_link(old_parent_id);
     // FIXME: Some code was deleted here (dump).
+    dump("type_name", e.type_name_get());
     parent_id = old_parent_id;
   }
 
@@ -230,9 +257,14 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "RecordExp");
     // FIXME: Some code was deleted here (node_html_ports with properties).
+    node_html_ports({"type_name"});
     // FIXME: Some code was deleted here (node_html_port_list for each list).
+    node_html_port_list("fields", e.get_fields());
+
     footer_and_link(old_parent_id);
     // FIXME: Some code was deleted here (dump and dump_list).
+    dump("type_name", e.get_type_name());
+    dump_list("fields", e.get_fields());
     parent_id = old_parent_id;
   }
 
@@ -241,8 +273,11 @@ namespace ast
     unsigned long old_parent_id = node_html_header(e, "RecordTy");
     node_html_ports();
     // FIXME: Some code was deleted here (node_html_port_list for each list).
+    node_html_port_list("field", e.field_get());
+
     footer_and_link(old_parent_id);
     // FIXME: Some code was deleted here (dump_list).
+    dump_list("field", e.field_get());
     parent_id = old_parent_id;
   }
 
@@ -251,8 +286,10 @@ namespace ast
     unsigned long old_parent_id = node_html_header(e, "SeqExp");
     node_html_ports();
     // FIXME: Some code was deleted here (node_html_port_list for each list).
+    node_html_port_list("exps", e.exps_get());
     footer_and_link(old_parent_id);
     // FIXME: Some code was deleted here (dump_list).
+    dump_list("exps", e.exps_get());
     parent_id = old_parent_id;
   }
 
@@ -270,6 +307,7 @@ namespace ast
   {
     unsigned long old_parent_id = node_html_header(e, "StringExp");
     // FIXME: Some code was deleted here (node_html_field, use misc::escape).
+    node_html_field("string", e.string_get());
     footer_and_link(old_parent_id);
     parent_id = old_parent_id;
   }
