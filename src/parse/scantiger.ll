@@ -55,14 +55,14 @@ YY_FLEX_NAMESPACE_BEGIN
 
 /* Abbreviations.  */
 int             [0-9]+
-num             \\[0-7]{3} 
+num             \\[0-3][0-7][0-7]
 xnum            \\x[0-9a-fA-F]{2}
 character       [a-zA-Z]
 white           [ \t]
 eol             "\n\r"|"\r\n"|"\r"|"\n"
 identifier      [a-zA-Z]{1}[a-zA-Z0-9_]*|"_main"
 escape          "\\a"|"\\b"|"\\t"|"\\n"|"\\v"|"\\f"|"\\r"
-escape-error    \\{character}
+escape-error    \\.
 %%
 %{
   // FIXME: Some code was deleted here (Local variables).
@@ -79,7 +79,11 @@ int comments = 0;
                 int val = 0;
                 val = strtol(yytext, 0, 10);
                 if (val > INT_MAX)
-                    CHECK_EXTENSION();
+                {
+                    tp.error_ << misc::error::error_type::scan
+                            << tp.location_ << ": Too high int value " << val <<
+                            << "\n";
+                }
                 return TOKEN_VAL(INT, val);
               }
 
@@ -305,15 +309,12 @@ int comments = 0;
     BEGIN INITIAL;
     return TOKEN_VAL(STRING, grown_string);
   }
-  "\\" { grown_string.append(yytext); }
-  {num} {
-      int value = strtol(yytext + 3, 0, 8);
-      if (value < 0 || value > 377)
-            CHECK_EXTENSION();
-      grown_string.append(yytext + 3);
-  }
+  {character} { grown_string += yytext; }
+  {escape} { grown_string.append(yytext); }
+  {num} { grown_string.append(yytext + 3); }
   {xnum} { grown_string.append(1, strtol(yytext + 2, 0, 16)); }
   {int} { grown_string.append(1, strtol(yytext + 3, 0, 10)); }
+  "\\" { grown_string.append(yytext); }
   "\\\\" { grown_string.append(yytext); }
   "\\\"" { grown_string.append(yytext); }
   <<EOF>> { 
@@ -322,8 +323,7 @@ int comments = 0;
                 << "\n";
         BEGIN INITIAL;
   }
-  {character} { grown_string += yytext; }
-  {escape} { grown_string.append(yytext); }
+
   {escape-error} { tp.error_ << misc::error::error_type::scan 
                                 << tp.location_ << ": Unexpected escape character " << yytext << ".\n"; 
     }
