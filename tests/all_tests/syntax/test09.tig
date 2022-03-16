@@ -1,17 +1,9 @@
+/* error : initializing exp and array type differ */
+
 let
-/* Nested comments
-/* with more text
-/* and symbols
-/* <> * = :=
-/* let function ())
+	type arrayty = array of int
 
-*/
-*/
-*/ abcdefg
-*/
-  var x := 5
+	var a := arrayty [10] of " "
 in
-  x
+	0
 end
-/* error : unexpected end of file in a comment */
-
