@@ -76,12 +76,12 @@ int comments = 0;
  /* The rules.  */
 
 {int}         {
-                int val = 0;
+                long val = 0;
                 val = strtol(yytext, 0, 10);
                 if (val > INT_MAX)
                 {
                     tp.error_ << misc::error::error_type::scan
-                            << tp.location_ << ": Too high int value " << val <<
+                            << tp.location_ << ": Too high int value " << val
                             << "\n";
                 }
                 return TOKEN_VAL(INT, val);
