@@ -62,6 +62,7 @@ white           [ \t]
 eol             "\n\r"|"\r\n"|"\r"|"\n"
 identifier      [a-zA-Z]{1}[a-zA-Z0-9_]*|"_main"
 escape          "\\a"|"\\b"|"\\t"|"\\n"|"\\v"|"\\f"|"\\r"
+escape-error    \\{character}
 %%
 %{
   // FIXME: Some code was deleted here (Local variables).
@@ -321,8 +322,13 @@ int comments = 0;
                 << "\n";
         BEGIN INITIAL;
   }
+  {character} { grown_string += yytext; }
   {escape} { grown_string.append(yytext); }
+  {escape-error} { tp.error_ << misc::error::error_type::scan 
+                                << tp.location_ << ": Unexpected escape character " << yytext << ".\n"; 
+    }
    . { grown_string.append(yytext); }
+   
 }
 
   /* Comment state. */
