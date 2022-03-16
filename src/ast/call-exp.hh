@@ -43,9 +43,14 @@ namespace ast
       exps_type& args_get();
       /** \} */
 
+      const FunctionDec* def_get() const;
+      FunctionDec* def_get();
+      void def_set(FunctionDec*);
+
   protected:
     misc::symbol name_;
     exps_type* args_;
+    FunctionDec* def_ = nullptr;
   };
 } // namespace ast
 #include <ast/call-exp.hxx>
