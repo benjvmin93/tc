@@ -26,6 +26,8 @@ namespace ast
     /// Visit methods.
     /// \{
     //Var
+    void operator()(const FieldInit& e) override;
+    void operator()(const Field& e) override;
     void operator()(const SimpleVar& e) override;    //OK
     void operator()(const FieldVar& e) override;     //OK
     void operator()(const SubscriptVar& e) override; //OK
