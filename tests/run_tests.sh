@@ -101,37 +101,20 @@ do
 
             ./../src/tc -XA $pretty_file >> $retour_pretty 2>&1
 
-            cmp -s $pretty_file $retour_pretty && code_prett=0 || code_prett=1
+            ./../src/tc -X $retour_pretty >> filerr 2>&1
+
         else
             ./../src/tc -X --parse $f >> filerr 2>&1
         fi
 
         if [ $? -eq $code_err ]
         then
-            if [ $code_err -eq 0 ]
-            then
-                if [ $code_prett -eq 0 ]
-                then
-                    #echo -e "$BLUE|$END$GREEN PASS $END" $f
-                    echo -e -n "$GREEN█$END "
-                else
-                    echo -e -n "$RED█$END "
-                    echo -e "$BLUE|$END$RED FAIL $END" $f >> printerr
-                    unique_nberr=$(($unique_nberr + 1))
-
-                    # You can change the output format: -u, -y, -C 1
-                    diff -u $retour_pretty $pretty_file >> pretty_log.txt              
-                    echo "" >> pretty_log.txt
-                fi
-            else
-                echo -e -n "$GREEN█$END "
-                #echo -e "$BLUE|$END$GREEN PASS $END" $f
-            fi
+            echo -e -n "$GREEN█$END "
+                
         else
             echo -e -n "$RED█$END "
             echo -e "$BLUE|$END$RED FAIL $END" $fileee >> printerr
-            unique_nberr=$(($unique_nberr + 1))
-            
+            unique_nberr=$(($unique_nberr + 1))   
         fi
 
         unique_nbtest=$(($unique_nbtest + 1))
@@ -143,30 +126,31 @@ do
         rm $pretty_file
         rm $retour_pretty
     done
+
     array+=("$unique_nberr")
 
     nbgood=$(($unique_nbtest - $unique_nberr))
     percen=$((($nbgood * 100) / $unique_nbtest))
     
     echo
-    cat printerr
-    echo "" > printerr
-
-    echo
-    echo -ne "$BLUE##$END $dir: $nbgood / $unique_nbtest | $percen%"    
-    echo
-
     if [ $unique_nberr -ne 0 ]
     then
+        cat printerr
+        echo "" > printerr
+        echo
+    else
         echo
     fi
 
-    if [ $code_err -eq 0 ]
-        then          
-            echo "See tests/pretty_log.txt for more information about Pretty Print."
-            echo "You can change the output format line 120 in run_tests.sh."
+    echo -ne "$BLUE##$END $dir: $nbgood / $unique_nbtest | $percen%"    
+    if [ $unique_nberr -eq 0 ]
+    then
+        echo -e " -> $GREEN╰(★‿★)╯ $END"
+    else
+        echo -e " -> $RED（♯▼皿▼） $END"
     fi
-    
+    echo
+
     nbtest=$(($nbtest + $unique_nbtest))
     nberr=$(($nberr + $unique_nberr))
 done
