@@ -16,36 +16,36 @@ namespace ast
   {
     /** \name Ctor & dtor.
      ** \{ */
-    public:
-      CallExp(const Location& location, misc::symbol name, exps_type* args);
-      CallExp(const CallExp&) = delete;
-      CallExp& operator=(const CallExp&) = delete;
+  public:
+    CallExp(const Location& location, misc::symbol name, exps_type* args);
+    CallExp(const CallExp&) = delete;
+    CallExp& operator=(const CallExp&) = delete;
 
-      ~CallExp() override;
-      /** \} */
+    ~CallExp() override;
+    /** \} */
 
-      /// \name Visitors entry point.
-      /// \{ */
-      /// Accept a const visitor \a v.
-      void accept(ConstVisitor& v) const override;
-      /// Accept a non-const visitor \a v.
-      void accept(Visitor& v) override;
-      /// \}
+    /// \name Visitors entry point.
+    /// \{ */
+    /// Accept a const visitor \a v.
+    void accept(ConstVisitor& v) const override;
+    /// Accept a non-const visitor \a v.
+    void accept(Visitor& v) override;
+    /// \}
 
-      /** \name Accessors.
+    /** \name Accessors.
        ** \{ */
-      const misc::symbol name_get() const;
+    const misc::symbol name_get() const;
 
-      misc::symbol name_get();
+    misc::symbol name_get();
 
-      const exps_type& args_get() const;
+    const exps_type& args_get() const;
 
-      exps_type& args_get();
-      /** \} */
+    exps_type& args_get();
+    /** \} */
 
-      const FunctionDec* def_get() const;
-      FunctionDec* def_get();
-      void def_set(FunctionDec*);
+    const FunctionDec* def_get() const;
+    FunctionDec* def_get();
+    void def_set(FunctionDec* def);
 
   protected:
     misc::symbol name_;

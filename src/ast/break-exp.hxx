@@ -11,5 +11,6 @@
 
 namespace ast
 {
-  // FIXME: Some code was deleted here.
+  inline Exp* BreakExp::def_get() { return def_; }
+  inline void BreakExp::def_set(Exp* def) { def_ = def; }
 } // namespace ast
