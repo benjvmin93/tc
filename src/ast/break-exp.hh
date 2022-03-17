@@ -32,10 +32,10 @@ namespace ast
 
     const Exp* def_get() const;
     Exp* def_get();
-    void def_set(Exp*);
+    void def_set(Exp* def);
 
-    protected:
-      Exp* def_ = nullptr;
+  protected:
+    Exp* def_ = nullptr;
   };
 } // namespace ast
 #include <ast/break-exp.hxx>
