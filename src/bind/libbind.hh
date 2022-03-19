@@ -3,4 +3,9 @@
  ** \brief Interface of the bind module.
  */
 
-// FIXME: Some code was deleted here.
+#include <ast/fwd.hh>
+
+namespace bind
+{
+    void bind_compute(ast::Ast& tree);
+}

@@ -20,12 +20,13 @@ namespace bind
 
   template <typename T> void undeclared(const std::string& k, const T& e)
   {
-
+    error(e, k);
   }
 
   template <typename T> void redefinition(const T& e1, const T& e2)
   {
-
+    error(e2, "redefinition: " + e2.get_name());
+    error(e1, "first definition: ");
   }
 
 

@@ -21,7 +21,8 @@ namespace bind
 
   void Binder::check_main(const ast::FunctionDec& e)
   {
-    
+    if (scope_fun_.nb_scope != 1 || e.name_get() != misc::symbol("_main"))
+      error(e, "Main error");
   }
 
   /*----------------.
@@ -48,6 +49,7 @@ namespace bind
 
   void Binder::operator()(ast::FunctionDec& e)
   {
+    check_main(e);
     scope_fun_.put(e.name_get(), &e);
     e.formals_get().accept(*this);
     e.result_get()->accept(*this);
@@ -86,6 +88,23 @@ namespace bind
     e.vardec_get().accept(*this);
     e.hi_get().accept(*this);
     e.body_get().accept(*this);
+    scope_end();
+  }
+
+  void Binder::operator()(ast::MethodDec& e)
+  {
+    scope_begin();
+    e.formals_get().accept(*this);
+    e.result_get()->accept(*this);
+    e.body_get()->accept(*this);
+    scope_end();
+  }
+
+  void Binder::operator()(ast::MethodChunk& e)
+  {
+    scope_begin();
+    for (auto it = e.begin(); it != e.end(); ++it)
+      (*it)->accept(*this);
     scope_end();
   }
 
