@@ -63,11 +63,27 @@ namespace bind
 
     /* The visiting methods. */
     void operator()(ast::LetExp& e) override;
-    // FIXME: Some code was deleted here.
+    void operator()(ast::WhileExp& e) override;
+    void operator()(ast::ForExp& e) override;
+
+    void operator()(ast::FunctionChunk& e) override;
+    void operator()(ast::MethodChunk& e) override;
+    void operator()(ast::TypeChunk& e) override;
+    void operator()(ast::VarChunk& e) override;
+
+    void operator()(ast::SimpleVar& e) override;
+    /*void operator()(ast::FieldVar& e) override;
+    void operator()(ast::SubscriptVar& e) override;*/
+
 
     // ---------------- //
     // Visiting /Dec/.  //
     // ---------------- //
+
+    void operator()(ast::FunctionDec& e) override;
+    void operator()(ast::MethodDec& e) override;
+    void operator()(ast::TypeDec& e) override;
+    void operator()(ast::VarDec& e) override;
 
     /// \name Type and Function declarations
     /// \{
@@ -145,7 +161,9 @@ namespace bind
     /// Binding errors handler.
     misc::error error_;
 
-    // FIXME: Some code was deleted here (More members).
+    misc::scoped_map<misc::symbol, ast::FunctionDec*> scope_fun_;
+    misc::scoped_map<misc::symbol, ast::TypeDec*> scope_type_;
+    misc::scoped_map<misc::symbol, ast::VarDec*> scope_var_;
   };
 
 } // namespace bind

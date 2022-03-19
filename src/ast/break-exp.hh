@@ -31,7 +31,6 @@ namespace ast
     /// \}
 
     const Exp* def_get() const;
-    Exp* def_get();
     void def_set(Exp* def);
 
   protected:

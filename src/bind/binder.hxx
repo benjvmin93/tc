@@ -13,7 +13,22 @@ namespace bind
   | Error handling.  |
   `-----------------*/
 
-  // FIXME: Some code was deleted here (Error reporting).
+  inline void Binder::error(const ast::Ast& loc, const std::string& msg)
+  {
+    error_ << misc::error::error_type::bind << loc.location_get() << ": " << msg << '\n';
+  }
+
+  template <typename T> void Binder::undeclared(const std::string& k, const T& e)
+  {
+    error(e, k);
+  }
+
+  template <typename T> void Binder::redefinition(const T& e1, const T& e2)
+  {
+    error(e2, "redefinition: " + e2.get_name());
+    error(e1, "first definition: ");
+  }
+
 
   /*----------------------------.
   | Visiting /ChunkInterface/.  |
@@ -23,7 +38,8 @@ namespace bind
   {
     // Shorthand.
     using chunk_type = ast::Chunk<D>;
-    // FIXME: Some code was deleted here (Two passes: once on headers, then on bodies).
+    for (const auto dec : e)
+      dec->accept(*this);
   }
 
   /* These specializations are in bind/binder.hxx, so that derived

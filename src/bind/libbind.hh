@@ -3,4 +3,10 @@
  ** \brief Interface of the bind module.
  */
 
-// FIXME: Some code was deleted here.
+#include <ast/fwd.hh>
+#include <misc/error.hh>
+
+namespace bind
+{
+    misc::error bind_compute(ast::Ast& tree);
+}
