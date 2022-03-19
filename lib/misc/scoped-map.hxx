@@ -17,14 +17,14 @@ namespace misc
 {
   template <typename Key, typename Data>
   scoped_map<Key, Data>::scoped_map()
-    : nb_scope(0),
-    maps_({})
+    : nb_scope(1),
+    maps_({1})
     {}
 
   template <typename Key, typename Data>
   void scoped_map<Key, Data>::put(const Key& key, const Data& value)
   {
-      maps_[nb_scope - 1].insert({key, value});
+      maps_.back().insert({key, value});
   }
 
   template <typename Key, typename Data>
@@ -38,6 +38,9 @@ namespace misc
         return (*e).at(key);
       }
     }
+
+    if constexpr (std::is_pointer_v<Data>)
+      return nullptr;
 
     throw std::range_error("No value matches the given key.");
   }
@@ -58,7 +61,7 @@ namespace misc
   template <typename Key, typename Data>
   void scoped_map<Key, Data>::scope_begin()
   {
-    maps_.push_back({});
+    maps_.emplace_back();
     nb_scope++;
   }
 
