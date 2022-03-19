@@ -360,6 +360,6 @@ namespace ast
   {
     ostr_ << "break";
     if (bindings_display(ostr_))
-      ostr_ << " /* " << e.def_get() << " */";
+      ostr_ << " /* "; //<< e.def_get() << " */"; // FIXME
   }
 } // namespace ast
