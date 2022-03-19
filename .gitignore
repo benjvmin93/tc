@@ -106,3 +106,5 @@ build-aux/*
 src/ast/test-ast
 src/ast/test-ast.log
 src/ast/test-ast.trs
+src/bind/.*
+src/escapes/.*
