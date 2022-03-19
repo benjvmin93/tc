@@ -156,7 +156,9 @@ namespace bind
     /// Binding errors handler.
     misc::error error_;
 
-    template <typename Key, typename Data> misc::scoped_map<Key, Data> scope_();
+    misc::scoped_map<misc::symbol, ast::FunctionDec*> scope_fun_;
+    misc::scoped_map<misc::symbol, ast::TypeDec*> scope_type_;
+    misc::scoped_map<misc::symbol, ast::VarDec*> scope_var_;
   };
 
 } // namespace bind

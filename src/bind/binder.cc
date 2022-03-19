@@ -21,36 +21,46 @@ namespace bind
 
   void Binder::check_main(const ast::FunctionDec& e)
   {
-    // FIXME: Some code was deleted here.
+    
   }
 
   /*----------------.
   | Symbol tables.  |
   `----------------*/
 
-  void Binder::scope_begin() { scope_.scope_begin(); }
+  void Binder::scope_begin()
+  { 
+    scope_fun_.scope_begin();
+    scope_type_.scope_begin();
+    scope_var_.scope_begin();
+  }
 
-  void Binder::scope_end() { scope_.scope_end(); }
+  void Binder::scope_end()
+  {
+    scope_fun_.scope_end();
+    scope_type_.scope_end();
+    scope_var_.scope_end();
+  }
 
   /*---------.
   | Visits.  |
   `---------*/
 
-  void operator()(ast::FunctionDec& e)
+  void Binder::operator()(ast::FunctionDec& e)
   {
-    scope_.put(e.name_get(), &e);
+    scope_fun_.put(e.name_get(), &e);
     e.formals_get().accept(*this);
     e.result_get()->accept(*this);
     e.body_get()->accept(*this);
   }
-  void operator()(ast::TypeDec& e)
+  void Binder::operator()(ast::TypeDec& e)
   {
-    scope_.put(e.name_get(), &e);
+    scope_type_.put(e.name_get(), &e);
     e.ty_get().accept(*this);
   }
-  void operator()(ast::VarDec& e)
+  void Binder::operator()(ast::VarDec& e)
   {
-    scope_.put(e.name_get(), &e);
+    scope_var_.put(e.name_get(), &e);
     this->accept(e.type_name_get());
     this->accept(e.init_get());
   }
@@ -63,14 +73,14 @@ namespace bind
     scope_end();
   }
 
-  void operator()(ast::WhileExp& e)
+  void Binder::operator()(ast::WhileExp& e)
   {
     scope_begin();
     e.test_get().accept(*this);
     e.body_get().accept(*this);
     scope_end();
   }
-  void operator()(ast::ForExp& e)
+  void Binder::operator()(ast::ForExp& e)
   {
     scope_begin();
     e.vardec_get().accept(*this);
@@ -83,7 +93,7 @@ namespace bind
   | Visiting VarChunk. |
   `-------------------*/
 
-  void Binder::operator()(ast::VarChunk& e) { chunk_visit<ast::VarChunk>(e); }
+  void Binder::operator()(ast::VarChunk& e) { chunk_visit(e); }
 
   /*------------------------.
   | Visiting FunctionChunk. |
@@ -91,12 +101,12 @@ namespace bind
 
   void Binder::operator()(ast::FunctionChunk& e)
   {
-    chunk_visit<ast::FunctionChunk>(e);
+    chunk_visit(e);
   }
 
   /*--------------------.
   | Visiting TypeChunk. |
   `--------------------*/
-  void Binder::operator()(ast::TypeChunk& e) { chunk_visit<ast::TypeChunk>(e); }
+  void Binder::operator()(ast::TypeChunk& e) { chunk_visit(e); }
 
 } // namespace bind
