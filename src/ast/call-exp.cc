@@ -15,10 +15,7 @@ namespace ast
     , args_(args)
   {}
 
-  CallExp::~CallExp()
-  {
-    delete args_;
-  }
+  CallExp::~CallExp() { delete args_; }
 
   void CallExp::accept(ConstVisitor& v) const { v(*this); }
 

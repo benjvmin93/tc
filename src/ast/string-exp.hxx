@@ -9,5 +9,5 @@
 
 namespace ast
 {
-    inline std::string StringExp::string_get() const { return string_; }
+  inline std::string StringExp::string_get() const { return string_; }
 } // namespace ast

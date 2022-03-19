@@ -14,10 +14,7 @@ namespace ast
     , field_(field)
   {}
 
-  RecordTy::~RecordTy()
-  {
-    delete field_;
-  }
+  RecordTy::~RecordTy() { delete field_; }
 
   void RecordTy::accept(ConstVisitor& v) const { v(*this); }
 

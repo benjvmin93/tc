@@ -8,5 +8,5 @@
 
 namespace bind
 {
-    misc::error bind_compute(ast::Ast& tree);
+  misc::error bind_compute(ast::Ast& tree);
 }

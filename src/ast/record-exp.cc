@@ -9,10 +9,12 @@
 
 namespace ast
 {
-  RecordExp::RecordExp(const Location& location, ast::NameTy* type_name, ast::fieldinits_type* fields):
-    Exp(location),
-    type_name_(type_name),
-    fields_(fields)
+  RecordExp::RecordExp(const Location& location,
+                       ast::NameTy* type_name,
+                       ast::fieldinits_type* fields)
+    : Exp(location)
+    , type_name_(type_name)
+    , fields_(fields)
   {}
   RecordExp::~RecordExp()
   {
@@ -22,5 +24,5 @@ namespace ast
 
   void RecordExp::accept(ConstVisitor& v) const { v(*this); };
   void RecordExp::accept(Visitor& v) { v(*this); }
-  
+
 } // namespace ast

@@ -7,10 +7,10 @@
 
 namespace bind
 {
-    misc::error bind_compute(ast::Ast& tree)
-    {
-        Binder bind_compute;
-        bind_compute(tree);
-        return bind_compute.error_get();
-    }
-}
+  misc::error bind_compute(ast::Ast& tree)
+  {
+    Binder bind_compute;
+    bind_compute(tree);
+    return bind_compute.error_get();
+  }
+} // namespace bind

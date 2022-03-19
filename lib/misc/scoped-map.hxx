@@ -17,27 +17,26 @@ namespace misc
 {
   template <typename Key, typename Data>
   scoped_map<Key, Data>::scoped_map()
-    : nb_scope(1),
-    maps_({1})
-    {}
+    : nb_scope(1)
+    , maps_({1})
+  {}
 
   template <typename Key, typename Data>
   void scoped_map<Key, Data>::put(const Key& key, const Data& value)
   {
-      maps_.back().insert({key, value});
+    maps_.back().insert({key, value});
   }
 
   template <typename Key, typename Data>
   Data scoped_map<Key, Data>::get(const Key& key) const
   {
-
     for (auto e = maps_.begin(); e != maps_.end(); e++)
-    {
-      if ((*e).find(key) != (*e).end())
       {
-        return (*e).at(key);
+        if ((*e).find(key) != (*e).end())
+          {
+            return (*e).at(key);
+          }
       }
-    }
 
     if constexpr (std::is_pointer_v<Data>)
       return nullptr;
@@ -49,13 +48,13 @@ namespace misc
   std::ostream& scoped_map<Key, Data>::dump(std::ostream& ostr) const
   {
     for (auto i = maps_.begin(); i != maps_.end(); i++)
-    {
-      ostr << "{ " << (*i).first << ", " << (*i).second << " }";
-      if (i + 1 != maps_.end())
       {
-        ostr << '\n';
+        ostr << "{ " << (*i).first << ", " << (*i).second << " }";
+        if (i + 1 != maps_.end())
+          {
+            ostr << '\n';
+          }
       }
-    }
   }
 
   template <typename Key, typename Data>
@@ -65,8 +64,7 @@ namespace misc
     nb_scope++;
   }
 
-  template <typename Key, typename Data>
-  void scoped_map<Key, Data>::scope_end()
+  template <typename Key, typename Data> void scoped_map<Key, Data>::scope_end()
   {
     maps_.pop_back();
     nb_scope--;

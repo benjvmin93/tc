@@ -32,7 +32,7 @@ namespace ast
     const Exp& exp_get() const;
 
     Exp& exp_get();
-  
+
   protected:
     ChunkList* chunklist_;
 

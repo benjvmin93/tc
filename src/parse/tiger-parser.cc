@@ -88,8 +88,6 @@ namespace parse
                  << &misc::error::exit;
       }
 
-
-
     // FIXME: Some code was deleted here (Enable scan traces and link the scanner to the input).
     scanner_->set_debug(scan_trace_p_);
     scanner_->scan_open_(*in);
@@ -101,7 +99,7 @@ namespace parse
     // FIXME: Some code was deleted here (Run the parser and close the scanner).
     parser.parse();
     scanner_->scan_close_();
-    
+
     ast_type res = ast_;
     ast_ = static_cast<ast::Exp*>(nullptr);
 

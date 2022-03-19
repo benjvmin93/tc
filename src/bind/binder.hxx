@@ -15,10 +15,12 @@ namespace bind
 
   inline void Binder::error(const ast::Ast& loc, const std::string& msg)
   {
-    error_ << misc::error::error_type::bind << loc.location_get() << ": " << msg << '\n';
+    error_ << misc::error::error_type::bind << loc.location_get() << ": " << msg
+           << '\n';
   }
 
-  template <typename T> void Binder::undeclared(const std::string& k, const T& e)
+  template <typename T>
+  void Binder::undeclared(const std::string& k, const T& e)
   {
     error(e, k);
   }
@@ -28,7 +30,6 @@ namespace bind
     error(e2, "redefinition: " + e2.get_name());
     error(e1, "first definition: ");
   }
-
 
   /*----------------------------.
   | Visiting /ChunkInterface/.  |

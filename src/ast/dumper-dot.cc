@@ -189,10 +189,10 @@ namespace ast
     node_html_field("name", e.name_get());
     // FIXME: Some code was deleted here (node_html_ports with properties).
     node_html_ports({"object"});
-  
+
     // FIXME: Some code was deleted here (node_html_port_list for each list).
     node_html_port_list("args", e.args_get());
-    
+
     node_html_one_port("def");
     footer_and_link(old_parent_id);
     dump_def(e);

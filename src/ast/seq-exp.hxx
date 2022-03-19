@@ -9,6 +9,6 @@
 
 namespace ast
 {
-        inline const exps_type& SeqExp::exps_get() const { return *exps_; }
-        inline exps_type& SeqExp::exps_get() { return *exps_; }
+  inline const exps_type& SeqExp::exps_get() const { return *exps_; }
+  inline exps_type& SeqExp::exps_get() { return *exps_; }
 } // namespace ast

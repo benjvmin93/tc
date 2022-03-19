@@ -8,17 +8,20 @@
 
 namespace ast
 {
-  IfExp::IfExp(const Location& location, Exp* test, Exp* thenclause, Exp* elseclause):
-    Exp(location),
-    test_(test),
-    thenclause_(thenclause),
-    elseclause_(elseclause)
+  IfExp::IfExp(const Location& location,
+               Exp* test,
+               Exp* thenclause,
+               Exp* elseclause)
+    : Exp(location)
+    , test_(test)
+    , thenclause_(thenclause)
+    , elseclause_(elseclause)
   {}
-  IfExp::IfExp(const Location& location, Exp* test, Exp* thenclause):
-    Exp(location),
-    test_(test),
-    thenclause_(thenclause),
-    elseclause_(nullptr)
+  IfExp::IfExp(const Location& location, Exp* test, Exp* thenclause)
+    : Exp(location)
+    , test_(test)
+    , thenclause_(thenclause)
+    , elseclause_(nullptr)
   {}
   IfExp::~IfExp()
   {

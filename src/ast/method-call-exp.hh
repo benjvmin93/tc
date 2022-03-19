@@ -21,22 +21,24 @@ namespace ast
 
   class MethodCallExp : public CallExp
   {
-    public:
-      MethodCallExp(const Location& location, misc::symbol name, ast::exps_type* args, ast::Var* object);
-      MethodCallExp(const MethodCallExp&) = delete;
-      MethodCallExp& operator=(const MethodCallExp&) = delete;
+  public:
+    MethodCallExp(const Location& location,
+                  misc::symbol name,
+                  ast::exps_type* args,
+                  ast::Var* object);
+    MethodCallExp(const MethodCallExp&) = delete;
+    MethodCallExp& operator=(const MethodCallExp&) = delete;
 
-      ~MethodCallExp() override;
+    ~MethodCallExp() override;
 
-      void accept(ConstVisitor& v) const override;
-      void accept(Visitor& v) override;
-      
-      const ast::Var& get_object() const;
-      ast::Var& get_object();
+    void accept(ConstVisitor& v) const override;
+    void accept(Visitor& v) override;
 
-    protected:
-      ast::Var* object_;
+    const ast::Var& get_object() const;
+    ast::Var& get_object();
 
+  protected:
+    ast::Var* object_;
   };
 } // namespace ast
 #include <ast/method-call-exp.hxx>

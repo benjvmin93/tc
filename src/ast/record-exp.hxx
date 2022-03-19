@@ -13,17 +13,11 @@ namespace ast
   {
     return *type_name_;
   }
-  inline ast::NameTy& RecordExp::get_type_name()
-  {
-    return *type_name_;
-  }
+  inline ast::NameTy& RecordExp::get_type_name() { return *type_name_; }
   inline const ast::fieldinits_type& RecordExp::get_fields() const
   {
     return *fields_;
   }
-  inline ast::fieldinits_type& RecordExp::get_fields()
-  {
-    return *fields_;
-  }
-  
+  inline ast::fieldinits_type& RecordExp::get_fields() { return *fields_; }
+
 } // namespace ast

@@ -17,20 +17,19 @@
 
 namespace misc
 {
-  template <typename Key, typename Data>
-  class scoped_map
+  template <typename Key, typename Data> class scoped_map
   {
-    public:
-      scoped_map();
-      void put(const Key& key, const Data& value);
-      Data get(const Key& key) const;
-      std::ostream& dump(std::ostream& ostr) const;
-      void scope_begin();
-      void scope_end();
+  public:
+    scoped_map();
+    void put(const Key& key, const Data& value);
+    Data get(const Key& key) const;
+    std::ostream& dump(std::ostream& ostr) const;
+    void scope_begin();
+    void scope_end();
 
-    public:
-      size_t nb_scope;
-      std::vector<std::map<Key, Data>> maps_;
+  public:
+    size_t nb_scope;
+    std::vector<std::map<Key, Data>> maps_;
   };
 
   template <typename Key, typename Data>

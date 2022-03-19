@@ -30,7 +30,7 @@ namespace bind
   `----------------*/
 
   void Binder::scope_begin()
-  { 
+  {
     scope_fun_.scope_begin();
     scope_type_.scope_begin();
     scope_var_.scope_begin();
@@ -121,7 +121,7 @@ namespace bind
     scope_end();
   }
 
-/*
+  /*
   void Binder::operator()(ast::FieldVar& e)
   {
     scope_begin();
@@ -137,8 +137,6 @@ namespace bind
     scope_end();
   } */
 
-
-
   /*-------------------.
   | Visiting VarChunk. |
   `-------------------*/
@@ -149,10 +147,7 @@ namespace bind
   | Visiting FunctionChunk. |
   `------------------------*/
 
-  void Binder::operator()(ast::FunctionChunk& e)
-  {
-    chunk_visit(e);
-  }
+  void Binder::operator()(ast::FunctionChunk& e) { chunk_visit(e); }
 
   /*--------------------.
   | Visiting TypeChunk. |

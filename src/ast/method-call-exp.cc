@@ -8,15 +8,15 @@
 
 namespace ast
 {
-  MethodCallExp::MethodCallExp(const Location& location, misc::symbol name, ast::exps_type* args, ast::Var* object):
-    CallExp(location, name, args),
-    object_(object)
+  MethodCallExp::MethodCallExp(const Location& location,
+                               misc::symbol name,
+                               ast::exps_type* args,
+                               ast::Var* object)
+    : CallExp(location, name, args)
+    , object_(object)
   {}
 
-  MethodCallExp::~MethodCallExp()
-  {
-    delete object_;
-  }
+  MethodCallExp::~MethodCallExp() { delete object_; }
 
   void MethodCallExp::accept(ConstVisitor& v) const { v(*this); }
   void MethodCallExp::accept(Visitor& v) { v(*this); }

@@ -24,7 +24,7 @@ inline static bool bound(const std::string& s)
 }
 */
 int main()
-{/*
+{           /*
   ast::bindings_display(std::cout) = true;
   assertion(bound(" let"
                   "   class C"
@@ -72,5 +72,5 @@ int main()
                   "   d.print()"
                   " end"));
                   */
-    return 0; //FIXME
+  return 0; //FIXME
 }

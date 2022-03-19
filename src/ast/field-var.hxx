@@ -13,5 +13,5 @@ namespace ast
   inline Var& FieldVar::var_get() { return *var_; }
 
   inline const misc::symbol FieldVar::name_get() const { return name_; }
-  inline misc::symbol FieldVar::name_get() {return name_; }
+  inline misc::symbol FieldVar::name_get() { return name_; }
 } // namespace ast

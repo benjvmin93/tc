@@ -14,10 +14,7 @@ namespace ast
     , name_(name)
   {}
 
-  FieldVar::~FieldVar()
-  {
-    delete var_;
-  }
+  FieldVar::~FieldVar() { delete var_; }
 
   void FieldVar::accept(ConstVisitor& v) const { v(*this); }
   void FieldVar::accept(Visitor& v) { v(*this); }

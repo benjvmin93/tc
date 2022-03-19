@@ -75,7 +75,6 @@ namespace bind
     /*void operator()(ast::FieldVar& e) override;
     void operator()(ast::SubscriptVar& e) override;*/
 
-
     // ---------------- //
     // Visiting /Dec/.  //
     // ---------------- //
