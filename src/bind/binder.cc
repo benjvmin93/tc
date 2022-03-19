@@ -28,42 +28,75 @@ namespace bind
   | Symbol tables.  |
   `----------------*/
 
-  void Binder::scope_begin()
-  {
-    // FIXME: Some code was deleted here.
-  }
+  void Binder::scope_begin() { scope_.scope_begin(); }
 
-  void Binder::scope_end()
-  {
-    // FIXME: Some code was deleted here.
-  }
+  void Binder::scope_end() { scope_.scope_end(); }
 
   /*---------.
   | Visits.  |
   `---------*/
 
-  // FIXME: Some code was deleted here.
+  void operator()(ast::FunctionDec& e)
+  {
+    scope_.put(e.name_get(), &e);
+    e.formals_get().accept(*this);
+    e.result_get()->accept(*this);
+    e.body_get()->accept(*this);
+  }
+  void operator()(ast::TypeDec& e)
+  {
+    scope_.put(e.name_get(), &e);
+    e.ty_get().accept(*this);
+  }
+  void operator()(ast::VarDec& e)
+  {
+    scope_.put(e.name_get(), &e);
+    this->accept(e.type_name_get());
+    this->accept(e.init_get());
+  }
 
   void Binder::operator()(ast::LetExp& e)
   {
-    // FIXME: Some code was deleted here.
+    scope_begin();
+    e.chunklist_get().accept(*this);
+    e.exp_get().accept(*this);
+    scope_end();
+  }
+
+  void operator()(ast::WhileExp& e)
+  {
+    scope_begin();
+    e.test_get().accept(*this);
+    e.body_get().accept(*this);
+    scope_end();
+  }
+  void operator()(ast::ForExp& e)
+  {
+    scope_begin();
+    e.vardec_get().accept(*this);
+    e.hi_get().accept(*this);
+    e.body_get().accept(*this);
+    scope_end();
   }
 
   /*-------------------.
   | Visiting VarChunk. |
   `-------------------*/
 
-  // FIXME: Some code was deleted here.
+  void Binder::operator()(ast::VarChunk& e) { chunk_visit<ast::VarChunk>(e); }
 
   /*------------------------.
   | Visiting FunctionChunk. |
   `------------------------*/
 
-  // FIXME: Some code was deleted here.
+  void Binder::operator()(ast::FunctionChunk& e)
+  {
+    chunk_visit<ast::FunctionChunk>(e);
+  }
 
   /*--------------------.
   | Visiting TypeChunk. |
   `--------------------*/
-  // FIXME: Some code was deleted here.
+  void Binder::operator()(ast::TypeChunk& e) { chunk_visit<ast::TypeChunk>(e); }
 
 } // namespace bind

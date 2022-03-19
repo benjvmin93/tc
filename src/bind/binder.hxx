@@ -23,7 +23,8 @@ namespace bind
   {
     // Shorthand.
     using chunk_type = ast::Chunk<D>;
-    // FIXME: Some code was deleted here (Two passes: once on headers, then on bodies).
+    for (const auto dec : e)
+      dec->accept(*this);
   }
 
   /* These specializations are in bind/binder.hxx, so that derived
