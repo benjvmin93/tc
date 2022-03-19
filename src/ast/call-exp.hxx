@@ -19,5 +19,5 @@ namespace ast
 
   inline FunctionDec* CallExp::def_get() { return def_; }
 
-  inline void CallExp::def_get(FunctionDec* def) { def_ = def; }
+  inline void CallExp::def_set(FunctionDec* def) { def_ = def; }
 } // namespace ast
