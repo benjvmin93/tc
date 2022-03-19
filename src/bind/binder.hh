@@ -71,6 +71,11 @@ namespace bind
     void operator()(ast::TypeChunk& e) override;
     void operator()(ast::VarChunk& e) override;
 
+    void operator()(ast::SimpleVar& e) override;
+    /*void operator()(ast::FieldVar& e) override;
+    void operator()(ast::SubscriptVar& e) override;*/
+
+
     // ---------------- //
     // Visiting /Dec/.  //
     // ---------------- //

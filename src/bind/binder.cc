@@ -52,8 +52,10 @@ namespace bind
     check_main(e);
     scope_fun_.put(e.name_get(), &e);
     e.formals_get().accept(*this);
-    e.result_get()->accept(*this);
-    e.body_get()->accept(*this);
+    if (e.result_get() && e.result_get()->def_get())
+      e.result_get()->def_get()->accept(*this);
+    if (e.body_get())
+      e.body_get()->accept(*this);
   }
   void Binder::operator()(ast::TypeDec& e)
   {
@@ -107,6 +109,35 @@ namespace bind
       (*it)->accept(*this);
     scope_end();
   }
+
+  void Binder::operator()(ast::SimpleVar& e)
+  {
+    scope_begin();
+    auto name = scope_var_.get(e.name_get());
+    if (name != nullptr)
+      e.def_set(name);
+    else
+      Binder::undeclared("undeclared variable: " + e.name_get().get(), e);
+    scope_end();
+  }
+
+/*
+  void Binder::operator()(ast::FieldVar& e)
+  {
+    scope_begin();
+    e.var_get().accept(*this);
+    scope_end();
+  }
+
+  void Binder::operator()(ast::SubscriptVar& e)
+  {
+    scope_begin();
+    e.var_get().accept(*this);
+    e.index_get().accept(*this);
+    scope_end();
+  } */
+
+
 
   /*-------------------.
   | Visiting VarChunk. |

@@ -4,8 +4,9 @@
  */
 
 #include <ast/fwd.hh>
+#include <misc/error.hh>
 
 namespace bind
 {
-    void bind_compute(ast::Ast& tree);
+    misc::error bind_compute(ast::Ast& tree);
 }

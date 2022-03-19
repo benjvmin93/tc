@@ -109,7 +109,7 @@ do
             ./../src/tc -X $retour_pretty >> filerr 2>&1
 
         else
-            ./../src/tc -X --parse $f >> filerr 2>&1
+            ./../src/tc -Xb --parse $f >> filerr 2>&1
         fi
 
         if [ $? -eq $code_err ]
