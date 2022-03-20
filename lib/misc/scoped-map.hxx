@@ -30,7 +30,7 @@ namespace misc
   template <typename Key, typename Data>
   Data scoped_map<Key, Data>::get(const Key& key) const
   {
-    for (auto e = maps_.begin(); e != maps_.end(); e++)
+    for (auto e = maps_.end() - 1; e != maps_.begin() - 1; e--)
       {
         if ((*e).find(key) != (*e).end())
           {

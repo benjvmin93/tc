@@ -21,7 +21,7 @@ namespace bind
 
   void Binder::check_main(const ast::FunctionDec& e)
   {
-    if (scope_fun_.nb_scope != 1 || e.name_get() != misc::symbol("_main"))
+    if (e.name_get() == "_main" && scope_fun_.get("_main") != nullptr)
       error(e, "Main error");
   }
 
@@ -50,17 +50,31 @@ namespace bind
   void Binder::operator()(ast::FunctionDec& e)
   {
     check_main(e);
-    scope_fun_.put(e.name_get(), &e);
-    e.formals_get().accept(*this);
-    if (e.result_get() && e.result_get()->def_get())
-      e.result_get()->def_get()->accept(*this);
-    if (e.body_get())
-      e.body_get()->accept(*this);
+    auto name = scope_fun_.get(e.name_get());
+    if (name != nullptr)
+      Binder::redefinition(name, &e);
+    else
+      {
+        scope_fun_.put(e.name_get(), &e);
+        scope_begin();
+        e.formals_get().accept(*this);
+        if (e.result_get() && e.result_get()->def_get())
+          e.result_get()->def_get()->accept(*this);
+        if (e.body_get())
+          e.body_get()->accept(*this);
+        scope_end();
+      }
   }
   void Binder::operator()(ast::TypeDec& e)
   {
-    scope_type_.put(e.name_get(), &e);
-    e.ty_get().accept(*this);
+    auto name = scope_type_.get(e.name_get());
+    if (name != nullptr)
+      Binder::redefinition(name, &e);
+    else
+      {
+        scope_type_.put(e.name_get(), &e);
+        e.ty_get().accept(*this);
+      }
   }
   void Binder::operator()(ast::VarDec& e)
   {
@@ -80,45 +94,68 @@ namespace bind
   void Binder::operator()(ast::WhileExp& e)
   {
     scope_begin();
+    scope_loop_.push_back(&e);
     e.test_get().accept(*this);
     e.body_get().accept(*this);
     scope_end();
+    scope_loop_.pop_back();
   }
   void Binder::operator()(ast::ForExp& e)
   {
     scope_begin();
+    scope_loop_.push_back(&e);
     e.vardec_get().accept(*this);
     e.hi_get().accept(*this);
     e.body_get().accept(*this);
     scope_end();
+    scope_loop_.pop_back();
   }
 
   void Binder::operator()(ast::MethodDec& e)
   {
-    scope_begin();
     e.formals_get().accept(*this);
     e.result_get()->accept(*this);
     e.body_get()->accept(*this);
-    scope_end();
   }
 
   void Binder::operator()(ast::MethodChunk& e)
   {
-    scope_begin();
     for (auto it = e.begin(); it != e.end(); ++it)
       (*it)->accept(*this);
-    scope_end();
   }
 
   void Binder::operator()(ast::SimpleVar& e)
   {
-    scope_begin();
     auto name = scope_var_.get(e.name_get());
     if (name != nullptr)
       e.def_set(name);
     else
       Binder::undeclared("undeclared variable: " + e.name_get().get(), e);
-    scope_end();
+  }
+
+  void Binder::operator()(ast::BreakExp& e)
+  {
+    if (scope_loop_.size() == 0)
+      Binder::loop(e);
+    else
+      {
+        auto name = scope_loop_.back();
+        e.def_set(name);
+      }
+  }
+
+  void Binder::operator()(ast::RecordExp& e)
+  {
+    auto name = scope_type_.get(e.get_type_name().name_get());
+    if (name != nullptr)
+      e.def_set(name);
+    else
+      Binder::undeclared(
+        "undeclared type: " + e.get_type_name().name_get().get(), e);
+    e.get_type_name().accept(*this);
+    auto fieldInit = e.get_fields();
+    for (auto elt : fieldInit)
+      elt->accept(*this);
   }
 
   /*

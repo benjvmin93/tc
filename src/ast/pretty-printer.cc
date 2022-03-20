@@ -59,6 +59,8 @@ namespace ast
   void PrettyPrinter::operator()(const Field& e)
   {
     ostr_ << e.name_get() << " : " << e.type_name_get();
+    if (bindings_display(ostr_))
+      ostr_ << " /* " << 0 << " */";
   }
 
   void PrettyPrinter::operator()(const FieldInit& e)
@@ -137,33 +139,13 @@ namespace ast
     if (bindings_display(ostr_))
       ostr_ << " /* " << &e << " */";
     ostr_ << '(';
-    bool first = false;
-    for (auto& x : e.formals_get())
-      if (!first)
-        {
-          ostr_ << x->name_get();
-          if (bindings_display(ostr_))
-            ostr_ << " /* " << x << " */";
-          ostr_ << " : " << x->type_name_get()->name_get();
-          if (bindings_display(ostr_))
-            ostr_ << " /* " << x->type_name_get() << " */";
-          first = true;
-        }
-      else
-        {
-          ostr_ << ", " << x->name_get();
-          if (bindings_display(ostr_))
-            ostr_ << " /* " << x << " */";
-          ostr_ << " : " << x->type_name_get()->name_get();
-          if (bindings_display(ostr_))
-            ostr_ << " /* " << x->type_name_get() << " */";
-        }
+    ostr_ << misc::separate(e.formals_get(), ", ");
     ostr_ << ")";
     if (e.result_get() != nullptr)
       {
         ostr_ << " : " << e.result_get()->name_get();
         if (bindings_display(ostr_))
-          ostr_ << " /* " << e.result_get() << " */";
+          ostr_ << " /* " << 0 << " */";
       }
     if (e.body_get() != nullptr)
       {
@@ -197,15 +179,21 @@ namespace ast
 
   void PrettyPrinter::operator()(const VarDec& e)
   {
-    ostr_ << "var " << e.name_get();
+    if (e.init_get())
+      ostr_ << "var " << e.name_get();
+    else
+      ostr_ << e.name_get();
     if (bindings_display(ostr_))
       ostr_ << " /* " << &e << " */";
     ostr_ << " ";
     if (e.type_name_get() != nullptr)
       {
-        ostr_ << ": " << *(e.type_name_get()) << ' ';
+        ostr_ << ": " << *(e.type_name_get());
+        if (bindings_display(ostr_))
+          ostr_ << " /* " << 0 << " */";
       }
-    ostr_ << ":= " << *(e.init_get());
+    if (e.init_get())
+      ostr_ << " := " << *(e.init_get());
   }
 
   void PrettyPrinter::operator()(const TypeDec& e)
@@ -242,19 +230,7 @@ namespace ast
   void PrettyPrinter::operator()(const RecordTy& e)
   {
     ostr_ << "{ ";
-    bool first = false;
-    for (auto& ch : e.field_get())
-      {
-        if (!first)
-          {
-            ostr_ << ch->name_get() << " : " << ch->type_name_get();
-            if (bindings_display(ostr_))
-              ostr_ << " /* " << &ch->type_name_get() << " */";
-            first = true;
-          }
-        else
-          ostr_ << ", " << ch->name_get() << " : " << ch->type_name_get();
-      }
+    ostr_ << misc::separate(e.field_get(), ", ");
     ostr_ << " }";
   }
 
@@ -275,14 +251,10 @@ namespace ast
     if (e.args_get().size() >= 1)
       {
         ostr_ << *(e.args_get()[0]);
-        if (bindings_display(ostr_))
-          ostr_ << " /* " << e.args_get()[0] << " */";
       }
     for (size_t args = 1; args < e.args_get().size(); args++)
       {
         ostr_ << ", " << *(e.args_get()[args]);
-        if (bindings_display(ostr_))
-          ostr_ << " /* " << e.args_get()[args] << " */";
       }
     ostr_ << ")";
   }
@@ -300,18 +272,11 @@ namespace ast
 
   void PrettyPrinter::operator()(const RecordExp& e)
   {
-    ostr_ << e.get_type_name() << " { ";
-    bool first = false;
-    for (auto& fi : e.get_fields())
-      {
-        if (!first)
-          {
-            first = true;
-            ostr_ << fi->name_get() << " = " << fi->init_get();
-          }
-        else
-          ostr_ << ", " << fi->name_get() << " = " << fi->init_get();
-      }
+    ostr_ << e.get_type_name();
+    if (bindings_display(ostr_))
+      ostr_ << " /* " << e.def_get() << " */";
+    ostr_ << " { ";
+    ostr_ << misc::separate(e.get_fields(), ", ");
     ostr_ << " }";
   }
 
@@ -340,16 +305,7 @@ namespace ast
   void PrettyPrinter::operator()(const MethodDec& e)
   {
     ostr_ << "method " << e.name_get() << "(";
-    bool first = false;
-    for (auto& x : e.formals_get())
-      if (!first)
-        {
-          ostr_ << x->name_get() << " : " << x->type_name_get()->name_get();
-          first = true;
-        }
-      else
-        ostr_ << ", " << x->name_get() << " : "
-              << x->type_name_get()->name_get();
+    ostr_ << misc::separate(e.formals_get(), ", ");
     ostr_ << ")";
     if (e.result_get() != nullptr)
       ostr_ << ": " << *(e.result_get());

@@ -65,6 +65,8 @@ namespace bind
     void operator()(ast::LetExp& e) override;
     void operator()(ast::WhileExp& e) override;
     void operator()(ast::ForExp& e) override;
+    void operator()(ast::BreakExp& e) override;
+    void operator()(ast::RecordExp& e) override;
 
     void operator()(ast::FunctionChunk& e) override;
     void operator()(ast::MethodChunk& e) override;
@@ -83,6 +85,7 @@ namespace bind
     void operator()(ast::MethodDec& e) override;
     void operator()(ast::TypeDec& e) override;
     void operator()(ast::VarDec& e) override;
+    void operator()(ast::RecordTy& e) override;
 
     /// \name Type and Function declarations
     /// \{
@@ -149,6 +152,8 @@ namespace bind
     template <typename T> void redefinition(const T& e1, const T& e2);
     /// \}
 
+    template <typename T> void loop(const T& e);
+
     /** \name Handling the environment
      ** \{ */
     /// Open a new var, fun, and type scope.
@@ -163,6 +168,7 @@ namespace bind
     misc::scoped_map<misc::symbol, ast::FunctionDec*> scope_fun_;
     misc::scoped_map<misc::symbol, ast::TypeDec*> scope_type_;
     misc::scoped_map<misc::symbol, ast::VarDec*> scope_var_;
+    std::vector<ast::Exp*> scope_loop_;
   };
 
 } // namespace bind

@@ -20,4 +20,7 @@ namespace ast
   }
   inline ast::fieldinits_type& RecordExp::get_fields() { return *fields_; }
 
+  inline const ast::TypeDec* RecordExp::def_get() const { return def_; }
+
+  inline void RecordExp::def_set(TypeDec* def) { def_ = def; }
 } // namespace ast

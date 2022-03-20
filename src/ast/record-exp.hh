@@ -30,10 +30,13 @@ namespace ast
     ast::NameTy& get_type_name();
     const ast::fieldinits_type& get_fields() const;
     ast::fieldinits_type& get_fields();
+    void def_set(TypeDec* def);
+    const TypeDec* def_get() const;
 
   protected:
     ast::NameTy* type_name_;
     ast::fieldinits_type* fields_;
+    TypeDec* def_;
   };
 } // namespace ast
 #include <ast/record-exp.hxx>

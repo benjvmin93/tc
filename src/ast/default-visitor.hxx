@@ -167,7 +167,7 @@ namespace ast
   template <typename ChunkType>
   inline void GenDefaultVisitor<Const>::chunk_visit(const_t<ChunkType>& e)
   {
-    for (const auto dec : e)
+    for (const auto& dec : e)
       dec->accept(*this);
   }
 

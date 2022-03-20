@@ -312,8 +312,8 @@ int comments = 0;
   {character} { grown_string += yytext; }
   {escape} { grown_string.append(yytext); }
   {num} { grown_string.append(yytext + 3); }
-  {xnum} { grown_string.append(1, strtol(yytext + 2, 0, 16)); }
-  {int} { grown_string.append(1, strtol(yytext + 3, 0, 10)); }
+  {xnum} { grown_string.append(yytext + 2); }
+  {int} { grown_string.append(yytext); }
   "\\" { grown_string.append(yytext); }
   "\\\\" { grown_string.append(yytext); }
   "\\\"" { grown_string.append(yytext); }

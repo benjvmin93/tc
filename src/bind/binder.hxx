@@ -27,8 +27,13 @@ namespace bind
 
   template <typename T> void Binder::redefinition(const T& e1, const T& e2)
   {
-    error(e2, "redefinition: " + e2.get_name());
-    error(e1, "first definition: ");
+    error(*e2, "redefinition: " + e2->name_get().get());
+    error(*e1, "first definition");
+  }
+
+  template <typename T> void Binder::loop(const T& e)
+  {
+    error(e, "\'break\' outside any loop");
   }
 
   /*----------------------------.
@@ -39,7 +44,7 @@ namespace bind
   {
     // Shorthand.
     using chunk_type = ast::Chunk<D>;
-    for (const auto dec : e)
+    for (const auto& dec : e)
       dec->accept(*this);
   }
 
