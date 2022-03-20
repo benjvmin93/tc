@@ -85,7 +85,6 @@ namespace bind
     void operator()(ast::MethodDec& e) override;
     void operator()(ast::TypeDec& e) override;
     void operator()(ast::VarDec& e) override;
-    void operator()(ast::RecordTy& e) override;
 
     /// \name Type and Function declarations
     /// \{
