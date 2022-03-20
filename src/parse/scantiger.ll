@@ -284,9 +284,7 @@ int comments = 0;
         tp.location_.step();
       }
 
-{white} {
-            ;
-        }
+{white} { ; }
  /* Begin of a string. */
 
 "\"" {
