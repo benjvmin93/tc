@@ -109,7 +109,7 @@ do
             ./../src/tc -X $retour_pretty >> filerr 2>&1
 
         else
-            ./../src/tc -Xb --parse $f >> filerr 2>&1
+            ./../src/tc -Xb --parse $f >> filerr 2>&1  
         fi
 
         if [ $? -eq $code_err ]
@@ -191,7 +191,7 @@ if [ $prett -eq 0 ]
 then
     echo
 else
-    echo -e "$YELLOW PRETTY:  $prett$END"
+    echo -e "$YELLOW  PRETTY:  $prett$END"
 fi
 echo -e "#$RED FAIL:  $nberr$END"
 
