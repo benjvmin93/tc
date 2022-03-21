@@ -13,7 +13,8 @@ namespace bind
 
   template <class E, class Def> void Renamer::visit(E& e, const Def* def)
   {
-    // FIXME: Some code was deleted here.
+    auto name = new_name(*def);
+    
   }
 
 } // namespace bind
