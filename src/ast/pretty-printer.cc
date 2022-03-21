@@ -60,7 +60,9 @@ namespace ast
   {
     ostr_ << e.name_get() << " : " << e.type_name_get();
     if (bindings_display(ostr_))
-      ostr_ << " /* " << 0 << " */";
+      {
+        ostr_ << " /* " << 0 << " */";
+      }
   }
 
   void PrettyPrinter::operator()(const FieldInit& e)
@@ -190,7 +192,9 @@ namespace ast
       {
         ostr_ << ": " << *(e.type_name_get());
         if (bindings_display(ostr_))
-          ostr_ << " /* " << 0 << " */";
+          {
+            ostr_ << " /* " << 0 << " */";
+          }
       }
     if (e.init_get())
       ostr_ << " := " << *(e.init_get());
@@ -211,11 +215,21 @@ namespace ast
 
   void PrettyPrinter::operator()(const ClassTy& e)
   {
-    ostr_ << "class";
+    ostr_ << misc::iendl << "class";
     if (&(e.super_get()) != nullptr)
-      ostr_ << " extends " << e.super_get().name_get() << misc::iendl;
+      {
+        ostr_ << " extends " << e.super_get().name_get();
+        if (bindings_display(ostr_))
+          ostr_ << " /* " << 0 << " */";
+        ostr_ << misc::iendl;
+      }
     else
-      ostr_ << " extends Object" << misc::iendl;
+      {
+        ostr_ << " extends Object";
+        if (bindings_display(ostr_))
+          ostr_ << " /* " << 0 << " */";
+        ostr_ << misc::iendl;
+      }
     ostr_ << "{" << misc::incendl;
     for (auto& ch : e.chunks_get())
       {
@@ -237,8 +251,6 @@ namespace ast
   void PrettyPrinter::operator()(const AssignExp& e)
   {
     ostr_ << e.var_get();
-    if (bindings_display(ostr_))
-      ostr_ << " /* " << &e.var_get() << " */";
     ostr_ << " := " << e.exp_get();
   }
 
@@ -246,7 +258,22 @@ namespace ast
   {
     ostr_ << e.name_get();
     if (bindings_display(ostr_))
-      ostr_ << " /* " << &e << " */";
+      ostr_ << " /* " << e.def_get() << " */";
+    ostr_ << "(";
+    if (e.args_get().size() >= 1)
+      {
+        ostr_ << *(e.args_get()[0]);
+      }
+    for (size_t args = 1; args < e.args_get().size(); args++)
+      {
+        ostr_ << ", " << *(e.args_get()[args]);
+      }
+    ostr_ << ")";
+  }
+
+  void PrettyPrinter::operator()(const MethodCallExp& e)
+  {
+    ostr_ << e.get_object() << "." << e.name_get();
     ostr_ << "(";
     if (e.args_get().size() >= 1)
       {
@@ -262,6 +289,8 @@ namespace ast
   void PrettyPrinter::operator()(const ObjectExp& e)
   {
     ostr_ << "new " << e.type_name_get();
+    if (bindings_display(ostr_))
+      ostr_ << " /* " << e.def_get() << " */";
   }
 
   void PrettyPrinter::operator()(const OpExp& e)

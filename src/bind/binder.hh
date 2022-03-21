@@ -67,7 +67,12 @@ namespace bind
     void operator()(ast::ForExp& e) override;
     void operator()(ast::BreakExp& e) override;
     void operator()(ast::RecordExp& e) override;
+    void operator()(ast::IfExp& e) override;
+    void operator()(ast::ObjectExp& e) override;
+    void operator()(ast::CallExp& e) override;
 
+    void operator()(ast::ClassTy& e) override;
+    void operator()(ast::RecordTy& e) override;
     void operator()(ast::FunctionChunk& e) override;
     void operator()(ast::MethodChunk& e) override;
     void operator()(ast::TypeChunk& e) override;
@@ -167,6 +172,7 @@ namespace bind
     misc::scoped_map<misc::symbol, ast::FunctionDec*> scope_fun_;
     misc::scoped_map<misc::symbol, ast::TypeDec*> scope_type_;
     misc::scoped_map<misc::symbol, ast::VarDec*> scope_var_;
+    misc::scoped_map<misc::symbol, ast::MethodDec*> scope_method_;
     std::vector<ast::Exp*> scope_loop_;
   };
 

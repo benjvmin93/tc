@@ -17,7 +17,7 @@ namespace ast
 
   inline exps_type& CallExp::args_get() { return *args_; }
 
-  inline FunctionDec* CallExp::def_get() { return def_; }
+  inline const FunctionDec* CallExp::def_get() const { return def_; }
 
   inline void CallExp::def_set(FunctionDec* def) { def_ = def; }
 } // namespace ast

@@ -27,7 +27,8 @@ namespace ast
   template <template <typename> class Const>
   void GenObjectVisitor<Const>::operator()(const_t<ClassTy>& e)
   {
-    e.super_get().accept(*this);
+    if (&e.super_get())
+      e.super_get().accept(*this);
 
     for (auto ch : e.chunks_get())
       ch->accept(*this);

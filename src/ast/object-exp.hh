@@ -27,8 +27,12 @@ namespace ast
     const NameTy& type_name_get() const;
     NameTy& type_name_get();
 
+    const TypeDec* def_get() const;
+    void def_set(TypeDec* def);
+
   protected:
     NameTy* type_name_;
+    TypeDec* def_ = nullptr;
   };
 } // namespace ast
 #include <ast/object-exp.hxx>
