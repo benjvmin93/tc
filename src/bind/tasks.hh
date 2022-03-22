@@ -20,4 +20,9 @@ namespace bind::tasks
                "enable bindings display in the AST",
                bind_display,
                "parse");
+
+  TASK_DECLARE("rename",
+                "rename identifiers to unique names",
+                name_compute,
+                "parse");
 } // namespace bind::tasks

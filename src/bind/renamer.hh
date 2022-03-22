@@ -53,7 +53,13 @@ namespace bind
 
     /// \name Visiting definition sites.
     /// \{
-    // FIXME: Some code was deleted here.
+    misc::symbol operator()(const ast::NameTy& ty);
+    misc::symbol operator()(const ast::CallExp& ty);    
+    misc::symbol operator()(const ast::SimpleVar& ty);    
+    misc::symbol operator()(const ast::FunctionDec& ty);    
+    misc::symbol operator()(const ast::VarDec& ty);
+    misc::symbol operator()(const ast::TypeDec& ty);
+
     /// \}
 
     /// \name Visiting usage sites.
