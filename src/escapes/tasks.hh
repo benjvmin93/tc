@@ -13,11 +13,12 @@ namespace escapes::tasks
   TASK_GROUP("3. Escapes");
 
   /// Compute variables escaping.
-  TASK_DECLARE("e|escapes-compute",
-               "compute the escaping variables "
-               "and the functions requiring a static link",
-               escapes_compute,
-               "parse");
+  TASK_DECLARE(
+    "e|escapes-compute",
+    "compute the escaping variables "
+    "and the functions requiring a static link",
+    escapes_compute,
+    "parse"); //that was supposed to be bound but I changed it so that it can compile. Need to be changed at the end
 
   /// Display escaped variables.
   TASK_DECLARE("E|escapes-display",
