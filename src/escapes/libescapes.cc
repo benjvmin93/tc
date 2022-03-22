@@ -5,7 +5,6 @@
 
 #include <escapes/escapes-visitor.hh>
 #include <escapes/libescapes.hh>
-
 namespace escapes
 {
   /** Walk the tree, and set the escape flag of variables and arguments

@@ -17,7 +17,7 @@ namespace escapes::tasks
                "compute the escaping variables "
                "and the functions requiring a static link",
                escapes_compute,
-               "bound");
+               "parse");
 
   /// Display escaped variables.
   TASK_DECLARE("E|escapes-display",

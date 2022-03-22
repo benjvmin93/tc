@@ -53,7 +53,17 @@ namespace escapes
     /// Import all the overloaded visit methods.
     using super_type::operator();
 
-    // FIXME: Some code was deleted here.
+    void operator()(ast::LetExp& e) override;
+    void operator()(ast::WhileExp& e) override;
+    void operator()(ast::ForExp& e) override;
+    void operator()(ast::IfExp& e) override;
+    void operator()(ast::FunctionDec& e) override;
+    void operator()(ast::VarDec& e) override;
+    void operator()(ast::SimpleVar& e) override;
+
+  protected:
+    std::map<misc::symbol, std::pair<ast::VarDec*, int>> escape;
+    int scope = 0;
   };
 
 } // namespace escapes
