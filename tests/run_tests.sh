@@ -97,6 +97,7 @@ do
         touch $pretty_file
         touch $retour_pretty
 
+        #GOOD
         if [ $code_err -eq 0 ]
         then
 
@@ -107,9 +108,26 @@ do
             cmp -s $pretty_file $retour_pretty && code_prett=0 || code_prett=1
 
             ./../src/tc -X $retour_pretty >> filerr 2>&1
-
-        else
+        
+        #SCAN
+        elif [ $code_err -eq 2 ]
+        then
+            ./../src/tc -X --parse $f >> filerr 2>&1  
+        
+        #SYNTAX
+        elif [ $code_err -eq 3 ]
+        then
+            ./../src/tc -X --parse $f >> filerr 2>&1  
+        
+        #BIND
+        elif [ $code_err -eq 4 ]
+        then
             ./../src/tc -Xb --parse $f >> filerr 2>&1  
+        
+        #TYPE
+        elif [ $code_err -eq 5 ]
+        then
+            ./../src/tc -X --parse $f >> filerr 2>&1  
         fi
 
         if [ $? -eq $code_err ]
