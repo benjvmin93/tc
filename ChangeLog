@@ -1,3 +1,10 @@
+2022-03-10  Etienne Renault  <renault@lrde.epita.fr>
+
+	Version 1.91.c for 2024-tc-3.0
+
+	* .last-cl-gen, ChangeLog, NEWS.txt,
+	configure.ac: Here.
+
 2022-03-03  Etienne Renault  <renault@lrde.epita.fr>
 
 	Version 1.91.b for 2024-tc-2.0
@@ -21048,7 +21055,7 @@
 
 2010-01-08  Roland Levillain  <roland@lrde.epita.fr>
 
-	Handle $Id: 6928155568555b33d88a49481b4f3a4fe77c7dd6 $ using gitattributes.
+	Handle $Id: 770c829cccee8defb946532837daaa8dbc81cb2f $ using gitattributes.
 
 2010-01-08  Roland Levillain  <roland@lrde.epita.fr>
 
@@ -46120,7 +46127,7 @@
 	* src/Makefile.am: Adjust.
 	* Makefile.am (version.h): Replace with...
 	(authors.h): these.
-	* tests/tc-check.in ($revision): Use $Id: 6928155568555b33d88a49481b4f3a4fe77c7dd6 $.
+	* tests/tc-check.in ($revision): Use $Id: 770c829cccee8defb946532837daaa8dbc81cb2f $.
 
 
 	git-svn-id: https://svn.lrde.epita.fr/svn/tc/trunk@1507 1f7e7f5b-0dda-0310-9018-85e83a419b00

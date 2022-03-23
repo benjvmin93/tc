@@ -11,6 +11,9 @@
 #include <misc/escape.hh>
 #include <misc/indent.hh>
 #include <misc/separator.hh>
+
+#include <type/class.hh>
+
 namespace ast
 {
   // Anonymous namespace: these functions are private to this file.

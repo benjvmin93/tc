@@ -35,6 +35,7 @@ FORMAT_IGNORE += %D%/flex-lexer.hh
 
 %C%_libmisc_la_SOURCES += %D%/scoped-map.hh %D%/scoped-map.hxx
 
+%C%_libmisc_la_SOURCES += %D%/singleton.hh
 
 %C%_libmisc_la_LDFLAGS = $(BOOST_SYSTEM_LDFLAGS)
 %C%_libmisc_la_LIBADD  = $(BOOST_SYSTEM_LIBS)
