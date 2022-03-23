@@ -26,6 +26,8 @@
 #include <ast/default-visitor.hh>
 #include <ast/non-object-visitor.hh>
 
+#include <misc/scoped-map.hh>
+
 namespace escapes
 {
   /** \brief Compute the escapes.
@@ -62,7 +64,7 @@ namespace escapes
     void operator()(ast::SimpleVar& e) override;
 
   protected:
-    std::map<misc::symbol, std::pair<ast::VarDec*, int>> escape;
+    misc::scoped_map<misc::symbol, std::pair<ast::VarDec*, int>> escape;
     int scope = 0;
   };
 
