@@ -20,4 +20,6 @@ namespace ast
   inline const FunctionDec* CallExp::def_get() const { return def_; }
 
   inline void CallExp::def_set(FunctionDec* def) { def_ = def; }
+
+  inline void CallExp::name_set(misc::symbol name) { name_ = name; }
 } // namespace ast

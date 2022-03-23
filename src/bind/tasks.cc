@@ -22,4 +22,6 @@ namespace bind::tasks
   }
 
   void bind_display() { ast::bindings_display(std::cout) = true; }
+
+  void name_compute() { bind::name_compute(*ast::tasks::the_program); }
 } // namespace bind::tasks

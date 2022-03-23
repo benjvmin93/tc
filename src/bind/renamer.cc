@@ -14,22 +14,46 @@ namespace bind
     , new_names_()
   {}
 
-  template <typename Def>
-  misc::symbol Renamer::new_name_compute(const Def& e)
+  misc::symbol Renamer::new_name_compute(const ast::FunctionDec& e)
   {
-    // FIXME PRIMITIVE TYPES MUST NOT BE RENAMED.
     auto name = e.name_get();
-    if (name != "_main")
-      return misc::symbol::fresh(name);
+    if (name != "_main" && e.body_get())
+    {
+      auto new_name = misc::symbol::fresh(name);
+      new_names_.insert( {static_cast<const ast::Dec*>(&e), new_name} );
+      return new_name;
+    }
+    return name;
   }
 
-  template <typename Def>
-  misc::symbol Renamer::new_name(const Def& e)
+  void Renamer::operator()(ast::NameTy& ty)
   {
-    auto it = new_names_.find(e);
-    if (it == new_names_.end())
-      return new_name_compute(e);
-    return new_names_[*it];
+    visit(ty, ty.def_get());
+  }
+
+  void Renamer::operator()(ast::CallExp& ty)
+  {
+    visit(ty, ty.def_get());
+  }
+
+  void Renamer::operator()(ast::SimpleVar& ty)
+  {
+    visit(ty, ty.def_get());
+  }
+
+  void Renamer::operator()(ast::FunctionDec& ty)
+  {
+    visit(ty, &ty);
+  }
+
+  void Renamer::operator()(ast::VarDec& ty)
+  {
+    visit(ty, &ty);
+  }
+
+  void Renamer::operator()(ast::TypeDec& ty)
+  {
+    visit(ty, &ty);
   }
 
 } // namespace bind

@@ -9,43 +9,36 @@
 
 namespace bind
 {
-  // FIXME: Some code was deleted here.
-
   template <class E, class Def> void Renamer::visit(E& e, const Def* def)
   {
-    auto name = new_name(*e);
-    //visit(*def, &def);
+    if (def)
+    {
+      auto name = new_name(*def);
+      e.name_set(name);
+    }
+  //  visit(def, e.def_get());
     super_type::operator()(e);
   }
 
-  misc::symbol Renamer::operator()(const ast::NameTy& ty)
+  template <typename Def>
+  misc::symbol Renamer::new_name_compute(const Def& e)
   {
-    visit(ty, ty.def_get());
+    auto name = e.name_get();
+    if (name != "_main")
+    {
+      auto new_name = misc::symbol::fresh(name);
+      new_names_.insert({&e, new_name});
+      return new_name;
+    }
+    return name;
   }
 
-  misc::symbol Renamer::operator()(const ast::CallExp& ty)
+  template <typename Def>
+  misc::symbol Renamer::new_name(const Def& e)
   {
-    visit(ty, ty.def_get());
+    auto it = new_names_.find(static_cast<const ast::Dec*>(&e));
+    if (it == new_names_.end())
+      return new_name_compute(e);
+    return (*it).second;
   }
-
-  misc::symbol Renamer::operator()(const ast::SimpleVar& ty)
-  {
-    visit(ty, ty.def_get());
-  }
-
-  misc::symbol Renamer::operator()(const ast::FunctionDec& ty)
-  {
-    visit(ty, &ty);
-  }
-
-  misc::symbol Renamer::operator()(const ast::VarDec& ty)
-  {
-    visit(ty, &ty);
-  }
-
-  misc::symbol Renamer::operator()(const ast::TypeDec& ty)
-  {
-    visit(ty, &ty);
-  }
-
 } // namespace bind

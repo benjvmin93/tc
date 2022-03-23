@@ -54,16 +54,17 @@ namespace bind
     scope_begin();
     misc::scoped_map<misc::symbol, ast::VarDec*> scope_var;
     for (auto& x : e.formals_get())
-      {
-        auto name = scope_var.get(x->name_get());
+    {
+       /*auto name = scope_var.get(x->name_get());
         if (name == nullptr)
           {
             x->accept(*this);
             scope_var.put(x->name_get(), x);
           }
         else
-          Binder::redefinition(name, x);
-      }
+          Binder::redefinition(name, x);*/
+        x->accept(*this);
+    }
     if (e.result_get() && e.result_get()->def_get())
       e.result_get()->def_get()->accept(*this);
     if (e.body_get())
@@ -105,7 +106,7 @@ namespace bind
   void Binder::operator()(ast::VarDec& e)
   {
     scope_var_.put(e.name_get(), &e);
-    if (e.type_name_get())
+    /*if (e.type_name_get())
       {
         auto type = scope_type_.get(e.type_name_get()->name_get());
         if (type == nullptr && e.type_name_get()->name_get() != "int"
@@ -123,7 +124,13 @@ namespace bind
     else
       {
         this->accept(e.init_get());
+      }*/
+      if (e.type_name_get())
+      {
+        e.type_name_get()->accept(*this);
       }
+      if (e.init_get())
+        e.init_get()->accept(*this);      
   }
 
   void Binder::operator()(ast::LetExp& e)

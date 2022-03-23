@@ -55,6 +55,7 @@ namespace misc
             ostr << '\n';
           }
       }
+      return ostr;
   }
 
   template <typename Key, typename Data>

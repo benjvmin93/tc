@@ -34,6 +34,7 @@ namespace bind
     /// Take into account the fact that _main and primitive are
     /// not to be renamed.
     template <typename Def> misc::symbol new_name_compute(const Def& e);
+    misc::symbol new_name_compute(const ast::FunctionDec& e);
 
     /// \brief Get the new name of this declaration, possibly create it.
     ///
@@ -53,12 +54,12 @@ namespace bind
 
     /// \name Visiting definition sites.
     /// \{
-    misc::symbol operator()(const ast::NameTy& ty);
-    misc::symbol operator()(const ast::CallExp& ty);    
-    misc::symbol operator()(const ast::SimpleVar& ty);    
-    misc::symbol operator()(const ast::FunctionDec& ty);    
-    misc::symbol operator()(const ast::VarDec& ty);
-    misc::symbol operator()(const ast::TypeDec& ty);
+    void operator()(ast::NameTy& ty);
+    void operator()(ast::CallExp& ty);    
+    void operator()(ast::SimpleVar& ty);    
+    void operator()(ast::FunctionDec& ty);    
+    void operator()(ast::VarDec& ty);
+    void operator()(ast::TypeDec& ty);
 
     /// \}
 
