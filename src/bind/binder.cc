@@ -147,8 +147,7 @@ namespace bind
   void Binder::operator()(ast::LetExp& e)
   {
     scope_begin();
-    e.chunklist_get().accept(*this);
-    e.exp_get().accept(*this);
+    super_type::operator()(e);
     scope_end();
   }
 
@@ -156,8 +155,7 @@ namespace bind
   {
     scope_begin();
     scope_loop_.push_back(&e);
-    e.test_get().accept(*this);
-    e.body_get().accept(*this);
+    super_type::operator()(e);
     scope_end();
     scope_loop_.pop_back();
   }
@@ -165,9 +163,7 @@ namespace bind
   {
     scope_begin();
     scope_loop_.push_back(&e);
-    e.vardec_get().accept(*this);
-    e.hi_get().accept(*this);
-    e.body_get().accept(*this);
+    super_type::operator()(e);
     scope_end();
     scope_loop_.pop_back();
   }

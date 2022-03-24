@@ -34,7 +34,6 @@ namespace bind
     /// Take into account the fact that _main and primitive are
     /// not to be renamed.
     template <typename Def> misc::symbol new_name_compute(const Def& e);
-    misc::symbol new_name_compute(const ast::FunctionDec& e);
 
     /// \brief Get the new name of this declaration, possibly create it.
     ///

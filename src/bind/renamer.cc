@@ -14,13 +14,14 @@ namespace bind
     , new_names_()
   {}
 
-  misc::symbol Renamer::new_name_compute(const ast::FunctionDec& e)
+  template <>
+  misc::symbol Renamer::new_name_compute<ast::FunctionDec>(const ast::FunctionDec& e)
   {
     auto name = e.name_get();
     if (name != "_main" && e.body_get())
     {
       auto new_name = misc::symbol::fresh(name);
-      new_names_.insert( {static_cast<const ast::Dec*>(&e), new_name} );
+      new_names_.insert( {&e, new_name} );
       return new_name;
     }
     return name;
