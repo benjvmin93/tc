@@ -11,7 +11,7 @@
 #include <object/libobject.hh>
 #include <parse/libparse.hh>
 #include <type/libtype.hh>
-
+/*
 static void desugar(const std::string& s)
 {
   // Parse, bind and type-check the input.
@@ -20,11 +20,11 @@ static void desugar(const std::string& s)
   try
     {
       tree = parse::parse_unit(s, true);
-      std::cout << "/* === Original tree...  */\n" << *tree << '\n';
+      std::cout << "/* === Original tree...  *//*\n" << *tree << '\n';
       object::bind(*tree).exit_on_error();
       object::types_check(*tree).exit_on_error();
       class_names = object::rename(*tree);
-      std::cout << "/* === Renamed tree...  */\n" << *tree << '\n';
+      std::cout << "/* === Renamed tree...  *//*\n" << *tree << '\n';
     }
   catch (const misc::error& error)
     {
@@ -38,7 +38,7 @@ static void desugar(const std::string& s)
   delete tree;
   tree = nullptr;
   ast::Ast* desugared = desugar.result_get();
-  std::cout << "/* === Desugared tree...  */\n" << *desugared << '\n';
+  std::cout << "/* === Desugared tree...  *//*\n" << *desugared << '\n';
 
   // Compute the bindings and the types on the desugared tree.
   try
@@ -57,10 +57,11 @@ static void desugar(const std::string& s)
 }
 
 const char* program_name = "test-desugar";
-
+*/
 int main()
 {
-  std::cout << "/* Test 1.  */\n";
+  /*
+  std::cout << "/* Test 1.  *//*\n";
   desugar(" let"
           "   type A = class"
           "   {"
@@ -74,7 +75,7 @@ int main()
           "   a.m()"
           " end");
   std::cout << "\n\n"
-            << "/* Test 2.  */\n";
+            << "/* Test 2.  *//*\n";
   desugar(" let"
           "   primitive print(s : string)"
           "   "
@@ -101,7 +102,7 @@ int main()
           "   a := b"
           " end");
   std::cout << "\n\n"
-            << "/* Test 3.  */\n";
+            << "/* Test 3.  *//*\n";
   desugar(" let"
           "   class A {}"
           "   class B extends A {}"
@@ -110,4 +111,6 @@ int main()
           "   var a := id(b)"
           " in"
           " end");
+*/
+return 1;
 }

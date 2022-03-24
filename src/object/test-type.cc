@@ -8,7 +8,7 @@
 #include <ast/libast.hh>
 #include <object/libobject.hh>
 #include <parse/libparse.hh>
-
+/*
 const char* program_name = "test-type";
 
 // Return true on correct typing.
@@ -23,9 +23,9 @@ inline static bool typed(const std::string& s)
   delete d;
   return !e;
 }
-
+*/
 int main()
-{
+{/*
   ast::bindings_display(std::cout) = true;
   assertion(typed(" let"
                   "   class C"
@@ -110,4 +110,6 @@ int main()
                    "   d.a := 2;"
                    "   d.a := d.a(d.a)"
                    " end"));
+*/
+return 1;
 }
