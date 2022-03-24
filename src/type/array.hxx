@@ -9,6 +9,6 @@
 
 namespace type
 {
-  // FIXME: Some code was deleted here.
+  const Type& Array::type_get() const { return type_; }
 
 } // namespace type

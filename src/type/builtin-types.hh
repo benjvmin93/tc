@@ -10,6 +10,27 @@
 
 namespace type
 {
-  // FIXME: Some code was deleted here (Other types : Int, String, Void).
+  class Int : public misc::Singleton<Int>
+  {
+    friend class misc::Singleton<Int>;
 
+  private:
+    Int(){};
+  };
+
+  class String : public misc::Singleton<String>
+  {
+    friend class misc::Singleton<String>;
+
+  private:
+    String(){};
+  };
+
+  class Void : public misc::Singleton<Void>
+  {
+    friend class misc::Singleton<Void>;
+
+  private:
+    Void(){};
+  };
 } // namespace type

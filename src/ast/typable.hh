@@ -21,7 +21,14 @@ namespace ast
 
   class Typable
   {
+    void type_set(const type::Type*);
+    const type::Type* type_get() const;
     // FIXME: Some code was deleted here.
+
+    virtual void accept(ConstVisitor& v) const = 0;
+    virtual void accept(Visitor& v) = 0;
+
+    type::Type* type_;
   };
 } // namespace ast
 #include <ast/typable.hxx>

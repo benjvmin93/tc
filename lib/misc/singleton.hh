@@ -9,7 +9,18 @@ namespace misc
 {
   template <typename T> class Singleton
   {
-    // FIXME: Some code was deleted here.
+  protected:
+    Singleton(){};
+    ~Singleton(){};
+
+  public:
+    Singleton(Singleton& other) = delete;
+    void operator=(const Singleton&) = delete;
+    static T* instance()
+    {
+      static T* instance;
+      return instance;
+    }
   };
 
 } // namespace misc
