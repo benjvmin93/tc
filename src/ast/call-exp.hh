@@ -46,6 +46,9 @@ namespace ast
     const FunctionDec* def_get() const;
     void def_set(FunctionDec* def);
 
+    void name_set(misc::symbol name);
+
+
   protected:
     misc::symbol name_;
     exps_type* args_;

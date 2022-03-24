@@ -53,7 +53,13 @@ namespace bind
 
     /// \name Visiting definition sites.
     /// \{
-    // FIXME: Some code was deleted here.
+    void operator()(ast::NameTy& ty);
+    void operator()(ast::CallExp& ty);    
+    void operator()(ast::SimpleVar& ty);    
+    void operator()(ast::FunctionDec& ty);    
+    void operator()(ast::VarDec& ty);
+    void operator()(ast::TypeDec& ty);
+
     /// \}
 
     /// \name Visiting usage sites.
