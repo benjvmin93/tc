@@ -24,23 +24,48 @@ namespace type
 
   const Type* Class::attr_type(misc::symbol key) const
   {
-    // FIXME: Some code was deleted here.
+    for (const Attribute& elt : attrs_get())
+    {
+      if (elt->name_get() == key)
+        return elt->type_get();
+    }
+    return nullptr;
   }
 
   const Type* Class::meth_type(misc::symbol key) const
   {
-    // FIXME: Some code was deleted here.
+    for (const Method& meth : meths_get())
+    {
+      if (meth->name_get() == key)
+        return meth->type_get();
+    }
+    return nullptr;
   }
 
-  // FIXME: Some code was deleted here (Find common super class).
+  const Class* Class::common_root(const Class& other) const
+  {
+    if (super_.id_get() == other.super_get().id_get())
+      return super_;
+    return nullptr;
+  }
 
-  // FIXME: Some code was deleted here (Super class soundness test).
-
+  bool Class::sound() const
+  {
+    for (const auto& elt : subclasses_type)
+    {
+      if (elt->id_get() == id_)
+        return false;
+    }
+    return true;
+  }
   // FIXME: Some code was deleted here (Special implementation of "compatible_with" for Class).
 
   const Class& Class::object_instance()
   {
-    // FIXME: Some code was deleted here.
+    auto it = std::find(subclasses_type.begin(), subclasses_type.end(), [](Class& elt) { return elt->type_get() == "Object"; };)
+    if (it == subclasses_type.end())
+      return nullptr;
+    return subclasses_type[it];
   }
 
   unsigned Class::fresh_id()

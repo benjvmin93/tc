@@ -22,7 +22,7 @@ namespace ast
     virtual void accept(ConstVisitor& v) const;
     virtual void accept(Visitor& v);
 
-    type::Type* type_;
+    const type::Type* type_;
   };
 } // namespace ast
 #include <ast/type-constructor.hxx>

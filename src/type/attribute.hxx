@@ -8,7 +8,7 @@ namespace type
 {
   inline misc::symbol Attribute::name_get() const { return def_->name_get(); }
 
-  inline const Type& Attribute::type_get() const { def_->type_get(); }
+  inline const Type& Attribute::type_get() const { return *def_->type_get(); }
 
   inline const ast::VarDec* Attribute::def_get() const { return def_; }
 

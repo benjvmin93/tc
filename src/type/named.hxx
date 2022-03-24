@@ -17,6 +17,6 @@ namespace type
 
   inline void Named::name_set(misc::symbol name) { name_ = name; }
 
-  inline const Type& Named::actual() const { return type_.actual(); }
+  inline const Type& Named::actual() const { return type_->actual(); }
 
 } // namespace type
