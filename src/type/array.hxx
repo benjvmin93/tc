@@ -9,6 +9,6 @@
 
 namespace type
 {
-  const Type& Array::type_get() const { return type_; }
+  inline const Type& Array::type_get() const { return type_; }
 
 } // namespace type

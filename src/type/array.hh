@@ -12,10 +12,12 @@ namespace type
   /// Array types.
   class Array : public Type
   {
+  public:
     Array(const Type& type);
 
     const Type& type_get() const;
-
+    
+  private:
     const Type& type_;
   };
 

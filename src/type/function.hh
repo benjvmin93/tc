@@ -43,6 +43,8 @@ namespace type
     const Type& result_get() const;
     /** \} */
 
+    const Type& actual() const;
+    
     bool compatible_with(const Type& other) const;
 
   protected:

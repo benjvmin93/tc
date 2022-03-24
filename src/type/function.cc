@@ -27,19 +27,7 @@ namespace type
 
   bool Function::compatible_with(const Type& other) const
   {
-    if (this.result != other.result_get())
-      return false;
-    if (this.formals_.fields_get().size()
-        != other.formals_get().fields_get().size())
-      return false;
-    auto& first = this.formals_.fields_get();
-    auto& second = other.formals_get().fields_get();
-    for (int x = 0; x < first.size(); x++)
-      {
-        if (first[x].type_get() != second[x].type_get())
-          return false;
-      }
-    return true;
+    return this->result_get() == other;
   }
 
 } // namespace type
