@@ -54,19 +54,32 @@ namespace bind
     scope_begin();
     misc::scoped_map<misc::symbol, ast::VarDec*> scope_var;
     for (auto& x : e.formals_get())
-    {
-       /*auto name = scope_var.get(x->name_get());
+      {
+        auto name = scope_var.get(x->name_get());
         if (name == nullptr)
           {
             x->accept(*this);
             scope_var.put(x->name_get(), x);
           }
         else
-          Binder::redefinition(name, x);*/
-        x->accept(*this);
-    }
-    if (e.result_get() && e.result_get()->def_get())
-      e.result_get()->def_get()->accept(*this);
+          Binder::redefinition(name, x);
+      }
+    if (e.result_get())
+      {
+        auto type = scope_type_.get(e.result_get()->name_get());
+        if (type == nullptr && e.result_get()->name_get() != "int"
+            && e.result_get()->name_get() != "string")
+          {
+            Binder::undeclared(
+              "undeclared type: " + e.result_get()->name_get().get(), e);
+          }
+        else
+          {
+            e.result_get()->def_set(type);
+            if (e.result_get()->def_get() != 0)
+              e.result_get()->def_get()->accept(*this);
+          }
+      }
     if (e.body_get())
       e.body_get()->accept(*this);
     scope_end();
@@ -79,6 +92,9 @@ namespace bind
       e.def_set(name);
     else
       Binder::undeclared("undeclared function: " + e.name_get().get(), e);
+    auto exps = e.args_get();
+    for (auto exp : exps)
+      exp->accept(*this);
   }
 
   void Binder::operator()(ast::TypeDec& e)
@@ -106,7 +122,7 @@ namespace bind
   void Binder::operator()(ast::VarDec& e)
   {
     scope_var_.put(e.name_get(), &e);
-    /*if (e.type_name_get())
+    if (e.type_name_get())
       {
         auto type = scope_type_.get(e.type_name_get()->name_get());
         if (type == nullptr && e.type_name_get()->name_get() != "int"
@@ -117,6 +133,7 @@ namespace bind
           }
         else
           {
+            e.type_name_get()->def_set(type);
             this->accept(e.type_name_get());
             this->accept(e.init_get());
           }
@@ -124,13 +141,7 @@ namespace bind
     else
       {
         this->accept(e.init_get());
-      }*/
-      if (e.type_name_get())
-      {
-        e.type_name_get()->accept(*this);
       }
-      if (e.init_get())
-        e.init_get()->accept(*this);      
   }
 
   void Binder::operator()(ast::LetExp& e)
@@ -166,7 +177,21 @@ namespace bind
     scope_method_.put(e.name_get(), &e);
     e.formals_get().accept(*this);
     if (e.result_get() && e.result_get()->def_get())
-      e.result_get()->def_get()->accept(*this);
+      {
+        auto type = scope_type_.get(e.result_get()->name_get());
+        if (type == nullptr && e.result_get()->name_get() != "int"
+            && e.result_get()->name_get() != "string")
+          {
+            Binder::undeclared(
+              "undeclared type: " + e.result_get()->name_get().get(), e);
+          }
+        else
+          {
+            e.result_get()->def_set(type);
+            if (e.result_get()->def_get() != 0)
+              e.result_get()->def_get()->accept(*this);
+          }
+      }
     if (e.body_get())
       e.body_get()->accept(*this);
   }
