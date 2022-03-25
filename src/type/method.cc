@@ -25,6 +25,13 @@ namespace type
 
   void Method::accept(Visitor& v) { v(*this); }
 
+  bool Method::compatible_with(const Type& other) const
+  {
+    if (this->type_get() == other.actual())
+      return true;
+    return false;
+  }
+
   // FIXME: Some code was deleted here.
 
 } // namespace type
