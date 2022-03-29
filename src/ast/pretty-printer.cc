@@ -61,7 +61,7 @@ namespace ast
     ostr_ << e.name_get() << " : " << e.type_name_get();
     if (bindings_display(ostr_))
       {
-        ostr_ << " /* " << 0 << " */";
+        ostr_ << " /* " << e.type_name_get().def_get() << " */";
       }
   }
 
@@ -147,7 +147,12 @@ namespace ast
       {
         ostr_ << " : " << e.result_get()->name_get();
         if (bindings_display(ostr_))
-          ostr_ << " /* " << 0 << " */";
+          {
+            if (e.result_get()->def_get() == 0)
+              ostr_ << " /* " << 0 << " */";
+            else
+              ostr_ << " /* " << e.result_get()->def_get() << " */";
+          }
       }
     if (e.body_get() != nullptr)
       {
@@ -202,7 +207,10 @@ namespace ast
         ostr_ << ": " << *(e.type_name_get());
         if (bindings_display(ostr_))
           {
-            ostr_ << " /* " << 0 << " */";
+            if (e.type_name_get()->def_get() == 0)
+              ostr_ << " /* " << 0 << " */";
+            else
+              ostr_ << " /* " << e.type_name_get()->def_get() << " */";
           }
       }
     if (e.init_get())

@@ -46,6 +46,7 @@ namespace bind
     using chunk_type = ast::Chunk<D>;
     for (const auto& dec : e)
       dec->accept(*this);
+    // FIXME make for loop for body.
   }
 
   /* These specializations are in bind/binder.hxx, so that derived

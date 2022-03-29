@@ -4,6 +4,7 @@
  */
 
 #include <bind/binder.hh>
+#include <bind/renamer.hh>
 
 namespace bind
 {
@@ -12,5 +13,11 @@ namespace bind
     Binder bind_compute;
     bind_compute(tree);
     return bind_compute.error_get();
+  }
+
+  void name_compute(ast::Ast& tree)
+  {
+    Renamer name_compute;
+    name_compute(tree);
   }
 } // namespace bind

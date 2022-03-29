@@ -12,26 +12,27 @@
 
 using namespace ast;
 using namespace desugar;
-
+/*
 const char* program_name = "test-bounds-checking";
 
 static void test_bounds_checking(ast::Ast& tree)
 {
   bind::bind(tree);
   type::types_check(tree);
-  std::cout << "/* === Original tree...  */\n" << tree << '\n';
+  std::cout << "/* === Original tree...  *//*\n" << tree << '\n';
 
   BoundsCheckingVisitor bounds_checks_add;
   bounds_checks_add(tree);
 
-  std::cout << "/* === AST with bounds checks...  */\n"
+  std::cout << "/* === AST with bounds checks...  *//*\n"
             << *bounds_checks_add.result_get() << '\n';
   delete bounds_checks_add.result_get();
   std::cout << std::endl;
 }
-
+*/
 int main()
 {
+  /*
   // Minimal built-in function requirements.
   std::string builtins = " primitive print_err(string: string)"
                          " primitive exit(status: int)"
@@ -64,4 +65,6 @@ int main()
     delete tree;
     tree = nullptr;
   }
+  */
+ return 1;
 }
