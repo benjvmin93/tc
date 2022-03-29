@@ -45,7 +45,7 @@ namespace type
 
     const Type& actual() const;
     
-    bool compatible_with(const Type& other) const;
+    bool compatible_with(const Type& other) const override;
 
   protected:
     /// Formals' types.

@@ -58,7 +58,10 @@ namespace type
     }
     return true;
   }
-  // FIXME: Some code was deleted here (Special implementation of "compatible_with" for Class).
+  bool Class::compatible_with(const Type& other) const
+  {
+    return this->actual() == other;
+  }
 
   const Class& Class::object_instance()
   {
