@@ -111,5 +111,5 @@ int main()
                    "   d.a := d.a(d.a)"
                    " end"));
 */
-return 1;
+return 0;
 }

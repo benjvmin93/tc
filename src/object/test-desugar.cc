@@ -112,5 +112,5 @@ int main()
           " in"
           " end");
 */
-return 1;
+return 0;
 }
