@@ -152,6 +152,10 @@ namespace type
 
     void operator()(ast::SimpleVar& e) override;
     // FIXME: Some code was deleted here (Other Var nodes).
+    /*
+    void operator()(ast::FieldVar& e) override;
+    void operator()(const_t<SubscriptVar>& e) override;
+    */
 
     // ---------------- //
     // Visiting /Exp/.  //
@@ -166,6 +170,19 @@ namespace type
     void operator()(ast::RecordExp& e) override;
     void operator()(ast::OpExp& e) override;
     // FIXME: Some code was deleted here (Other Exp nodes).
+    /*
+    void operator()(const_t<CallExp>& e) override;
+    void operator()(const_t<SeqExp>& e) override;
+    void operator()(const_t<AssignExp>& e) override;
+    void operator()(const_t<IfExp>& e) override;
+    void operator()(const_t<WhileExp>& e) override;
+    void operator()(const_t<ForExp>& e) override;
+    void operator()(const_t<BreakExp>&) override;
+    void operator()(const_t<LetExp>& e) override;
+    void operator()(const_t<ArrayExp>& e) override;
+    void operator()(const_t<CastExp>& e) override;
+    void operator()(const_t<FieldInit>& e) override;
+    */
 
     // ---------------- //
     // Visiting /Dec/.  //

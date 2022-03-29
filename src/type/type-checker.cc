@@ -33,13 +33,16 @@ namespace type
 
   const Type* TypeChecker::type(ast::Typable& e)
   {
-    // FIXME: Some code was deleted here.
+    if (e.type_get() == nullptr)
+      e.accept(*this);
+    return e.type_get();
   }
 
   const Record* TypeChecker::type(const ast::fields_type& e)
   {
-    auto res = new Record;
     // FIXME: Some code was deleted here.
+    auto res = new Record;
+    //res->fields_ = e;
     return res;
   }
 
@@ -81,7 +84,8 @@ namespace type
                                 const std::string& exp2,
                                 const Type& type2)
   {
-    // FIXME: Some code was deleted here.
+    if (!type1.compatible_with(type2))
+      type_mismatch(ast, exp1, type1, exp2, type2);
   }
 
   void TypeChecker::check_types(const ast::Ast& ast,
@@ -91,8 +95,7 @@ namespace type
                                 ast::Typable& type2)
   {
     // Ensure evaluation order.
-    type(type1);
-    type(type2);
+    //check_types(ast, exp1, type(type1), exp2, type(type2));
     // FIXME: Some code was deleted here (Check types).
   }
 
@@ -106,10 +109,20 @@ namespace type
 
   void TypeChecker::operator()(ast::SimpleVar& e)
   {
-    // FIXME: Some code was deleted here.
+    //type_default(e, type(e.def_get()));
   }
 
   // FIXME: Some code was deleted here.
+  /*
+  void operator()(ast::FieldVar& e)
+  {
+    type_default(e, type(e.var_get()));
+  }
+
+  void operator()(const_t<SubscriptVar>& e)
+  {
+    type_default(e, type(e.var_get()));
+  }*/
 
   /*-----------------.
   | Visiting /Exp/.  |
@@ -125,12 +138,13 @@ namespace type
 
   void TypeChecker::operator()(ast::IntExp& e)
   {
-    // FIXME: Some code was deleted here.
+    //type_default(e, Int);
   }
 
   void TypeChecker::operator()(ast::StringExp& e)
   {
     // FIXME: Some code was deleted here.
+    //type_default(e, String);
   }
 
   // Complex values.
@@ -157,6 +171,23 @@ namespace type
   }
 
   // FIXME: Some code was deleted here.
+  /*
+    void operator()(const_t<CallExp>& e) override
+    {
+      //type_default(e, def_get());
+    }
+
+    void operator()(const_t<SeqExp>& e) override;
+    void operator()(const_t<AssignExp>& e) override;
+    void operator()(const_t<IfExp>& e) override;
+    void operator()(const_t<WhileExp>& e) override;
+    void operator()(const_t<ForExp>& e) override;
+    void operator()(const_t<BreakExp>&) override;
+    void operator()(const_t<LetExp>& e) override;
+    void operator()(const_t<ArrayExp>& e) override;
+    void operator()(const_t<CastExp>& e) override;
+    void operator()(const_t<FieldInit>& e) override;
+    */
 
   /*-----------------.
   | Visiting /Dec/.  |
