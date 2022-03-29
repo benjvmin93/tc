@@ -16,7 +16,6 @@ namespace type
 
   void Record::accept(Visitor& v) { v(*this); }
 
-  // FIXME: Some code was deleted here (Field manipulators).
   const Type* Record::field_type(misc::symbol key) const
   {
     for (auto& v : fields_)
@@ -38,10 +37,16 @@ namespace type
     }
   }
 
-  // FIXME: Some code was deleted here (Special implementation of "compatible_with" for Record).
   bool Record::compatible_with(const Type& other) const
   {
-    return true; //TODO 
+    auto fields_vec = this->fields_get();
+
+    for (auto &f : fields_vec)
+    {
+      if (f.type_get() != other.actual())
+        return false;
+    }
+    return true;
   }
 
 } // namespace type

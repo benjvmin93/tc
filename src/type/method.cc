@@ -31,7 +31,4 @@ namespace type
       return true;
     return false;
   }
-
-  // FIXME: Some code was deleted here.
-
 } // namespace type

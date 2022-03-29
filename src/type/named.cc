@@ -20,14 +20,17 @@ namespace type
     , type_(type)
   {}
 
-  // FIXME: Some code was deleted here (Inherited functions).
   void Named::accept(ConstVisitor& v) const { v(*this); }
 
   void Named::accept(Visitor& v) { v(*this); }
 
   // FIXME: Some code was deleted here (Sound).
-  bool Named::sound() const { return true; }
-  // FIXME: Some code was deleted here (Special implementation of "compatible_with" for Named).
+  bool Named::sound() const 
+  {
+    //TODO
+    return true; 
+  }
+
   bool Named::compatible_with(const Type& other) const
   {
     if (*this->type_get() == other.actual())
