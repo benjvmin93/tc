@@ -48,7 +48,6 @@ namespace ast
 
     void name_set(misc::symbol name);
 
-
   protected:
     misc::symbol name_;
     exps_type* args_;

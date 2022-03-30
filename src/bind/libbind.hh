@@ -10,4 +10,4 @@ namespace bind
 {
   misc::error bind_compute(ast::Ast& tree);
   void name_compute(ast::Ast& tree);
-}
+} // namespace bind
