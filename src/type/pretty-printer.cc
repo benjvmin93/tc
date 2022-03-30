@@ -84,12 +84,12 @@ namespace type
 
   void PrettyPrinter::operator()(const Class& e)
   {
-    //FIXME
+    //TODO
   }
 
   void PrettyPrinter::operator()(const Function& e)
   {
-    // FIXME: Some code was deleted here.
+    ostr_ << e.formals_get();
   }
 
   void PrettyPrinter::operator()(const Attribute& e)

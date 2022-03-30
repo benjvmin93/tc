@@ -9,7 +9,7 @@
 #include <misc/symbol.hh>
 #include <type/attribute.hh>
 #include <type/method.hh>
-#include <type/type.hh>
+// #include <type/type.hh>
 
 namespace type
 {
