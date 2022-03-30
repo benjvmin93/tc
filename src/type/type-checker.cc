@@ -95,7 +95,7 @@ namespace type
                                 ast::Typable& type2)
   {
     // Ensure evaluation order.
-    //check_types(ast, exp1, type(type1), exp2, type(type2));
+    check_types(ast, exp1, *type(type1), exp2, *type(type2));
     // FIXME: Some code was deleted here (Check types).
   }
 
@@ -138,13 +138,14 @@ namespace type
 
   void TypeChecker::operator()(ast::IntExp& e)
   {
-    //type_default(e, Int);
+    auto int_ptr = misc::Singleton<Int>::instance();
+    type_default(e, int_ptr);
   }
 
   void TypeChecker::operator()(ast::StringExp& e)
   {
-    // FIXME: Some code was deleted here.
-    //type_default(e, String);
+    auto str_ptr = misc::Singleton<String>::instance();
+    type_default(e, str_ptr);
   }
 
   // Complex values.
@@ -161,6 +162,16 @@ namespace type
   void TypeChecker::operator()(ast::OpExp& e)
   {
     // FIXME: Some code was deleted here.
+    /*auto record_type = std::make_unique<ast::RecordTy>();
+    if (e.left_get().type_get() == nullptr)
+      e.right_get().type_set(record_type);
+    else if (e.right_get().type_get() == nullptr)
+      e.left_get().type_set(record_type);
+    else
+    {*/
+    // check_types(e, e.left_get().name_get(), e.left_get().type_get(), e.right_get().name_get(), e.right_get().type_get());
+
+    //}
 
     // If any of the operands are of type Nil, set the `record_type_` to the
     // type of the opposite operand.
