@@ -280,14 +280,16 @@ namespace type
     // name in E.  A declaration has no type in itself; here we store
     // the type declared by E.
 
-    auto named = Named(e.name_get());
+    auto named = new Named(e.name_get());
     e.create_type_set(e.type_get());
+    e.type_set(e.created_type_get());
   }
 
   // Bind the type body to its name.
   template <> void TypeChecker::visit_dec_body<ast::TypeDec>(ast::TypeDec& e)
   {
-    auto type = e.created_type_get();
+    auto type = dynamic_cast<const Named*>(e.created_type_get());
+    type->type_set(type(dynamic_cast<ast::Typable>(e.ty_get()));
     // TODO : Bind the type to the name of the dec.
   }
 
