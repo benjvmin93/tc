@@ -164,9 +164,10 @@ namespace type
     auto int_ptr = &Int::instance();
     e.left_get().accept(*this);
     e.right_get().accept(*this);
-    //check_type(e.left_get(), "left operand type", *int_ptr);
-    //check_type(e.right_get(), "right operand type", *int_ptr);
-    std::cout << "there is no error here\n";
+    check_types(e.left_get(), "left operand type", *e.left_get().type_get(),
+                "expected type", *int_ptr);
+    check_types(e.right_get(), "right operand type", *e.right_get().type_get(),
+                "expected type", *int_ptr);
     /*type_default(e, int_ptr);
     // FIXME: Some code was deleted here.
     // If any of the operands are of type Nil, set the `record_type_` to the

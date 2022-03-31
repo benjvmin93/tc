@@ -25,7 +25,8 @@ namespace type
   template <typename NodeType>
   void TypeChecker::type_default(NodeType& e, const type::Type* type)
   {
-    e.type_set(type);
+    if (!e.type_get())
+      e.type_set(type);
   }
 
   template <typename NodeType>
@@ -66,9 +67,9 @@ namespace type
                                const std::string& s,
                                const Type& expected)
   {
-    if (e.type_get()->compatible_with(expected))
+    if (!e.type_get()->compatible_with(expected))
       {
-        std::cout << "test";
+        error(e, s, expected);
       }
   }
 
