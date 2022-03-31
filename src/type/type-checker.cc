@@ -302,14 +302,10 @@ namespace type
   template <class D> void TypeChecker::chunk_visit(ast::Chunk<D>& e)
   {
     for (const auto& dec : e)
-<<<<<<< HEAD
       {
         visit_dec_header(*dec);
         visit_dec_body(*dec);
       }
-=======
-      visit_dec_header<D>(*dec);
->>>>>>> 811229ce622ad61b9929463d510a40e12f7b14fc
   }
 
   /*-------------.
