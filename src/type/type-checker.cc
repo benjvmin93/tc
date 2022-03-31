@@ -288,8 +288,8 @@ namespace type
   // Bind the type body to its name.
   template <> void TypeChecker::visit_dec_body<ast::TypeDec>(ast::TypeDec& e)
   {
-    auto type = dynamic_cast<const Named*>(e.created_type_get());
-    type->type_set(type(dynamic_cast<ast::Typable>(e.ty_get()));
+    auto typ = dynamic_cast<const Named*>(e.created_type_get());
+    typ->type_set(type(e.ty_get()));
     // TODO : Bind the type to the name of the dec.
   }
 
