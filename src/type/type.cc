@@ -11,7 +11,7 @@ namespace type
 {
   const Type& Type::actual() const { return *this; }
 
-  bool Type::compatible_with(const Type& other) const { return *this == other; }
+  bool Type::compatible_with(const Type& other) const { return this == &other; }
 
   const misc::xalloc<bool> hide_actual_types;
 

@@ -109,7 +109,7 @@ namespace type
 
   void TypeChecker::operator()(ast::SimpleVar& e)
   {
-    //type_default(e, type(e.def_get()));
+    type_default(e, type(*(e.def_get())));
   }
 
   // FIXME: Some code was deleted here.
@@ -138,13 +138,17 @@ namespace type
 
   void TypeChecker::operator()(ast::IntExp& e)
   {
-    auto int_ptr = misc::Singleton<Int>::instance();
+    auto int_ptr = Int::instance();
     type_default(e, int_ptr);
+    if (int_ptr == nullptr)
+      std::cout << "this is null\n";
+    else
+      std::cout << "wtf bro srl";
   }
 
   void TypeChecker::operator()(ast::StringExp& e)
   {
-    auto str_ptr = misc::Singleton<String>::instance();
+    auto str_ptr = String::instance();
     type_default(e, str_ptr);
   }
 
@@ -161,17 +165,14 @@ namespace type
 
   void TypeChecker::operator()(ast::OpExp& e)
   {
+    auto int_ptr = Int::instance();
+    e.left_get().accept(*this);
+    e.right_get().accept(*this);
+    //check_type(e.left_get(), "left operand type", *int_ptr);
+    //check_type(e.right_get(), "right operand type", *int_ptr);
+    std::cout << "there is no error here\n";
+    type_default(e, int_ptr);
     // FIXME: Some code was deleted here.
-    /*auto record_type = std::make_unique<ast::RecordTy>();
-    if (e.left_get().type_get() == nullptr)
-      e.right_get().type_set(record_type);
-    else if (e.right_get().type_get() == nullptr)
-      e.left_get().type_set(record_type);
-    else
-    {*/
-    // check_types(e, e.left_get().name_get(), e.left_get().type_get(), e.right_get().name_get(), e.right_get().type_get());
-
-    //}
 
     // If any of the operands are of type Nil, set the `record_type_` to the
     // type of the opposite operand.
@@ -232,8 +233,8 @@ namespace type
   {
     if (e.body_get())
       {
-        visit_routine_body<Function>(e);
-
+        //visit_routine_body<Function>(e);
+        e.body_get()->accept(*this);
         // Check for Nil types in the function body.
         if (!error_)
           {
@@ -287,7 +288,11 @@ namespace type
 
   template <class D> void TypeChecker::chunk_visit(ast::Chunk<D>& e)
   {
-    // FIXME: Some code was deleted here.
+    for (const auto& dec : e)
+      {
+        visit_dec_header(*dec);
+        visit_dec_body(*dec);
+      }
   }
 
   /*-------------.

@@ -21,15 +21,15 @@ namespace ast
 
   class Typable
   {
-    public:
-      void type_set(const type::Type*);
-      const type::Type* type_get() const;
+  public:
+    void type_set(const type::Type*);
+    const type::Type* type_get() const;
 
-      virtual void accept(ConstVisitor& v) const = 0;
-      virtual void accept(Visitor& v) = 0;
-    
-    private:
-      const type::Type* type_;
+    virtual void accept(ConstVisitor& v) const = 0;
+    virtual void accept(Visitor& v) = 0;
+
+  private:
+    const type::Type* type_ = nullptr;
   };
 } // namespace ast
 #include <ast/typable.hxx>
