@@ -161,23 +161,22 @@ namespace type
 
   void TypeChecker::operator()(ast::OpExp& e)
   {
-    // FIXME: Some code was deleted here.
-    /*auto record_type = std::make_unique<ast::RecordTy>();
-    if (e.left_get().type_get() == nullptr)
-      e.right_get().type_set(record_type);
-    else if (e.right_get().type_get() == nullptr)
-      e.left_get().type_set(record_type);
-    else
-    {*/
-    // check_types(e, e.left_get().name_get(), e.left_get().type_get(), e.right_get().name_get(), e.right_get().type_get());
-
-    //}
-
     // If any of the operands are of type Nil, set the `record_type_` to the
     // type of the opposite operand.
+    type(e.left_get());
+    type(e.right_get());
+
+    std::cout << "test\n";
+    check_types(e, "left", e.left_get(), "right", e.right_get());
+    
     if (!error_)
       {
-        // FIXME: Some code was deleted here.
+        auto oper = e.oper_get();
+        if (oper == ast::OpExp::Oper::add || oper == ast::OpExp::Oper::sub || oper == ast::OpExp::Oper::mul || oper == ast::OpExp::Oper::div)
+        {
+          if (e.left_get().type_get() != Int::instance() || e.right_get().type_get() != Int::instance())
+            error(e, "expected INT");
+        }
       }
   }
 
@@ -213,7 +212,7 @@ namespace type
     chunk_visit<ast::FunctionDec>(e);
   }
 
-  void TypeChecker::operator()(ast::FunctionDec&)
+  void TypeChecker::operator()(ast::FunctionDec& e)
   {
     // We must not be here.
     unreachable();
@@ -272,13 +271,16 @@ namespace type
     // We only process the head of the type declaration, to set its
     // name in E.  A declaration has no type in itself; here we store
     // the type declared by E.
-    // FIXME: Some code was deleted here.
+
+    auto named = Named(e.name_get());
+    e.create_type_set(e.type_get());
   }
 
   // Bind the type body to its name.
   template <> void TypeChecker::visit_dec_body<ast::TypeDec>(ast::TypeDec& e)
   {
-    // FIXME: Some code was deleted here.
+    auto type = e.created_type_get();
+    // TODO : Bind the type to the name of the dec.
   }
 
   /*------------------.
@@ -287,7 +289,8 @@ namespace type
 
   template <class D> void TypeChecker::chunk_visit(ast::Chunk<D>& e)
   {
-    // FIXME: Some code was deleted here.
+    for (const auto& dec : e)
+      visit_dec_header<D>(*dec);
   }
 
   /*-------------.
