@@ -138,17 +138,13 @@ namespace type
 
   void TypeChecker::operator()(ast::IntExp& e)
   {
-    auto int_ptr = Int::instance();
+    auto int_ptr = &Int::instance();
     type_default(e, int_ptr);
-    if (int_ptr == nullptr)
-      std::cout << "this is null\n";
-    else
-      std::cout << "wtf bro srl";
   }
 
   void TypeChecker::operator()(ast::StringExp& e)
   {
-    auto str_ptr = String::instance();
+    auto str_ptr = &String::instance();
     type_default(e, str_ptr);
   }
 
@@ -165,7 +161,7 @@ namespace type
 
   void TypeChecker::operator()(ast::OpExp& e)
   {
-    auto int_ptr = Int::instance();
+    auto int_ptr = &Int::instance();
     e.left_get().accept(*this);
     e.right_get().accept(*this);
     //check_type(e.left_get(), "left operand type", *int_ptr);
