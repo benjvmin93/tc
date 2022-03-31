@@ -171,15 +171,25 @@ namespace type
     //check_type(e.left_get(), "left operand type", *int_ptr);
     //check_type(e.right_get(), "right operand type", *int_ptr);
     std::cout << "there is no error here\n";
-    type_default(e, int_ptr);
+    /*type_default(e, int_ptr);
     // FIXME: Some code was deleted here.
-
     // If any of the operands are of type Nil, set the `record_type_` to the
     // type of the opposite operand.
+    type(e.left_get());
+    type(e.right_get());
+
+    std::cout << "test\n";
+    check_types(e, "left", e.left_get(), "right", e.right_get());
+    
     if (!error_)
       {
-        // FIXME: Some code was deleted here.
-      }
+        auto oper = e.oper_get();
+        if (oper == ast::OpExp::Oper::add || oper == ast::OpExp::Oper::sub || oper == ast::OpExp::Oper::mul || oper == ast::OpExp::Oper::div)
+        {
+          if (e.left_get().type_get() != Int::instance() || e.right_get().type_get() != Int::instance())
+            error(e, "expected INT");
+        }
+      }*/
   }
 
   // FIXME: Some code was deleted here.
@@ -214,7 +224,7 @@ namespace type
     chunk_visit<ast::FunctionDec>(e);
   }
 
-  void TypeChecker::operator()(ast::FunctionDec&)
+  void TypeChecker::operator()(ast::FunctionDec& e)
   {
     // We must not be here.
     unreachable();
@@ -273,13 +283,16 @@ namespace type
     // We only process the head of the type declaration, to set its
     // name in E.  A declaration has no type in itself; here we store
     // the type declared by E.
-    // FIXME: Some code was deleted here.
+
+    auto named = Named(e.name_get());
+    e.create_type_set(e.type_get());
   }
 
   // Bind the type body to its name.
   template <> void TypeChecker::visit_dec_body<ast::TypeDec>(ast::TypeDec& e)
   {
-    // FIXME: Some code was deleted here.
+    auto type = e.created_type_get();
+    // TODO : Bind the type to the name of the dec.
   }
 
   /*------------------.
@@ -289,10 +302,14 @@ namespace type
   template <class D> void TypeChecker::chunk_visit(ast::Chunk<D>& e)
   {
     for (const auto& dec : e)
+<<<<<<< HEAD
       {
         visit_dec_header(*dec);
         visit_dec_body(*dec);
       }
+=======
+      visit_dec_header<D>(*dec);
+>>>>>>> 811229ce622ad61b9929463d510a40e12f7b14fc
   }
 
   /*-------------.
