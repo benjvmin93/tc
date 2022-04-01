@@ -207,16 +207,16 @@ namespace type
     // si il n'y a pas de else on doit check le then avec un void
     e.get_test().accept(*this);
     e.get_thenclause().accept(*this);
-    if (e.get_elseclause())
+    if (&e.get_elseclause())
       {
         e.get_elseclause().accept(*this);
-        check_types(e, "then clause type", e.get_thenclause().type_get(),
-                    "else clause type", e.get_elseclause().type_get());
+        check_types(e, "then clause type", *e.get_thenclause().type_get(),
+                    "else clause type", *e.get_elseclause().type_get());
       }
     else
       {
         auto void_ptr = &Void::instance();
-        check_types(e, "then clause type", e.get_thenclause().type_get(),
+        check_types(e, "then clause type", *e.get_thenclause().type_get(),
                     "else clause type", *void_ptr);
       }
     type_default(e, e.get_thenclause().type_get());
@@ -229,14 +229,14 @@ namespace type
 
     e.vardec_get().accept(*this);
 
-    check_types(e, "index type", e.vardec_get().type_get(), "expected type",
+    check_types(e, "index type", *e.vardec_get().type_get(), "expected type",
                 *int_ptr);
     e.hi_get().accept(*this);
-    check_types(e, "high bound type", e.hi_get().type_get(), "expected type",
+    check_types(e, "high bound type", *e.hi_get().type_get(), "expected type",
                 *int_ptr);
     e.body_get().accept(*this);
 
-    check_types(e, "for type", e.body_get().type_get(), "expected type",
+    check_types(e, "for type", *e.body_get().type_get(), "expected type",
                 *void_ptr);
     // INFORMATION
     // check si la variable de l'index est un int et si le high bound est aussi un int
@@ -252,7 +252,7 @@ namespace type
 
     e.test_get().accept(*this);
     e.body_get().accept(*this);
-    check_types(e, "while type", e.body_get().type_get(), "expected type",
+    check_types(e, "while type", *e.body_get().type_get(), "expected type",
                 *void_ptr);
     // INFORMATION
     // accept le test puis le body
@@ -275,7 +275,9 @@ namespace type
     // recuperer le type de la fonction de deifnition
     // accept la liste d'arguments
     type_default(e, type(*(e.def_get())));
-    e.args_get().accept(*this);
+    auto exps = e.args_get();
+    for (auto exp : exps)
+      exp->accept(*this);
   }
 
   void TypeChecker::operator()(ast::LetExp& e)
@@ -288,7 +290,7 @@ namespace type
     e.exp_get().accept(*this);
     auto void_ptr = &Void::instance();
 
-    check_types(e, "in type", e.exp_get().type_get(), "expected type",
+    check_types(e, "in type", *e.exp_get().type_get(), "expected type",
                 *void_ptr);
     type_default(e, void_ptr);
   }
@@ -317,8 +319,8 @@ namespace type
     e.var_get().accept(*this);
     e.exp_get().accept(*this);
 
-    check_types(e, "left operand type", e.var_get().type_get(),
-                "right operand type", e.exp_get().type_get());
+    check_types(e, "left operand type", *e.var_get().type_get(),
+                "right operand type", *e.exp_get().type_get());
     type_default(e, e.var_get().type_get());
   }
 
@@ -338,10 +340,10 @@ namespace type
     e.init_get().accept(*this);
     auto int_ptr = &Int::instance();
 
-    check_types(e, "Array type", e.type_name_get().type_get(), "Array variable",
-                e.init_get().type_get());
+    check_types(e, "Array type", *e.type_name_get().type_get(),
+                "Array variable", *e.init_get().type_get());
 
-    check_types(e, "Array size type", e.size_get().type_get(), "Expected type",
+    check_types(e, "Array size type", *e.size_get().type_get(), "Expected type",
                 *int_ptr);
     type_default(e, e.type_name_get().type_get());
   }
@@ -399,11 +401,11 @@ namespace type
     if (e.result_get())
       {
         e.result_get()->accept(*this);
-        type_default(e, type(*e.result_));
+        type_default(e, type(*e.result_get()));
       }
     else
       {
-        auto void_ptr = Void::instance();
+        auto void_ptr = &Void::instance();
         type_default(e, void_ptr);
       }
     // INFORMATION

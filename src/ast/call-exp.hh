@@ -44,10 +44,10 @@ namespace ast
     /** \} */
 
     const FunctionDec* def_get() const;
+    FunctionDec* def_get();
     void def_set(FunctionDec* def);
 
     void name_set(misc::symbol name);
-
 
   protected:
     misc::symbol name_;

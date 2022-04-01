@@ -13,4 +13,6 @@ namespace ast
 {
   inline const Exp* BreakExp::def_get() const { return def_; }
   inline void BreakExp::def_set(Exp* def) { def_ = def; }
+  inline Exp* BreakExp::def_get() { return def_; }
+
 } // namespace ast
