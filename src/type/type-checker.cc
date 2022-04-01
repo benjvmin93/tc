@@ -161,13 +161,20 @@ namespace type
 
   void TypeChecker::operator()(ast::OpExp& e)
   {
+    // INFORMATION
+    // Recupere l'instance de int
+    // accept le left puis accept le right pour qu'ils recuperent leurs type
+    // Grace au parcours des noeuds
+    // check le type pour savoir si c'est des int
+    // Ce sera a changer parce qu'on peut avoir des records et des type_dec
     auto int_ptr = &Int::instance();
     e.left_get().accept(*this);
     e.right_get().accept(*this);
-    check_types(e.left_get(), "left operand type", *e.left_get().type_get(),
+    check_types(e, "left operand type", *e.left_get().type_get(),
                 "expected type", *int_ptr);
-    check_types(e.right_get(), "right operand type", *e.right_get().type_get(),
+    check_types(e, "right operand type", *e.right_get().type_get(),
                 "expected type", *int_ptr);
+    type_default(e, int_ptr);
     /*type_default(e, int_ptr);
     // FIXME: Some code was deleted here.
     // If any of the operands are of type Nil, set the `record_type_` to the
@@ -189,24 +196,180 @@ namespace type
       }*/
   }
 
-  // FIXME: Some code was deleted here.
-  /*
-    void operator()(const_t<CallExp>& e) override
-    {
-      //type_default(e, def_get());
-    }
+  void TypeChecker::operator()(ast::IfExp& e)
+  {
+    // INFORMATION
+    // accept le test
+    // accept le then
+    // accept le else s'il existe
+    // apres avoir accept, les noeuds ont recup leur types grace au parcours
+    // on peut check_types le then et else pour savoir si c'est le meme type
+    // si il n'y a pas de else on doit check le then avec un void
+    e.get_test().accept(*this);
+    e.get_thenclause().accept(*this);
+    if (e.get_elseclause())
+      {
+        e.get_elseclause().accept(*this);
+        check_types(e, "then clause type", e.get_thenclause().type_get(),
+                    "else clause type", e.get_elseclause().type_get());
+      }
+    else
+      {
+        auto void_ptr = &Void::instance();
+        check_types(e, "then clause type", e.get_thenclause().type_get(),
+                    "else clause type", *void_ptr);
+      }
+    type_default(e, e.get_thenclause().type_get());
+  }
+  void TypeChecker::operator()(ast::ForExp& e)
+  {
+    auto int_ptr = &Int::instance();
+    auto void_ptr = &Void::instance();
+    type_default(e, void_ptr);
 
-    void operator()(const_t<SeqExp>& e) override;
-    void operator()(const_t<AssignExp>& e) override;
-    void operator()(const_t<IfExp>& e) override;
-    void operator()(const_t<WhileExp>& e) override;
-    void operator()(const_t<ForExp>& e) override;
-    void operator()(const_t<BreakExp>&) override;
-    void operator()(const_t<LetExp>& e) override;
-    void operator()(const_t<ArrayExp>& e) override;
-    void operator()(const_t<CastExp>& e) override;
-    void operator()(const_t<FieldInit>& e) override;
-    */
+    e.vardec_get().accept(*this);
+
+    check_types(e, "index type", e.vardec_get().type_get(), "expected type",
+                *int_ptr);
+    e.hi_get().accept(*this);
+    check_types(e, "high bound type", e.hi_get().type_get(), "expected type",
+                *int_ptr);
+    e.body_get().accept(*this);
+
+    check_types(e, "for type", e.body_get().type_get(), "expected type",
+                *void_ptr);
+    // INFORMATION
+    // check si la variable de l'index est un int et si le high bound est aussi un int
+    // check si le body a bien un void en retour
+    // TODO
+    // check que la variable de l'index n'es pas incrementer ou decrementer dans le body
+  }
+
+  void TypeChecker::operator()(ast::WhileExp& e)
+  {
+    auto void_ptr = &Void::instance();
+    type_default(e, void_ptr);
+
+    e.test_get().accept(*this);
+    e.body_get().accept(*this);
+    check_types(e, "while type", e.body_get().type_get(), "expected type",
+                *void_ptr);
+    // INFORMATION
+    // accept le test puis le body
+    // check si le body est bien un void
+    // TODO
+    // peut etre quelque chose mais j'ai pas d'idee
+    // ca se trouve c'est parfait ?
+  }
+
+  void TypeChecker::operator()(ast::BreakExp& e)
+  {
+    // INFORMATION
+    // recuperer le type de la loop
+    type_default(e, type(*(e.def_get())));
+  }
+
+  void TypeChecker::operator()(ast::CallExp& e)
+  {
+    // INFORMATION
+    // recuperer le type de la fonction de deifnition
+    // accept la liste d'arguments
+    type_default(e, type(*(e.def_get())));
+    e.args_get().accept(*this);
+  }
+
+  void TypeChecker::operator()(ast::LetExp& e)
+  {
+    // INFORMATION
+    // visit la chunklist
+    // visit les expressions qu'il y a dans 'in'
+    // check si le in est bien un void puisque un letExp doit rien return
+    e.chunklist_get().accept(*this);
+    e.exp_get().accept(*this);
+    auto void_ptr = &Void::instance();
+
+    check_types(e, "in type", e.exp_get().type_get(), "expected type",
+                *void_ptr);
+    type_default(e, void_ptr);
+  }
+
+  void TypeChecker::operator()(ast::SeqExp& e)
+  {
+    // INFORMATION
+    // visit les expressions
+    // le type default est void je crois mais info a verifier
+    auto exps = e.exps_get();
+    for (auto exp : exps)
+      {
+        exp->accept(*this);
+      }
+    auto void_ptr = &Void::instance();
+    type_default(e, void_ptr);
+  }
+
+  void TypeChecker::operator()(ast::AssignExp& e)
+  {
+    // INFORMATION
+    // accept les expressions
+    // check si la variable de gauche est du meme type que le calcul a droite
+    // TODO
+    // Peut etre gerer aussi le cas du NIL mais info a verifier
+    e.var_get().accept(*this);
+    e.exp_get().accept(*this);
+
+    check_types(e, "left operand type", e.var_get().type_get(),
+                "right operand type", e.exp_get().type_get());
+    type_default(e, e.var_get().type_get());
+  }
+
+  void TypeChecker::operator()(ast::ArrayExp& e)
+  {
+    // INFORMATION
+    // accept les expressions
+    // check si le type du nom est bien le meme que le type de l'init
+    // Exemple : ArrInt = array of int
+    // arr : arrInt := arrInt [10] of 0
+    // C'est un array of int donc l'init est 0 et ne doit pas etre une string
+    // Check aussi si la size est bien un int
+    // TODO
+    // Sans doute d'autre chose a check mais je sais pas a verifier
+    e.type_name_get().accept(*this);
+    e.size_get().accept(*this);
+    e.init_get().accept(*this);
+    auto int_ptr = &Int::instance();
+
+    check_types(e, "Array type", e.type_name_get().type_get(), "Array variable",
+                e.init_get().type_get());
+
+    check_types(e, "Array size type", e.size_get().type_get(), "Expected type",
+                *int_ptr);
+    type_default(e, e.type_name_get().type_get());
+  }
+
+  void TypeChecker::operator()(ast::CastExp& e)
+  {
+    // INFORMATION
+    // accept les expressions
+    // Mettre le type default au nouveau type du cast
+    // TODO
+    // Je ne sais pas si c'est bon et y a de tres grande chance qu'il
+    // faut rajouter d'autre bout de code
+    e.exp_get().accept(*this);
+    e.ty_get().accept(*this);
+    type_default(e, e.ty_get().type_get());
+  }
+
+  void TypeChecker::operator()(ast::FieldInit& e)
+  {
+    // INFORMATION
+    // accept les expressions
+    // TODO
+    // reussir a retrouver le type du misc::symbol pour check si l'init
+    // est du meme type que la variable
+    // PROBLEME
+    // un misc symbol n'a pas de type donc je ne sais pas comment faire
+    e.init_get().accept(*this);
+  }
 
   /*-----------------.
   | Visiting /Dec/.  |
@@ -231,7 +394,23 @@ namespace type
   template <>
   void TypeChecker::visit_dec_header<ast::FunctionDec>(ast::FunctionDec& e)
   {
-    // FIXME: Some code was deleted here.
+    if (&e.formals_get())
+      e.formals_get().accept(*this);
+    if (e.result_get())
+      {
+        e.result_get()->accept(*this);
+        type_default(e, type(*e.result_));
+      }
+    else
+      {
+        auto void_ptr = Void::instance();
+        type_default(e, void_ptr);
+      }
+    // INFORMATION
+    // Sauvegarder le type de la declaration de fonction avec type_default
+    // Le type de la declaration est recuperer avec NameTy
+    // Si NameTy (result_get()) est nullptr, ca veut dire que c'est une fonction
+    // du type void
   }
 
   // Type check this function's body.
@@ -240,8 +419,14 @@ namespace type
   {
     if (e.body_get())
       {
-        //visit_routine_body<Function>(e);
+        // INFORMATION
+        // Accept le body et fait une visit du body avec visit_routine_body
+        // TODO
+        // On doit recuperer le type du body d'une maniere ou d'une autre
+        // Puis faire un check types avec le qui a ete sauvegarder plus haut
+
         e.body_get()->accept(*this);
+        //visit_routine_body<Function>(e);
         // Check for Nil types in the function body.
         if (!error_)
           {
