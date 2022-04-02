@@ -28,8 +28,6 @@ namespace type
     void accept(Visitor& v) override;
     /** \} */
 
-    const Type& actual() const override;
-
     bool compatible_with(const Type& other) const override;
 
     /// Get the associated record type.

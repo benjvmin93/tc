@@ -167,14 +167,55 @@ namespace type
     // Grace au parcours des noeuds
     // check le type pour savoir si c'est des int
     // Ce sera a changer parce qu'on peut avoir des records et des type_dec
-    auto int_ptr = &Int::instance();
+    auto oper = e.oper_get();
     e.left_get().accept(*this);
     e.right_get().accept(*this);
-    check_types(e, "left operand type", *e.left_get().type_get(),
+    auto type_left = e.left_get().type_get();
+    auto type_right = e.right_get().type_get();
+
+    if (dynamic_cast<const Nil*>(type_left) && dynamic_cast<const Nil*>(type_right))
+        error(e, "Can't compare two Nil expressions.");
+
+    if (oper == ast::OpExp::Oper::eq 
+    || oper == ast::OpExp::Oper::ne 
+    || oper == ast::OpExp::Oper::lt 
+    || oper == ast::OpExp::Oper::le
+    || oper == ast::OpExp::Oper::gt 
+    || oper == ast::OpExp::Oper::ge)
+    {
+      if (dynamic_cast<const Int*>(type_left))
+      {
+        auto type_instance = &Int::instance();
+        check_types(e, "left operand type", *type_left,
+                "expected type", *type_instance);
+        check_types(e, "right operand type", *type_right,
+                "expected type", *type_instance);
+      }
+      if (dynamic_cast<const String*>(type_left))
+      {
+        auto type_instance = &String::instance();
+        check_types(e, "left operand type", *type_left,
+                "expected type", *type_instance);
+        check_types(e, "right operand type", *type_right,
+                "expected type", *type_instance);
+      }
+    }
+    if (oper == ast::OpExp::Oper::add 
+    || oper == ast::OpExp::Oper::sub 
+    || oper == ast::OpExp::Oper::mul 
+    || oper == ast::OpExp::Oper::div)
+    {
+      auto int_ptr = &Int::instance();
+      check_types(e, "left operand type", *type_left,
                 "expected type", *int_ptr);
-    check_types(e, "right operand type", *e.right_get().type_get(),
+      check_types(e, "right operand type", *type_right,
                 "expected type", *int_ptr);
-    type_default(e, int_ptr);
+
+      type_default(e, int_ptr);
+    }
+
+    if (error_)
+      error(e, "caca");
     /*type_default(e, int_ptr);
     // FIXME: Some code was deleted here.
     // If any of the operands are of type Nil, set the `record_type_` to the
