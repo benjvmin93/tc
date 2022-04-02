@@ -173,8 +173,12 @@ namespace type
     auto type_left = e.left_get().type_get();
     auto type_right = e.right_get().type_get();
 
+    // Two Nil expression => ERROR.
     if (dynamic_cast<const Nil*>(type_left) && dynamic_cast<const Nil*>(type_right))
+    {   
         error(e, "Can't compare two Nil expressions.");
+        return;
+    }
 
     if (oper == ast::OpExp::Oper::eq 
     || oper == ast::OpExp::Oper::ne 
@@ -215,7 +219,7 @@ namespace type
     }
 
     if (error_)
-      error(e, "caca");
+      error(e, "type mismatch");
     /*type_default(e, int_ptr);
     // FIXME: Some code was deleted here.
     // If any of the operands are of type Nil, set the `record_type_` to the
@@ -264,17 +268,34 @@ namespace type
   }
   void TypeChecker::operator()(ast::ForExp& e)
   {
+    // TODO type() au lieu de accept().
+    e.vardec_get().accept(*this);
+    // TODO Singleton INT.
+    if (dynamic_cast<const Int*>(e.vardec_get().type_get()))
+    {
+      auto int_ptr = &Int::instance();
+      check_types(e, "index type", *e.vardec_get().type_get(), "expected type",
+                *int_ptr);
+      e.hi_get().accept(*this);
+      check_types(e, "high bound type", *e.hi_get().type_get(), "expected type",
+                *int_ptr);
+      if (error_)
+      {
+        error(e, "type mismatch");
+        return;
+      }
+    }
     auto int_ptr = &Int::instance();
     auto void_ptr = &Void::instance();
     type_default(e, void_ptr);
 
-    e.vardec_get().accept(*this);
+    // e.vardec_get().accept(*this);
 
-    check_types(e, "index type", *e.vardec_get().type_get(), "expected type",
+   /* check_types(e, "index type", *e.vardec_get().type_get(), "expected type",
                 *int_ptr);
     e.hi_get().accept(*this);
     check_types(e, "high bound type", *e.hi_get().type_get(), "expected type",
-                *int_ptr);
+                *int_ptr);*/
     e.body_get().accept(*this);
 
     check_types(e, "for type", *e.body_get().type_get(), "expected type",
@@ -484,7 +505,22 @@ namespace type
 
   void TypeChecker::operator()(ast::VarDec& e)
   {
-    // FIXME: Some code was deleted here.
+    auto type_name = e.type_name_get();
+    auto init = e.init_get();
+    if (!type_name && !init)
+        unreachable();
+
+    if (!type_name)
+      type_default(e, type(*(init)));
+    else
+    {
+      if (init)
+        check_types(e, "type name", *type_name, "init type", *init);
+      if (!error_)
+        type_default(e, type(*(type_name)));
+      else
+        error(e, "type mismatch");
+    }
   }
 
   /*--------------------.
