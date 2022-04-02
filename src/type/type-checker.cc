@@ -423,7 +423,7 @@ namespace type
       {
         // INFORMATION
         // Accept le body et fait une visit du body avec visit_routine_body
-        // TODO
+      
         // On doit recuperer le type du body d'une maniere ou d'une autre
         // Puis faire un check types avec le qui a ete sauvegarder plus haut
 
