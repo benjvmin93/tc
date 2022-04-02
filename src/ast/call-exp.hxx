@@ -22,4 +22,7 @@ namespace ast
   inline void CallExp::def_set(FunctionDec* def) { def_ = def; }
 
   inline void CallExp::name_set(misc::symbol name) { name_ = name; }
+
+  inline FunctionDec* CallExp::def_get() { return def_; }
+
 } // namespace ast

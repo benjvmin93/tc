@@ -9,7 +9,7 @@
 #include <misc/symbol.hh>
 #include <type/attribute.hh>
 #include <type/method.hh>
-#include <type/type.hh>
+// #include <type/type.hh>
 
 namespace type
 {
@@ -132,8 +132,8 @@ namespace type
     bool sound() const;
     /** \} */
 
-    // FIXME: Some code was deleted here (Inherited methods).
-
+    bool compatible_with(const Type& other) const override;
+    
     /// Return the unique instance of the class type `Object'.
     static const Class& object_instance();
 

@@ -12,7 +12,13 @@ namespace type
   /// Array types.
   class Array : public Type
   {
-    // FIXME: Some code was deleted here.
+  public:
+    Array(const Type& type);
+
+    const Type& type_get() const;
+    
+  private:
+    const Type& type_;
   };
 
 } // namespace type

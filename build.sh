@@ -1,1 +1,1 @@
-libtoolize && ./bootstrap && ./configure && make -j4
+libtoolize --force && ./bootstrap && ./configure && make -j4

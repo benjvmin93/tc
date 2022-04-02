@@ -16,7 +16,15 @@ namespace ast
 
   class TypeConstructor
   {
-    // FIXME: Some code was deleted here.
+  public:
+    void create_type_set(const type::Type*);
+    const type::Type* created_type_get() const;
+
+    virtual void accept(ConstVisitor& v) const = 0;
+    virtual void accept(Visitor& v) = 0;
+
+  private:
+    const type::Type* type_;
   };
 } // namespace ast
 #include <ast/type-constructor.hxx>

@@ -20,9 +20,12 @@ namespace type
 
   void Nil::accept(Visitor& v) { v(*this); }
 
+
   bool Nil::compatible_with(const Type& other) const
   {
-    // FIXME: Some code was deleted here.
+    if (other == this->actual())
+      return false;
+    return true;
   }
 
   const Type* Nil::record_type_get() const { return record_type_; }

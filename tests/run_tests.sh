@@ -127,7 +127,7 @@ do
         #TYPE
         elif [ $code_err -eq 5 ]
         then
-            ./../src/tc -X --parse $f >> filerr 2>&1  
+            ./../src/tc -T $f >> filerr 2>&1
         fi
 
         if [ $? -eq $code_err ]

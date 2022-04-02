@@ -16,3 +16,6 @@
 #include <type/nil.hh>
 #include <type/record.hh>
 #include <type/type.hh>
+
+//#include <type/attribute.hh>
+//#include <type/class.hh>

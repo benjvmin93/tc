@@ -25,19 +25,21 @@ namespace type
   template <typename NodeType>
   void TypeChecker::type_default(NodeType& e, const type::Type* type)
   {
-    // FIXME: Some code was deleted here.
+    if (!e.type_get())
+      e.type_set(type);
   }
 
   template <typename NodeType>
   void TypeChecker::created_type_default(NodeType& e, const type::Type* type)
   {
-    // FIXME: Some code was deleted here.
+    /*if (!e.create_type_get())
+      e.create_type_set(type);*/
   }
 
   template <typename NodeType>
   void TypeChecker::type_set(NodeType& e, const type::Type* type)
   {
-    // FIXME: Some code was deleted here (Basically e.type_set(type)).
+    e.type_set(type);
   }
 
   /*-----------------.
@@ -65,7 +67,10 @@ namespace type
                                const std::string& s,
                                const Type& expected)
   {
-    // FIXME: Some code was deleted here.
+    if (!e.type_get()->compatible_with(expected))
+      {
+        error(e, s, expected);
+      }
   }
 
   /*------------.

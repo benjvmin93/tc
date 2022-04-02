@@ -7,6 +7,4 @@
 #include <ast/visitor.hh>
 
 namespace ast
-{
-  // FIXME: Some code was deleted here.
-} // namespace ast
+{} // namespace ast

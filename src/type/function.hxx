@@ -13,4 +13,6 @@ namespace type
 
   inline const Type& Function::result_get() const { return result_; }
 
+  inline const Type& Function::actual() const {return result_get(); } //TODO
+
 } // namespace type

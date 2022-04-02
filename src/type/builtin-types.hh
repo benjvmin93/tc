@@ -10,6 +10,24 @@
 
 namespace type
 {
-  // FIXME: Some code was deleted here (Other types : Int, String, Void).
+  class Int : public misc::Singleton<Int>, public Type
+  {
+    friend class misc::Singleton<Int>;
+    void accept(ConstVisitor& v) const override;
+    void accept(Visitor& v) override;
+  };
 
+  class String : public misc::Singleton<String>, public Type
+  {
+    friend class misc::Singleton<String>;
+    void accept(ConstVisitor& v) const override;
+    void accept(Visitor& v) override;
+  };
+
+  class Void : public misc::Singleton<Void>, public Type
+  {
+    friend class misc::Singleton<Void>;
+    void accept(ConstVisitor& v) const override;
+    void accept(Visitor& v) override;
+  };
 } // namespace type
