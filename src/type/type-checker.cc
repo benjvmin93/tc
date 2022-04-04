@@ -94,9 +94,7 @@ namespace type
                                 const std::string& exp2,
                                 ast::Typable& type2)
   {
-    // Ensure evaluation order.
     check_types(ast, exp1, *type(type1), exp2, *type(type2));
-    // FIXME: Some code was deleted here (Check types).
   }
 
   /*--------------------------.
@@ -112,17 +110,24 @@ namespace type
     type_default(e, type(*(e.def_get())));
   }
 
-  // FIXME: Some code was deleted here.
-  /*
-  void operator()(ast::FieldVar& e)
+  void TypeChecker::operator()(ast::FieldVar& e)
   {
     type_default(e, type(e.var_get()));
   }
 
-  void operator()(const_t<SubscriptVar>& e)
+  void TypeChecker::operator()(ast::SubscriptVar& e)
   {
     type_default(e, type(e.var_get()));
-  }*/
+    type_default(e, type(e.index_get()));
+
+    auto type_exp = e.index_get().type_get();
+    auto int_instance = &Int::instance();
+    check_types(e, "index type", *type_exp,
+            "expected type", *int_instance);
+    
+    if (error_)
+      error(e, "type mismatch in subscript var");
+  }
 
   /*-----------------.
   | Visiting /Exp/.  |
@@ -168,8 +173,8 @@ namespace type
     // check le type pour savoir si c'est des int
     // Ce sera a changer parce qu'on peut avoir des records et des type_dec
     auto oper = e.oper_get();
-    e.left_get().accept(*this);
-    e.right_get().accept(*this);
+    type(e.left_get());
+    type(e.right_get());
     auto type_left = e.left_get().type_get();
     auto type_right = e.right_get().type_get();
 
@@ -220,25 +225,8 @@ namespace type
 
     if (error_)
       error(e, "type mismatch");
-    /*type_default(e, int_ptr);
-    // FIXME: Some code was deleted here.
     // If any of the operands are of type Nil, set the `record_type_` to the
     // type of the opposite operand.
-    type(e.left_get());
-    type(e.right_get());
-
-    std::cout << "test\n";
-    check_types(e, "left", e.left_get(), "right", e.right_get());
-    
-    if (!error_)
-      {
-        auto oper = e.oper_get();
-        if (oper == ast::OpExp::Oper::add || oper == ast::OpExp::Oper::sub || oper == ast::OpExp::Oper::mul || oper == ast::OpExp::Oper::div)
-        {
-          if (e.left_get().type_get() != Int::instance() || e.right_get().type_get() != Int::instance())
-            error(e, "expected INT");
-        }
-      }*/
   }
 
   void TypeChecker::operator()(ast::IfExp& e)
@@ -415,7 +403,7 @@ namespace type
     // INFORMATION
     // accept les expressions
     // Mettre le type default au nouveau type du cast
-    // TODO
+    // FIXME
     // Je ne sais pas si c'est bon et y a de tres grande chance qu'il
     // faut rajouter d'autre bout de code
     e.exp_get().accept(*this);
@@ -427,7 +415,7 @@ namespace type
   {
     // INFORMATION
     // accept les expressions
-    // TODO
+    // FIXME
     // reussir a retrouver le type du misc::symbol pour check si l'init
     // est du meme type que la variable
     // PROBLEME
@@ -578,16 +566,52 @@ namespace type
   void TypeChecker::operator()(ast::NameTy& e)
   {
     // FIXME: Some code was deleted here (Recognize user defined types, and built-in types).
+    if (!e.def_get())
+      return;
+
+    // FIXME MARCHE PAS
+
+    auto type_namety = e.def_get()->ty_get().type_get();
+    auto str_instance = &String::instance();
+   
+    check_types(e, "type namety", *type_namety, "expected type str", *str_instance);
+
+    if (!error_)
+    {
+      type_default(e, str_instance);
+      return;
+    }
+    
+    auto int_instance = &Int::instance();
+    check_types(e, "type namety", *type_namety, "expected type int", *int_instance);
+    
+    if (!error_)
+    {  
+      type_default(e, int_instance);
+      return;
+    }
+
+    auto void_instance = &Void::instance();
+    check_types(e, "type namety", *type_namety, "expected type void", *void_instance);
+  
+    if (!error_)
+    {
+      type_default(e, void_instance);
+      return;
+    }
+
+    type_default(e, type_namety);
   }
 
   void TypeChecker::operator()(ast::RecordTy& e)
   {
-    // FIXME: Some code was deleted here.
+    //auto vec_fields = e.field_get();
+    type_default(e, e.type_get());
   }
 
   void TypeChecker::operator()(ast::ArrayTy& e)
   {
-    // FIXME: Some code was deleted here.
+    type_default(e, e.base_type_get().type_get());
   }
 
 } // namespace type

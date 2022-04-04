@@ -151,11 +151,10 @@ namespace type
     // ---------------- //
 
     void operator()(ast::SimpleVar& e) override;
-    // FIXME: Some code was deleted here (Other Var nodes).
-    /*
+    
     void operator()(ast::FieldVar& e) override;
-    void operator()(const_t<SubscriptVar>& e) override;
-    */
+    
+    void operator()(ast::SubscriptVar& e) override;
 
     // ---------------- //
     // Visiting /Exp/.  //
