@@ -94,7 +94,6 @@ namespace type
                                 const std::string& exp2,
                                 ast::Typable& type2)
   {
-    //for-loop segfault here FIXME
     check_types(ast, exp1, *type(type1), exp2, *type(type2));
   }
 
@@ -446,19 +445,19 @@ namespace type
   template <>
   void TypeChecker::visit_dec_header<ast::FunctionDec>(ast::FunctionDec& e)
   {
-    if (&e.formals_get())
-      type(e.formals_get());
+    auto form_ty = type(e.formals_get());
+
+    Function* fun = nullptr;
     if (e.result_get())
       {
-        //type(e.result_get());
-        e.result_get()->accept(*this);
-        type_default(e, type(*e.result_get()));
+        auto res = type(*e.result_get());
+        fun = new Function(form_ty, *res);
       }
     else
-      {
-        auto void_ptr = &Void::instance();
-        type_default(e, void_ptr);
+      {  
+        fun = new Function(form_ty, Void::instance());
       }
+      type_default(e, fun);
     // INFORMATION
     // Sauvegarder le type de la declaration de fonction avec type_default
     // Le type de la declaration est recuperer avec NameTy
@@ -477,13 +476,10 @@ namespace type
       
         // On doit recuperer le type du body d'une maniere ou d'une autre
         // Puis faire un check types avec le qui a ete sauvegarder plus haut
-
-        type(*e.body_get());
-        //isit_routine_body(e.body_get());
+    
+        visit_routine_body<const Function*>(e);
+        
         // Check for Nil types in the function body.
-
-
-
         if (!error_)
           {
             // FIXME: Some code was deleted here.

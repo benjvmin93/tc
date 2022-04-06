@@ -80,7 +80,9 @@ namespace type
   template <typename Routine_Type, typename Routine_Node>
   void TypeChecker::visit_routine_body(Routine_Node& e)
   {
-    // FIXME: Some code was deleted here.
-  }
+    auto rout_type = dynamic_cast<const Function*>(e.type_get());
 
+    auto type_body = type(*e.body_get());
+    check_types(e, "rout body", rout_type->result_get(), "type body", *type_body);
+  }
 } // namespace type
