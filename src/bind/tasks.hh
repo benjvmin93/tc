@@ -23,7 +23,7 @@ namespace bind::tasks
                bind_compute,
                "parse");
 
-  TASK_DECLARE("B|binding-display",
+  TASK_DECLARE("B|bindings-display",
                "enable bindings display in the AST",
                bind_display,
                "parse");
