@@ -94,6 +94,7 @@ namespace type
                                 const std::string& exp2,
                                 ast::Typable& type2)
   {
+    //for-loop segfault here FIXME
     check_types(ast, exp1, *type(type1), exp2, *type(type2));
   }
 
@@ -225,6 +226,8 @@ namespace type
 
     if (error_)
       error(e, "type mismatch");
+
+
     // If any of the operands are of type Nil, set the `record_type_` to the
     // type of the opposite operand.
   }
@@ -238,11 +241,11 @@ namespace type
     // apres avoir accept, les noeuds ont recup leur types grace au parcours
     // on peut check_types le then et else pour savoir si c'est le meme type
     // si il n'y a pas de else on doit check le then avec un void
-    e.get_test().accept(*this);
-    e.get_thenclause().accept(*this);
+    type(e.get_test());
+    type(e.get_thenclause());
     if (&e.get_elseclause())
       {
-        e.get_elseclause().accept(*this);
+        type(e.get_elseclause());
         check_types(e, "then clause type", *e.get_thenclause().type_get(),
                     "else clause type", *e.get_elseclause().type_get());
       }
@@ -256,15 +259,14 @@ namespace type
   }
   void TypeChecker::operator()(ast::ForExp& e)
   {
-    // TODO type() au lieu de accept().
-    e.vardec_get().accept(*this);
-    // TODO Singleton INT.
+    type(e.vardec_get());
     if (dynamic_cast<const Int*>(e.vardec_get().type_get()))
     {
       auto int_ptr = &Int::instance();
       check_types(e, "index type", *e.vardec_get().type_get(), "expected type",
                 *int_ptr);
-      e.hi_get().accept(*this);
+
+      type(e.hi_get());
       check_types(e, "high bound type", *e.hi_get().type_get(), "expected type",
                 *int_ptr);
       if (error_)
@@ -277,14 +279,7 @@ namespace type
     auto void_ptr = &Void::instance();
     type_default(e, void_ptr);
 
-    // e.vardec_get().accept(*this);
-
-   /* check_types(e, "index type", *e.vardec_get().type_get(), "expected type",
-                *int_ptr);
-    e.hi_get().accept(*this);
-    check_types(e, "high bound type", *e.hi_get().type_get(), "expected type",
-                *int_ptr);*/
-    e.body_get().accept(*this);
+    type(e.body_get());
 
     check_types(e, "for type", *e.body_get().type_get(), "expected type",
                 *void_ptr);
@@ -300,8 +295,9 @@ namespace type
     auto void_ptr = &Void::instance();
     type_default(e, void_ptr);
 
-    e.test_get().accept(*this);
-    e.body_get().accept(*this);
+    type(e.test_get());
+    type(e.body_get());
+
     check_types(e, "while type", *e.body_get().type_get(), "expected type",
                 *void_ptr);
     // INFORMATION
@@ -336,8 +332,10 @@ namespace type
     // visit la chunklist
     // visit les expressions qu'il y a dans 'in'
     // check si le in est bien un void puisque un letExp doit rien return
+    //type(e.chunklist_get());
     e.chunklist_get().accept(*this);
-    e.exp_get().accept(*this);
+    type(e.exp_get());
+
     auto void_ptr = &Void::instance();
 
     check_types(e, "in type", *e.exp_get().type_get(), "expected type",
@@ -366,8 +364,8 @@ namespace type
     // check si la variable de gauche est du meme type que le calcul a droite
     // TODO
     // Peut etre gerer aussi le cas du NIL mais info a verifier
-    e.var_get().accept(*this);
-    e.exp_get().accept(*this);
+    type(e.var_get());
+    type(e.exp_get());
 
     check_types(e, "left operand type", *e.var_get().type_get(),
                 "right operand type", *e.exp_get().type_get());
@@ -385,9 +383,10 @@ namespace type
     // Check aussi si la size est bien un int
     // TODO
     // Sans doute d'autre chose a check mais je sais pas a verifier
-    e.type_name_get().accept(*this);
-    e.size_get().accept(*this);
-    e.init_get().accept(*this);
+    type(e.type_name_get());
+    type(e.size_get());
+    type(e.init_get());
+
     auto int_ptr = &Int::instance();
 
     check_types(e, "Array type", *e.type_name_get().type_get(),
@@ -406,8 +405,9 @@ namespace type
     // FIXME
     // Je ne sais pas si c'est bon et y a de tres grande chance qu'il
     // faut rajouter d'autre bout de code
-    e.exp_get().accept(*this);
-    e.ty_get().accept(*this);
+    type(e.exp_get());
+    type(e.ty_get());
+
     type_default(e, e.ty_get().type_get());
   }
 
@@ -420,7 +420,7 @@ namespace type
     // est du meme type que la variable
     // PROBLEME
     // un misc symbol n'a pas de type donc je ne sais pas comment faire
-    e.init_get().accept(*this);
+    type(e.init_get());
   }
 
   /*-----------------.
@@ -447,9 +447,10 @@ namespace type
   void TypeChecker::visit_dec_header<ast::FunctionDec>(ast::FunctionDec& e)
   {
     if (&e.formals_get())
-      e.formals_get().accept(*this);
+      type(e.formals_get());
     if (e.result_get())
       {
+        //type(e.result_get());
         e.result_get()->accept(*this);
         type_default(e, type(*e.result_get()));
       }
@@ -477,9 +478,12 @@ namespace type
         // On doit recuperer le type du body d'une maniere ou d'une autre
         // Puis faire un check types avec le qui a ete sauvegarder plus haut
 
-        e.body_get()->accept(*this);
-        //visit_routine_body<Function>(e);
+        //type(e.body_get());
+        //isit_routine_body(e.body_get());
         // Check for Nil types in the function body.
+
+
+
         if (!error_)
           {
             // FIXME: Some code was deleted here.

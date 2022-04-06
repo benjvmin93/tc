@@ -287,6 +287,17 @@ namespace bind
       ch->accept(*this);
   }
 
+  void Binder::operator()(ast::NameTy& e)
+  {
+    auto name = scope_type_.get(e.name_get());
+    
+    if (name != nullptr)
+      e.def_set(name);
+    else
+      Binder::undeclared(
+        "undeclared type: " + e.name_get().get(), e);
+  }
+
   /*-------------------.
   | Visiting VarChunk. |
   `-------------------*/
