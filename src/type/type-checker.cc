@@ -478,7 +478,7 @@ namespace type
         // On doit recuperer le type du body d'une maniere ou d'une autre
         // Puis faire un check types avec le qui a ete sauvegarder plus haut
 
-        //type(e.body_get());
+        type(*e.body_get());
         //isit_routine_body(e.body_get());
         // Check for Nil types in the function body.
 
