@@ -27,6 +27,8 @@ namespace misc
     void scope_begin();
     void scope_end();
 
+    bool contains(const Key& key);
+
   public:
     size_t nb_scope;
     std::vector<std::map<Key, Data>> maps_;

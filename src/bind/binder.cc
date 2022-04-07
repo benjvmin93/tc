@@ -21,8 +21,8 @@ namespace bind
 
   void Binder::check_main(const ast::FunctionDec& e)
   {
-    if (e.name_get() == "_main" && scope_fun_.get("_main") != nullptr)
-      error(e, "Main error");
+    if (e.name_get().get() == "_main" && scope_fun_.nb_scope != 1)
+      error(e, "Bad _main definition.");
   }
 
   /*----------------.
@@ -289,15 +289,21 @@ namespace bind
 
   void Binder::operator()(ast::NameTy& e)
   {
-    auto name = scope_type_.get(e.name_get());
-    
-    if (name != nullptr)
-      e.def_set(name);
+    if (scope_type_.contains(e.name_get()))
+    {
+      auto *def = scope_type_.get(e.name_get());
+      if (def)
+        e.def_set(def);
+      else
+        error(e, "definition type is null inside namety binder");
+    }
     else
-      Binder::undeclared(
-        "undeclared type: " + e.name_get().get(), e);
+    {
+      if (e.name_get() == "string" || e.name_get() == "int")
+        return;
+      Binder::undeclared("undeclared type: " + e.name_get().get(), e);
+    }
   }
-
   /*-------------------.
   | Visiting VarChunk. |
   `-------------------*/
@@ -310,15 +316,14 @@ namespace bind
 
   void Binder::operator()(ast::FunctionChunk& e)
   {
-    misc::scoped_map<misc::symbol, ast::FunctionDec*> func;
     for (auto& dec : e)
       {
-        auto name = func.get(dec->name_get());
+        auto name = scope_fun_.get(dec->name_get());
         if (name != nullptr)
           Binder::redefinition(name, dec);
         else
           {
-            func.put(dec->name_get(), dec);
+            scope_fun_.put(dec->name_get(), dec);
             dec->accept(*this);
           }
       }
@@ -329,15 +334,14 @@ namespace bind
   `--------------------*/
   void Binder::operator()(ast::TypeChunk& e)
   {
-    misc::scoped_map<misc::symbol, ast::TypeDec*> type;
     for (auto& dec : e)
       {
-        auto name = type.get(dec->name_get());
+        auto name = scope_type_.get(dec->name_get());
         if (name != nullptr)
           Binder::redefinition(name, dec);
         else
           {
-            type.put(dec->name_get(), dec);
+            scope_type_.put(dec->name_get(), dec);
             dec->accept(*this);
           }
       }

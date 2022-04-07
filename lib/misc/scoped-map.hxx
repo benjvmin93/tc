@@ -72,10 +72,23 @@ namespace misc
   }
 
   template <typename Key, typename Data>
+  bool scoped_map<Key, Data>::contains(const Key& key)
+  {
+    for (auto& map : maps_)
+    {
+      if (map.contains(key))
+        return true;
+    }
+    return false;
+  }
+
+
+  template <typename Key, typename Data>
   inline std::ostream& operator<<(std::ostream& ostr,
                                   const scoped_map<Key, Data>& tbl)
   {
     return tbl.dump(ostr);
   }
+
 
 } // namespace misc

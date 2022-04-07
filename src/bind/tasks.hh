@@ -12,9 +12,9 @@ namespace bind::tasks
   TASK_GROUP("3. Bind");
 
   DISJUNCTIVE_TASK_DECLARE("bound",
-                "default the computation of bindings to Tiger"
-                "(without objects nor overloading)",
-                "bindings-compute");
+                           "default the computation of bindings to Tiger"
+                           "(without objects nor overloading)",
+                           "bindings-compute");
 
   //OBJECT AFTER biding-compute in DISJONCTIVE TASK
 
@@ -23,13 +23,13 @@ namespace bind::tasks
                bind_compute,
                "parse");
 
-  TASK_DECLARE("B|binding-display",
+  TASK_DECLARE("B|bindings-display",
                "enable bindings display in the AST",
                bind_display,
                "parse");
 
   TASK_DECLARE("rename",
-                "rename identifiers to unique names",
-                name_compute,
-                "bound");
+               "rename identifiers to unique names",
+               name_compute,
+               "bound");
 } // namespace bind::tasks
