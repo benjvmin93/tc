@@ -304,6 +304,7 @@ namespace bind
       Binder::undeclared("undeclared type: " + e.name_get().get(), e);
     }
   }
+  
   /*-------------------.
   | Visiting VarChunk. |
   `-------------------*/
