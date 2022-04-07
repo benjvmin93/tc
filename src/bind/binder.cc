@@ -286,7 +286,7 @@ namespace bind
     for (auto ch : e.chunks_get())
       ch->accept(*this);
   }
-
+/*
   void Binder::operator()(ast::NameTy& e)
   {
     auto name = scope_type_.get(e.name_get());
@@ -296,8 +296,9 @@ namespace bind
     else
       Binder::undeclared(
         "undeclared type: " + e.name_get().get(), e);
+  
   }
-
+*/
   /*-------------------.
   | Visiting VarChunk. |
   `-------------------*/
