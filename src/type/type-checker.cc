@@ -122,9 +122,8 @@ namespace type
 
     auto type_exp = e.index_get().type_get();
     auto int_instance = &Int::instance();
-    check_types(e, "index type", *type_exp,
-            "expected type", *int_instance);
-    
+    check_types(e, "index type", *type_exp, "expected type", *int_instance);
+
     if (error_)
       error(e, "type mismatch in subscript var");
   }
@@ -179,53 +178,48 @@ namespace type
     auto type_right = e.right_get().type_get();
 
     // Two Nil expression => ERROR.
-    if (dynamic_cast<const Nil*>(type_left) && dynamic_cast<const Nil*>(type_right))
-    {   
+    if (dynamic_cast<const Nil*>(type_left)
+        && dynamic_cast<const Nil*>(type_right))
+      {
         error(e, "Can't compare two Nil expressions.");
         return;
-    }
-
-    if (oper == ast::OpExp::Oper::eq 
-    || oper == ast::OpExp::Oper::ne 
-    || oper == ast::OpExp::Oper::lt 
-    || oper == ast::OpExp::Oper::le
-    || oper == ast::OpExp::Oper::gt 
-    || oper == ast::OpExp::Oper::ge)
-    {
-      if (dynamic_cast<const Int*>(type_left))
-      {
-        auto type_instance = &Int::instance();
-        check_types(e, "left operand type", *type_left,
-                "expected type", *type_instance);
-        check_types(e, "right operand type", *type_right,
-                "expected type", *type_instance);
       }
-      if (dynamic_cast<const String*>(type_left))
-      {
-        auto type_instance = &String::instance();
-        check_types(e, "left operand type", *type_left,
-                "expected type", *type_instance);
-        check_types(e, "right operand type", *type_right,
-                "expected type", *type_instance);
-      }
-    }
-    if (oper == ast::OpExp::Oper::add 
-    || oper == ast::OpExp::Oper::sub 
-    || oper == ast::OpExp::Oper::mul 
-    || oper == ast::OpExp::Oper::div)
-    {
-      auto int_ptr = &Int::instance();
-      check_types(e, "left operand type", *type_left,
-                "expected type", *int_ptr);
-      check_types(e, "right operand type", *type_right,
-                "expected type", *int_ptr);
 
-      type_default(e, int_ptr);
-    }
+    if (oper == ast::OpExp::Oper::eq || oper == ast::OpExp::Oper::ne
+        || oper == ast::OpExp::Oper::lt || oper == ast::OpExp::Oper::le
+        || oper == ast::OpExp::Oper::gt || oper == ast::OpExp::Oper::ge)
+      {
+        if (dynamic_cast<const Int*>(type_left))
+          {
+            auto type_instance = &Int::instance();
+            check_types(e, "left operand type", *type_left, "expected type",
+                        *type_instance);
+            check_types(e, "right operand type", *type_right, "expected type",
+                        *type_instance);
+          }
+        if (dynamic_cast<const String*>(type_left))
+          {
+            auto type_instance = &String::instance();
+            check_types(e, "left operand type", *type_left, "expected type",
+                        *type_instance);
+            check_types(e, "right operand type", *type_right, "expected type",
+                        *type_instance);
+          }
+      }
+    if (oper == ast::OpExp::Oper::add || oper == ast::OpExp::Oper::sub
+        || oper == ast::OpExp::Oper::mul || oper == ast::OpExp::Oper::div)
+      {
+        auto int_ptr = &Int::instance();
+        check_types(e, "left operand type", *type_left, "expected type",
+                    *int_ptr);
+        check_types(e, "right operand type", *type_right, "expected type",
+                    *int_ptr);
+
+        type_default(e, int_ptr);
+      }
 
     if (error_)
       error(e, "type mismatch");
-
 
     // If any of the operands are of type Nil, set the `record_type_` to the
     // type of the opposite operand.
@@ -260,28 +254,27 @@ namespace type
   {
     type(e.vardec_get());
     if (dynamic_cast<const Int*>(e.vardec_get().type_get()))
-    {
-      auto int_ptr = &Int::instance();
-      check_types(e, "index type", *e.vardec_get().type_get(), "expected type",
-                *int_ptr);
-
-      type(e.hi_get());
-      check_types(e, "high bound type", *e.hi_get().type_get(), "expected type",
-                *int_ptr);
-      if (error_)
       {
-        error(e, "type mismatch");
-        return;
+        auto int_ptr = &Int::instance();
+        check_types(e, "index type", *e.vardec_get().type_get(),
+                    "expected type", *int_ptr);
+
+        type(e.hi_get());
+        check_types(e, "high bound", *e.hi_get().type_get(), "expected",
+                    *int_ptr);
+        if (error_)
+          {
+            error(e, "type mismatch");
+            return;
+          }
       }
-    }
     auto int_ptr = &Int::instance();
     auto void_ptr = &Void::instance();
     type_default(e, void_ptr);
 
     type(e.body_get());
 
-    check_types(e, "for type", *e.body_get().type_get(), "expected type",
-                *void_ptr);
+    check_types(e, "for", *e.body_get().type_get(), "expected", *void_ptr);
     // INFORMATION
     // check si la variable de l'index est un int et si le high bound est aussi un int
     // check si le body a bien un void en retour
@@ -454,10 +447,10 @@ namespace type
         fun = new Function(form_ty, *res);
       }
     else
-      {  
+      {
         fun = new Function(form_ty, Void::instance());
       }
-      type_default(e, fun);
+    type_default(e, fun);
     // INFORMATION
     // Sauvegarder le type de la declaration de fonction avec type_default
     // Le type de la declaration est recuperer avec NameTy
@@ -473,12 +466,12 @@ namespace type
       {
         // INFORMATION
         // Accept le body et fait une visit du body avec visit_routine_body
-      
+
         // On doit recuperer le type du body d'une maniere ou d'une autre
         // Puis faire un check types avec le qui a ete sauvegarder plus haut
-    
+
         visit_routine_body<const Function*>(e);
-        
+
         // Check for Nil types in the function body.
         if (!error_)
           {
@@ -496,19 +489,19 @@ namespace type
     auto type_name = e.type_name_get();
     auto init = e.init_get();
     if (!type_name && !init)
-        unreachable();
+      unreachable();
 
     if (!type_name)
       type_default(e, type(*(init)));
     else
-    {
-      if (init)
-        check_types(e, "type name", *type_name, "init type", *init);
-      if (!error_)
-        type_default(e, type(*(type_name)));
-      else
-        error(e, "type mismatch");
-    }
+      {
+        if (init)
+          check_types(e, "type name", *type_name, "init type", *init);
+        if (!error_)
+          type_default(e, type(*(type_name)));
+        else
+          error(e, "type mismatch");
+      }
   }
 
   /*--------------------.
@@ -566,41 +559,34 @@ namespace type
   void TypeChecker::operator()(ast::NameTy& e)
   {
     // FIXME: Some code was deleted here (Recognize user defined types, and built-in types).
-    if (!e.def_get())
-      return;
+    /*if (!e.def_get())
+      return;*/
 
     // FIXME MARCHE PAS
 
-    auto type_namety = e.def_get()->ty_get().type_get();
-    auto str_instance = &String::instance();
-   
-    check_types(e, "type namety", *type_namety, "expected type str", *str_instance);
-
-    if (!error_)
-    {
-      type_default(e, str_instance);
-      return;
-    }
-    
-    auto int_instance = &Int::instance();
-    check_types(e, "type namety", *type_namety, "expected type int", *int_instance);
-    
-    if (!error_)
-    {  
-      type_default(e, int_instance);
-      return;
-    }
-
-    auto void_instance = &Void::instance();
-    check_types(e, "type namety", *type_namety, "expected type void", *void_instance);
-  
-    if (!error_)
-    {
-      type_default(e, void_instance);
-      return;
-    }
-
-    type_default(e, type_namety);
+    if (e.name_get() == "string")
+      {
+        auto str_instance = &String::instance();
+        type_default(e, str_instance);
+        return;
+      }
+    else if (e.name_get() == "void")
+      {
+        auto void_instance = &Void::instance();
+        type_default(e, void_instance);
+        return;
+      }
+    else if (e.name_get() == "int")
+      {
+        auto int_instance = &Int::instance();
+        type_default(e, int_instance);
+        return;
+      }
+    else
+      {
+        auto type_namety = e.def_get()->ty_get().type_get();
+        type_default(e, type_namety);
+      }
   }
 
   void TypeChecker::operator()(ast::RecordTy& e)

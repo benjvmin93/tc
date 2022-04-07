@@ -290,21 +290,21 @@ namespace bind
   void Binder::operator()(ast::NameTy& e)
   {
     if (scope_type_.contains(e.name_get()))
-    {
-      auto *def = scope_type_.get(e.name_get());
-      if (def)
-        e.def_set(def);
-      else
-        error(e, "definition type is null inside namety binder");
-    }
+      {
+        auto def = scope_type_.get(e.name_get());
+        if (def)
+          e.def_set(def);
+        else
+          error(e, "definition type is null inside namety binder");
+      }
     else
-    {
-      if (e.name_get() == "string" || e.name_get() == "int")
-        return;
-      Binder::undeclared("undeclared type: " + e.name_get().get(), e);
-    }
+      {
+        if (e.name_get() == "string" || e.name_get() == "int")
+          return;
+        Binder::undeclared("undeclared type: " + e.name_get().get(), e);
+      }
   }
-  
+
   /*-------------------.
   | Visiting VarChunk. |
   `-------------------*/
