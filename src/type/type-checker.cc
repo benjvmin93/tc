@@ -40,9 +40,9 @@ namespace type
 
   const Record* TypeChecker::type(const ast::fields_type& e)
   {
-    // FIXME: Some code was deleted here.
     auto res = new Record;
-    //res->fields_ = e;
+    for (const auto& var : e)
+      res->field_add(var->name_get(), *type(var->type_name_get()));
     return res;
   }
 
@@ -402,6 +402,7 @@ namespace type
 
     type_default(e, e.ty_get().type_get());
   }
+
 
   void TypeChecker::operator()(ast::FieldInit& e)
   {
