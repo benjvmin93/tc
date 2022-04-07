@@ -72,11 +72,13 @@ namespace bind
     void operator()(ast::CallExp& e) override;
 
     void operator()(ast::ClassTy& e) override;
+    void operator()(ast::NameTy& e) override;
     void operator()(ast::RecordTy& e) override;
     void operator()(ast::FunctionChunk& e) override;
     void operator()(ast::MethodChunk& e) override;
     void operator()(ast::TypeChunk& e) override;
     void operator()(ast::VarChunk& e) override;
+
 
     void operator()(ast::SimpleVar& e) override;
 
