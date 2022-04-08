@@ -528,7 +528,7 @@ namespace type
     // the type declared by E.
 
     auto named = new Named(e.name_get());
-    e.create_type_set(e.type_get());
+    e.create_type_set(named);
     e.type_set(e.created_type_get());
   }
 
@@ -571,12 +571,6 @@ namespace type
         type_default(e, str_instance);
         return;
       }
-    else if (e.name_get() == "void")
-      {
-        auto void_instance = &Void::instance();
-        type_default(e, void_instance);
-        return;
-      }
     else if (e.name_get() == "int")
       {
         auto int_instance = &Int::instance();
@@ -585,7 +579,7 @@ namespace type
       }
     else
       {
-        auto type_namety = e.def_get()->ty_get().type_get();
+        auto type_namety = e.def_get()->type_get();
         type_default(e, type_namety);
       }
   }
@@ -598,7 +592,8 @@ namespace type
 
   void TypeChecker::operator()(ast::ArrayTy& e)
   {
-    type_default(e, e.base_type_get().type_get());
+    auto array_type = new Array(*e.base_type_get().type_get());
+    type_default(e, array_type);
   }
 
 } // namespace type

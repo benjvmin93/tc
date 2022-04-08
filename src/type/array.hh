@@ -15,7 +15,11 @@ namespace type
   public:
     Array(const Type& type);
 
+    virtual void accept(ConstVisitor& v) const override;
+    virtual void accept(Visitor& v) override;
+    
     const Type& type_get() const;
+    
     
   private:
     const Type& type_;

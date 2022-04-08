@@ -12,4 +12,6 @@ namespace type
     : type_(type)
   {}
 
+  void Array::accept(ConstVisitor& v) const { v(*this); }
+  void Array::accept(Visitor& v) { v(*this); }
 } // namespace type
