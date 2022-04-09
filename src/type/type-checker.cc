@@ -41,8 +41,8 @@ namespace type
   const Record* TypeChecker::type(const ast::fields_type& e)
   {
     auto res = new Record;
-    for (const auto& var : e)
-      res->field_add(var->name_get(), *type(var->type_name_get()));
+    for (const auto var : e)
+      res->field_add(var->name_get(), *(type(var->type_name_get())));
     return res;
   }
 
@@ -161,6 +161,44 @@ namespace type
     // If there are any record initializations, set the `record_type_`
     // of the `Nil` to the expected type.
     // FIXME: Some code was deleted here.
+
+    auto fields = dynamic_cast<const Record*>(&(e.def_get()->type_get()->actual()));
+
+    if (!fields)
+    {
+      error(e, "type mismatch");
+      type_default(e, e.def_get()->type_get());
+      return;
+    }
+
+    auto count = 0;
+
+    for (auto &f_rec : e.get_fields())
+    {
+      auto name = f_rec->name_get();
+
+      int index = fields->field_index(name);
+
+      if (count != index)
+        error(e, "error recordexp");
+
+      type(f_rec->init_get());
+
+      auto f_type = f_rec->init_get().type_get();
+
+      auto expected_type = fields->field_type(name);
+
+      check_types(e, "type", *f_type, "expected type",
+      *expected_type);
+
+      count++;
+    }
+
+    if (error_)
+      type_default(e, std::make_unique<Nil>().get());
+
+    type_default(e, e.def_get()->type_get());
+
   }
 
   void TypeChecker::operator()(ast::OpExp& e)
@@ -586,8 +624,7 @@ namespace type
 
   void TypeChecker::operator()(ast::RecordTy& e)
   {
-    //auto vec_fields = e.field_get();
-    type_default(e, e.type_get());
+    type_default(e, type(e.field_get()));
   }
 
   void TypeChecker::operator()(ast::ArrayTy& e)
