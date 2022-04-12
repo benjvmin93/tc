@@ -161,9 +161,12 @@ namespace bind
   }
   void Binder::operator()(ast::ForExp& e)
   {
+    e.hi_get().accept(*this);
+    e.vardec_get().accept(*this);
     scope_begin();
     scope_loop_.push_back(&e);
-    super_type::operator()(e);
+    // super_type::operator()(e);
+    e.body_get().accept(*this);
     scope_end();
     scope_loop_.pop_back();
   }

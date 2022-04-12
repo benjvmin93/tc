@@ -1,0 +1,4 @@
+/* break init value in for */
+
+for id := break to 5 do
+    id := id + 1
