@@ -1,0 +1,9 @@
+/* break in func expression */
+
+let 
+    var me := 0
+    function id(me : int) : me = break
+in
+    while 1 do
+        id(6)
+end

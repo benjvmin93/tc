@@ -153,9 +153,11 @@ namespace bind
 
   void Binder::operator()(ast::WhileExp& e)
   {
+    e.test_get().accept(*this);
     scope_begin();
     scope_loop_.push_back(&e);
-    super_type::operator()(e);
+    e.body_get().accept(*this);
+    //super_type::operator()(e);
     scope_end();
     scope_loop_.pop_back();
   }
@@ -165,7 +167,6 @@ namespace bind
     e.vardec_get().accept(*this);
     scope_begin();
     scope_loop_.push_back(&e);
-    // super_type::operator()(e);
     e.body_get().accept(*this);
     scope_end();
     scope_loop_.pop_back();
