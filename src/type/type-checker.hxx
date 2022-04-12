@@ -32,8 +32,8 @@ namespace type
   template <typename NodeType>
   void TypeChecker::created_type_default(NodeType& e, const type::Type* type)
   {
-    /*if (!e.create_type_get())
-      e.create_type_set(type);*/
+    if (!e.created_type_get())
+      e.create_type_set(type);
   }
 
   template <typename NodeType>

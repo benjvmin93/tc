@@ -306,7 +306,7 @@ namespace type
             return;
           }
       }
-    auto int_ptr = &Int::instance();
+    //auto int_ptr = &Int::instance();
     auto void_ptr = &Void::instance();
     type_default(e, void_ptr);
 
@@ -394,12 +394,22 @@ namespace type
     // check si la variable de gauche est du meme type que le calcul a droite
     // TODO
     // Peut etre gerer aussi le cas du NIL mais info a verifier
-    type(e.var_get());
-    type(e.exp_get());
+    if (&e.var_get() != nullptr && &e.exp_get() != nullptr)
+    {
+      type(e.var_get());
+      type(e.exp_get());
 
-    check_types(e, "left operand type", *e.var_get().type_get(),
-                "right operand type", *e.exp_get().type_get());
-    type_default(e, e.var_get().type_get());
+      check_types(e, "left operand type", *e.var_get().type_get(),
+                  "right operand type", *e.exp_get().type_get());
+      
+      if (!error_)
+      {
+        auto v = dynamic_cast<ast::SimpleVar*>(&e.var_get());
+        if (v != nullptr && v->def_get() != nullptr && var_read_only_.contains(v->def_get()))
+          error(e, "type mismatch on read only");
+      }
+      type_default(e, e.var_get().type_get());
+    }
   }
 
   void TypeChecker::operator()(ast::ArrayExp& e)
@@ -413,18 +423,22 @@ namespace type
     // Check aussi si la size est bien un int
     // TODO
     // Sans doute d'autre chose a check mais je sais pas a verifier
-    type(e.type_name_get());
-    type(e.size_get());
-    type(e.init_get());
+    if (&e.type_name_get() != nullptr && &e.size_get() != nullptr 
+        && &e.init_get() != nullptr)
+    {
+      type(e.type_name_get());
+      type(e.size_get());
+      type(e.init_get());
 
-    auto int_ptr = &Int::instance();
+      auto int_ptr = &Int::instance();
 
-    check_types(e, "Array type", *e.type_name_get().type_get(),
-                "Array variable", *e.init_get().type_get());
+      check_types(e, "Array type", *e.type_name_get().type_get(),
+                  "Array variable", *e.init_get().type_get());
 
-    check_types(e, "Array size type", *e.size_get().type_get(), "Expected type",
-                *int_ptr);
-    type_default(e, e.type_name_get().type_get());
+      check_types(e, "Array size type", *e.size_get().type_get(), "Expected type",
+                  *int_ptr);
+      type_default(e, e.type_name_get().type_get());
+    }
   }
 
   void TypeChecker::operator()(ast::CastExp& e)
@@ -467,7 +481,7 @@ namespace type
     chunk_visit<ast::FunctionDec>(e);
   }
 
-  void TypeChecker::operator()(ast::FunctionDec& e)
+  void TypeChecker::operator()(ast::FunctionDec&)
   {
     // We must not be here.
     unreachable();
