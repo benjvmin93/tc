@@ -121,7 +121,6 @@ namespace bind
 
   void Binder::operator()(ast::VarDec& e)
   {
-    scope_var_.put(e.name_get(), &e);
     if (e.type_name_get())
       {
         auto type = scope_type_.get(e.type_name_get()->name_get());
@@ -142,6 +141,7 @@ namespace bind
       {
         this->accept(e.init_get());
       }
+    scope_var_.put(e.name_get(), &e);
   }
 
   void Binder::operator()(ast::LetExp& e)
@@ -157,7 +157,6 @@ namespace bind
     scope_begin();
     scope_loop_.push_back(&e);
     e.body_get().accept(*this);
-    //super_type::operator()(e);
     scope_end();
     scope_loop_.pop_back();
   }

@@ -1,0 +1,4 @@
+/* for index in higher bound */ 
+
+for i := i to 5 do
+    i := i + 1
