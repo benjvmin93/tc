@@ -17,14 +17,19 @@ namespace bind
   /// The error handler.
   const misc::error& Binder::error_get() const { return error_; }
 
-  // FIXME: Some code was deleted here (Error reporting).
-
   void Binder::check_main(const ast::FunctionDec& e)
   {
-    if (e.name_get().get() == "_main" && scope_fun_.nb_scope != 1)
-      error(e, "Bad _main definition.");
+    if (scope_fun_.nb_scope == 1)
+    {
+      if (e.name_get().get() == "_main")
+        main = true;
+    }
+    else if (main && e.name_get().get() == "_main")
+    {
+      error(e, "Bad _main deefinition");
+    }
   }
-
+  
   /*----------------.
   | Symbol tables.  |
   `----------------*/

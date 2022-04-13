@@ -19,6 +19,12 @@ namespace bind
            << '\n';
   }
 
+  inline void Binder::error(const std::string& msg)
+  {
+    error_ << misc::error::error_type::bind << msg
+           << '\n';
+  }
+
   template <typename T>
   void Binder::undeclared(const std::string& k, const T& e)
   {

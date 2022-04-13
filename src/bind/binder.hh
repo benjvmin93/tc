@@ -135,10 +135,13 @@ namespace bind
     /// \}
 
     /// \name Error handling
+    bool main = false;
+
     /// \{
   protected:
     /// Report an error.
     void error(const ast::Ast& loc, const std::string& msg);
+    void error(const std::string& msg);
 
     /// Check _main definition.
     void check_main(const ast::FunctionDec& e);
